@@ -232,6 +232,17 @@ namespace OniAccess.Handlers {
 			Register<KleiItemDropScreen>(screen => new KleiItemDropHandler(screen));
 			_showPatchedTypes.Add(typeof(KleiItemDropScreen));
 
+			// KleiInventoryScreen (KModalScreen -- blueprint gallery in Supply Closet)
+			// Show patch pushes/pops via ContextDetector since OnActivate calls OnShow(true)
+			Register<KleiInventoryScreen>(screen =>
+				new Screens.Inventory.InventoryScreenHandler(screen));
+			_showPatchedTypes.Add(typeof(KleiInventoryScreen));
+
+			// BarterConfirmationScreen (KModalScreen -- buy/sell confirmation dialog)
+			// Dynamically instantiated; OnActivate patch pushes via ContextDetector
+			Register<BarterConfirmationScreen>(screen =>
+				new Screens.Inventory.BarterConfirmationHandler(screen));
+
 			// WattsonMessage (KScreen -- welcome narrative at colony start)
 			Register<WattsonMessage>(screen => new WattsonMessageHandler(screen));
 

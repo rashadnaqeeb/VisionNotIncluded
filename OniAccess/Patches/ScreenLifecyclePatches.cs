@@ -2,6 +2,7 @@ using HarmonyLib;
 using OniAccess.Handlers;
 using OniAccess.Handlers.Screens;
 using OniAccess.Handlers.Screens.Codex;
+using OniAccess.Handlers.Screens.Inventory;
 using OniAccess.Speech;
 using OniAccess.Util;
 using UnityEngine;
@@ -98,6 +99,35 @@ namespace OniAccess.Patches {
 	internal static class KleiItemDropScreen_Show_Patch {
 		private static void Postfix(KScreen __instance, bool show) =>
 			ShowDispatch.Handle(__instance, show);
+	}
+
+	/// KleiInventoryScreen declares OnShow — patch it for show/hide lifecycle.
+	[HarmonyPatch(typeof(KleiInventoryScreen), "OnShow")]
+	internal static class KleiInventoryScreen_OnShow_Patch {
+		private static void Postfix(KScreen __instance, bool show) =>
+			ShowDispatch.Handle(__instance, show);
+	}
+
+	/// BarterConfirmationScreen is dynamically instantiated, not pushed via
+	/// the KScreen stack. Patch OnActivate to push our handler when it appears.
+	[HarmonyPatch(typeof(BarterConfirmationScreen), "OnActivate")]
+	internal static class BarterConfirmationScreen_OnActivate_Patch {
+		private static void Postfix(KScreen __instance) {
+			if (!ModToggle.IsEnabled) return;
+			ContextDetector.OnScreenActivated(__instance);
+		}
+	}
+
+	/// Patch ShowResultPanel to notify BarterConfirmationHandler of transaction result.
+	[HarmonyPatch(typeof(BarterConfirmationScreen), "ShowResultPanel")]
+	internal static class BarterConfirmationScreen_ShowResultPanel_Patch {
+		private static void Postfix(BarterConfirmationScreen __instance, bool transationResult) {
+			if (!ModToggle.IsEnabled) return;
+			if (HandlerStack.ActiveHandler is BarterConfirmationHandler handler
+				&& handler.Screen == __instance) {
+				handler.OnTransactionResult(transationResult);
+			}
+		}
 	}
 
 	/// Notify KleiItemDropHandler when an item is presented for reveal.

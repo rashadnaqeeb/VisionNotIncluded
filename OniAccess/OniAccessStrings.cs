@@ -56,6 +56,7 @@ namespace STRINGS {
 			public static LocString FEEDBACK = "Feedback";
 			public static LocString KEY_BINDINGS = "Key bindings";
 			public static LocString SUPPLY_CLOSET = "Supply closet";
+			public static LocString INVENTORY = "Inventory";
 			public static LocString ITEM_DROP = "Claim blueprints";
 			public static LocString WELCOME_MESSAGE = "Welcome message";
 			public static LocString STORY_MESSAGE = "Story message";
@@ -108,6 +109,34 @@ namespace STRINGS {
 			public static LocString OFFLINE = "Not connected to server";
 		}
 
+		// Inventory (blueprint gallery) screen
+		public class INVENTORY {
+			public static LocString GALLERY_TAB = "Gallery";
+			public static LocString DETAIL_TAB = "Details";
+			public static LocString OWNED = "owned {0}";
+			public static LocString UNOWNED = "unowned";
+			public static LocString NOT_FOR_SALE = "not for sale";
+			public static LocString NOT_FOR_SALE_YET = "not yet available";
+			public static LocString TOO_EXPENSIVE = "too expensive, {0} filaments";
+			public static LocString ALREADY_OWNED = "already owned";
+			public static LocString BUY = "Buy for {0} filaments";
+			public static LocString SELL = "Sell for {0} filaments";
+			public static LocString SELL_NONE = "Sell, none owned";
+			public static LocString FILAMENTS = "Filaments: {0}";
+			public static LocString FACADE_FOR = "Blueprint for {0}";
+			public static LocString FILTER_OWNERSHIP_ALL = "all";
+			public static LocString FILTER_OWNERSHIP_OWNED = "owned only";
+			public static LocString FILTER_OWNERSHIP_DOUBLES = "doubles only";
+			public static LocString FILTER_DLC_ALL = "all";
+			public static LocString OWNERSHIP_FILTER = "Ownership: {0}";
+			public static LocString DLC_FILTER = "Collection: {0}";
+			public static LocString CONFIRM_BUY = "Buy {0} for {1} filaments?";
+			public static LocString CONFIRM_SELL = "Sell {0} for {1} filaments?";
+			public static LocString TRANSACTION_LOADING = "Processing";
+			public static LocString TRANSACTION_SUCCESS = "Transaction complete";
+			public static LocString TRANSACTION_FAILED = "Transaction failed";
+		}
+
 		// Help overlay key descriptions
 		public class HELP {
 			public static LocString NAVIGATE = "Step through help entries";
@@ -138,6 +167,7 @@ namespace STRINGS {
 			public static LocString CYCLE_RECIPE = "Cycle recipe";
 			public static LocString TOGGLE_OPTION = "Toggle option";
 			public static LocString OPEN_CONFIG = "Open settings";
+			public static LocString OPEN_FILTER = "Open filter";
 
 			// Help entries for tool-specific keys
 			public class TOOLS_HELP {
