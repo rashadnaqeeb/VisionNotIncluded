@@ -431,7 +431,7 @@ These are base game hotkeys that toggle information overlays. Each overlay chang
 
 ## Troubleshooting
 
-If something isn't working, the player log usually has the answer. It's at `%USERPROFILE%\AppData\LocalLow\Klei\Oxygen Not Included\Player.log`. When reporting a bug, please include this file.
+If something isn't working, the player log usually has the answer. It's at `%USERPROFILE%\AppData\LocalLow\Klei\Oxygen Not Included\Player.log` on Windows or `~/Library/Logs/Klei/Oxygen Not Included/Player.log` on Mac. When reporting a bug, please include this file.
 
 ## Credits
 

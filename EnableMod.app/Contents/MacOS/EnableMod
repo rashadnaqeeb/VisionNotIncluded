@@ -1,0 +1,87 @@
+#!/usr/bin/osascript
+
+on findModsJson()
+	set homePath to POSIX path of (path to home folder)
+	set modsJson to homePath & "Library/Application Support/unity.Klei.Oxygen Not Included/mods/mods.json"
+	try
+		do shell script "test -f " & quoted form of modsJson
+		return modsJson
+	end try
+	return missing value
+end findModsJson
+
+on enableMod(modsJsonPath)
+	set pythonScript to "
+import json, sys
+
+path = sys.argv[1]
+with open(path) as f:
+    root = json.load(f)
+
+mods = root.get('mods', [])
+found = False
+for mod in mods:
+    static_id = mod.get('staticID', '')
+    label_id = ''
+    label = mod.get('label')
+    if isinstance(label, dict):
+        label_id = label.get('id', '')
+    if static_id == 'OniAccess' or label_id == 'OniAccess':
+        mod['enabled'] = True
+        mod['enabledForDlc'] = ['', 'EXPANSION1_ID']
+        mod['crash_count'] = 0
+        mod['status'] = 1
+        found = True
+        break
+
+if not found:
+    print('NOT_FOUND')
+    sys.exit(0)
+
+with open(path, 'w') as f:
+    json.dump(root, f)
+print('OK')
+"
+	try
+		set result to do shell script "python3 -c " & quoted form of pythonScript & " " & quoted form of modsJsonPath
+		return result
+	on error errMsg
+		error "Failed to update mod config: " & errMsg
+	end try
+end enableMod
+
+on run
+	set workshopUrl to "https://steamcommunity.com/sharedfiles/filedetails/?id=3683507975"
+	set steamLaunchUrl to "steam://rungameid/457140"
+
+	repeat
+		set modsJsonPath to findModsJson()
+
+		if modsJsonPath is missing value then
+			set userChoice to button returned of (display dialog "Could not find the OniAccess mod config." & return & return & "If you haven't subscribed yet, click Open Workshop Page." & return & "If you have subscribed, launch the game once, close it, then click Try Again." with title "OniAccess" buttons {"Close", "Try Again", "Open Workshop Page"} default button "Try Again" cancel button "Close")
+			if userChoice is "Open Workshop Page" then
+				open location workshopUrl
+			end if
+		else
+			try
+				set result to enableMod(modsJsonPath)
+			on error errMsg
+				display dialog errMsg with title "OniAccess" buttons {"OK"} default button "OK" with icon stop
+				return
+			end try
+
+			if result is "NOT_FOUND" then
+				set userChoice to button returned of (display dialog "Could not find the OniAccess mod config." & return & return & "If you haven't subscribed yet, click Open Workshop Page." & return & "If you have subscribed, launch the game once, close it, then click Try Again." with title "OniAccess" buttons {"Close", "Try Again", "Open Workshop Page"} default button "Try Again" cancel button "Close")
+				if userChoice is "Open Workshop Page" then
+					open location workshopUrl
+				end if
+			else
+				set userChoice to button returned of (display dialog "OniAccess enabled. Launch the game?" with title "OniAccess" buttons {"No", "Yes"} default button "Yes")
+				if userChoice is "Yes" then
+					open location steamLaunchUrl
+				end if
+				return
+			end if
+		end if
+	end repeat
+end run
