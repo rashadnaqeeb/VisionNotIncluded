@@ -206,6 +206,22 @@ namespace OniAccess.Handlers.Screens.Research {
 			};
 		}
 
+		/// <summary>
+		/// Build a search-only label containing tech name plus each TechItem's
+		/// name and description — the same tooltip text the player has seen.
+		/// Never spoken; only used for type-ahead matching.
+		/// </summary>
+		internal static string BuildSearchLabel(Tech tech) {
+			var parts = new List<string>();
+			parts.Add(tech.Name);
+			foreach (var item in tech.unlockedItems) {
+				parts.Add(item.Name);
+				if (!string.IsNullOrEmpty(item.description))
+					parts.Add(item.description);
+			}
+			return string.Join(" ", parts);
+		}
+
 		static bool HasProgress(TechInstance ti) {
 			foreach (var kv in ti.progressInventory.PointsByTypeID) {
 				if (kv.Value > 0f) return true;

@@ -116,7 +116,7 @@ namespace OniAccess.Handlers.Screens.Research {
 		protected override string GetSearchItemLabel(int flatIndex) {
 			var all = ResearchHelper.GetAllTechs();
 			if (flatIndex < 0 || flatIndex >= all.Count) return null;
-			return all[flatIndex].Name;
+			return ResearchHelper.BuildSearchLabel(all[flatIndex]);
 		}
 
 		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
