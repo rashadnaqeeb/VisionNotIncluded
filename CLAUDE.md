@@ -92,7 +92,8 @@ This mod runs on Harmony patches and reflection. Both fail in ways that produce 
 3. Commit as "Release X.Y.Z" and tag as `vX.Y.Z`
 4. Push with `git push --tags && git push`
 5. Run `powershell -ExecutionPolicy Bypass -File release.ps1` — populates `release/` with all mod files except the config file
-6. Point the Steam Workshop uploader at the `release/` folder
+6. Zip the `release/` folder and upload it to GitHub: `gh release create vX.Y.Z release.zip --title "X.Y.Z" --notes "notes"` — the release notes should always direct players to use the Steam Workshop install and link to the getting-started guide, with the manual zip offered only as a fallback for regions where the Workshop is unavailable
+7. Point the Steam Workshop uploader at the `release/` folder
 
 ## Game Log
 
