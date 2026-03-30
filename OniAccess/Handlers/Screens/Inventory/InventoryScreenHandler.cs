@@ -97,10 +97,9 @@ namespace OniAccess.Handlers.Screens.Inventory {
 				return true;
 			}
 
-			// Escape from gallery tab: close the screen explicitly via Show(false)
-			// so our OnShow patch fires. LockerNavigator.PopScreen uses SetActive(false)
-			// which doesn't trigger OnShow, leaving the handler orphaned.
-			_screen?.Show(false);
+			// Dismiss via LockerNavigator so it updates its navigation history.
+			// PopScreen calls SetActive(false) → OnCmpDisable patch pops our handler.
+			LockerNavigator.Instance?.PopScreen();
 			return true;
 		}
 

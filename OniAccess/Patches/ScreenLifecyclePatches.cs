@@ -101,11 +101,37 @@ namespace OniAccess.Patches {
 			ShowDispatch.Handle(__instance, show);
 	}
 
-	/// KleiInventoryScreen declares OnShow — patch it for show/hide lifecycle.
+	/// KleiInventoryScreen lifecycle is managed by LockerNavigator via SetActive,
+	/// not Show(). OnShow fires on first open (OnActivate → OnShow(true)), but
+	/// re-opens only fire OnCmpEnable. We patch both: OnShow for first open,
+	/// OnCmpEnable (guarded by IsActive) for re-opens, and OnCmpDisable for pop.
 	[HarmonyPatch(typeof(KleiInventoryScreen), "OnShow")]
 	internal static class KleiInventoryScreen_OnShow_Patch {
 		private static void Postfix(KScreen __instance, bool show) =>
 			ShowDispatch.Handle(__instance, show);
+	}
+
+	/// Re-open: LockerNavigator.PushScreen calls SetActive(true), which fires
+	/// OnCmpEnable but not OnShow. Guard with IsActive() — false on first open
+	/// (Activate hasn't run yet), true on re-opens.
+	[HarmonyPatch(typeof(KleiInventoryScreen), "OnCmpEnable")]
+	internal static class KleiInventoryScreen_OnCmpEnable_Patch {
+		private static void Postfix(KScreen __instance) {
+			if (!ModToggle.IsEnabled) return;
+			if (!__instance.IsActive()) return;
+			ContextDetector.OnScreenActivated(__instance);
+		}
+	}
+
+	/// Dismiss: LockerNavigator.PopScreen calls SetActive(false), which fires
+	/// OnCmpDisable but not OnShow. KleiInventoryScreen doesn't declare
+	/// OnCmpDisable, so patch the declaring type (KModalScreen) and filter.
+	[HarmonyPatch(typeof(KModalScreen), "OnCmpDisable")]
+	internal static class KleiInventoryScreen_OnCmpDisable_Patch {
+		private static void Postfix(KScreen __instance) {
+			if (__instance is KleiInventoryScreen)
+				ContextDetector.OnScreenDeactivating(__instance);
+		}
 	}
 
 	/// BarterConfirmationScreen is dynamically instantiated, not pushed via
