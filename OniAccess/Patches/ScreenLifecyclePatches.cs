@@ -3,6 +3,7 @@ using OniAccess.Handlers;
 using OniAccess.Handlers.Screens;
 using OniAccess.Handlers.Screens.Codex;
 using OniAccess.Handlers.Screens.Inventory;
+using OniAccess.Handlers.Screens.Outfits;
 using OniAccess.Speech;
 using OniAccess.Util;
 using UnityEngine;
@@ -425,6 +426,56 @@ namespace OniAccess.Patches {
 
 			HandlerStack.RemoveByScreen(__instance);
 			ContextDetector.OnScreenActivated(__instance);
+		}
+	}
+
+	/// OutfitBrowserScreen extends KMonoBehaviour (not KScreen), so it
+	/// cannot go through ContextDetector. LockerNavigator manages it via
+	/// SetActive, which fires OnCmpEnable/OnCmpDisable.
+	[HarmonyPatch(typeof(OutfitBrowserScreen), "OnCmpEnable")]
+	internal static class OutfitBrowserScreen_OnCmpEnable_Patch {
+		private static void Postfix(OutfitBrowserScreen __instance) {
+			if (!ModToggle.IsEnabled) return;
+			if (!__instance.Config.isValid) return; // not yet configured
+			// Configure() calls SetActive(false)/SetActive(true) on re-open,
+			// which fires OnCmpDisable then OnCmpEnable — skip if already active
+			if (HandlerStack.ActiveHandler is OutfitBrowserHandler h
+				&& h.BrowserScreen == __instance) return;
+			HandlerStack.Push(new OutfitBrowserHandler(__instance));
+		}
+	}
+
+	/// OutfitBrowserScreen does not declare OnCmpDisable, so patch the
+	/// declaring type (KMonoBehaviour) and filter by instance type.
+	[HarmonyPatch(typeof(KMonoBehaviour), "OnCmpDisable")]
+	internal static class OutfitBrowserScreen_OnCmpDisable_Patch {
+		private static void Postfix(KMonoBehaviour __instance) {
+			if (!(__instance is OutfitBrowserScreen screen)) return;
+			if (!ModToggle.IsEnabled) return;
+			if (HandlerStack.ActiveHandler is OutfitBrowserHandler handler
+				&& handler.BrowserScreen == screen)
+				HandlerStack.Pop();
+		}
+	}
+
+	/// OutfitDesignerScreen extends KMonoBehaviour (not KScreen), same
+	/// lifecycle pattern as OutfitBrowserScreen.
+	[HarmonyPatch(typeof(OutfitDesignerScreen), "OnCmpEnable")]
+	internal static class OutfitDesignerScreen_OnCmpEnable_Patch {
+		private static void Postfix(OutfitDesignerScreen __instance) {
+			if (!ModToggle.IsEnabled) return;
+			if (!__instance.Config.isValid) return; // not yet configured
+			HandlerStack.Push(new OutfitDesignerHandler(__instance));
+		}
+	}
+
+	[HarmonyPatch(typeof(OutfitDesignerScreen), "OnCmpDisable")]
+	internal static class OutfitDesignerScreen_OnCmpDisable_Patch {
+		private static void Postfix(OutfitDesignerScreen __instance) {
+			if (!ModToggle.IsEnabled) return;
+			if (HandlerStack.ActiveHandler is OutfitDesignerHandler handler
+				&& handler.DesignerScreen == __instance)
+				HandlerStack.Pop();
 		}
 	}
 }

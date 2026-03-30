@@ -57,6 +57,8 @@ namespace STRINGS {
 			public static LocString KEY_BINDINGS = "Key bindings";
 			public static LocString SUPPLY_CLOSET = "Supply closet";
 			public static LocString INVENTORY = "Inventory";
+			public static LocString WARDROBE = "Wardrobe";
+			public static LocString OUTFIT_DESIGNER = "Outfit designer";
 			public static LocString ITEM_DROP = "Claim blueprints";
 			public static LocString WELCOME_MESSAGE = "Welcome message";
 			public static LocString STORY_MESSAGE = "Story message";
@@ -135,6 +137,22 @@ namespace STRINGS {
 			public static LocString TRANSACTION_LOADING = "Processing";
 			public static LocString TRANSACTION_SUCCESS = "Transaction complete";
 			public static LocString TRANSACTION_FAILED = "Transaction failed";
+		}
+
+		// Wardrobe (outfit browser) screen
+		public class WARDROBE {
+			public static LocString GALLERY_TAB = "Outfits";
+			public static LocString DETAIL_TAB = "Details";
+			// {0} = slot display name, {1} = item name or "None"
+			public static LocString SLOT_ITEM = "{0}: {1}";
+			public static LocString SLOT_EMPTY = "empty";
+			public static LocString CONTAINS_LOCKED = "contains unowned items";
+			public static LocString NO_OUTFITS = "No outfits";
+		}
+
+		// Outfit designer screen
+		public class OUTFIT_DESIGNER {
+			public static LocString SELECTED = "selected";
 		}
 
 		// Help overlay key descriptions
