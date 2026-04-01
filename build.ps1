@@ -50,7 +50,7 @@ if (-not $env:ONI_MANAGED) {
 }
 
 $ProjectDir  = "$PSScriptRoot\OniAccess"
-$BuildOutput = "$ProjectDir\bin\Release\net472\OniAccess.dll"
+$BuildOutput = "$ProjectDir\bin\Release\net48\OniAccess.dll"
 $DocsDir     = [Environment]::GetFolderPath("MyDocuments")
 $ModDir      = "$DocsDir\Klei\OxygenNotIncluded\mods\local\OniAccess"
 $ModsJson    = "$DocsDir\Klei\OxygenNotIncluded\mods\mods.json"

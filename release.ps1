@@ -16,7 +16,7 @@ if (Test-Path $ReleaseDir) {
 New-Item -ItemType Directory -Path $ReleaseDir -Force | Out-Null
 
 $ProjectDir  = "$PSScriptRoot\OniAccess"
-$BuildOutput = "$ProjectDir\bin\Release\net472\OniAccess.dll"
+$BuildOutput = "$ProjectDir\bin\Release\net48\OniAccess.dll"
 
 # DLL and mod metadata
 Copy-Item $BuildOutput "$ReleaseDir\OniAccess.dll" -Force
