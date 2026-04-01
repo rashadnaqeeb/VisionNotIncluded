@@ -4,6 +4,13 @@ namespace OniAccess.Widgets {
 	/// Resolves the underlying input field for text editing.
 	/// </summary>
 	public class TextInputWidget: Widget {
+		public override string GetSpeechText() {
+			var field = GetTextField();
+			if (field != null && !string.IsNullOrEmpty(field.text))
+				return field.text;
+			return base.GetSpeechText();
+		}
+
 		/// <summary>
 		/// Resolve the KInputTextField from the component, handling
 		/// KNumberInputField.field and KInputField.field indirection.
