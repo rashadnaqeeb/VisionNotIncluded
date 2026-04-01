@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.2.1
+## Unreleased changes since 1.2.2
+
+## 1.2.2
 
 * Wardrobe and designer: clothing items now include their descriptions in speech output
 * Wardrobe and designer: empty slots now say the default item name (e.g. "Default Gloves") instead of "empty"
