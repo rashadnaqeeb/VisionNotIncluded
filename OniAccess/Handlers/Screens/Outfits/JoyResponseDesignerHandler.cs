@@ -97,10 +97,14 @@ namespace OniAccess.Handlers.Screens.Outfits {
 					} else {
 						name += ", " + rarity;
 					}
+
+					if (!string.IsNullOrEmpty(permit.Description)
+						&& !permit.Description.Equals("n/a", System.StringComparison.OrdinalIgnoreCase))
+						name += ", " + permit.Description;
 				}
 
 				// Mark the currently selected item
-				var selected = Traverse.Create(_screen)
+				var selected = Traverse.Create(_designerScreen)
 					.Field<JoyResponseDesignerScreen.GalleryItem>("selectedGalleryItem").Value;
 				if (selected != null && selected.Equals(galleryItem))
 					name += ", " + (string)STRINGS.ONIACCESS.OUTFIT_DESIGNER.SELECTED;
@@ -109,7 +113,7 @@ namespace OniAccess.Handlers.Screens.Outfits {
 			}
 
 			// Apply button
-			var button = Traverse.Create(_screen)
+			var button = Traverse.Create(_designerScreen)
 				.Field<KButton>("primaryButton").Value;
 			if (button != null)
 				return button.GetComponentInChildren<LocText>().text;
@@ -139,7 +143,7 @@ namespace OniAccess.Handlers.Screens.Outfits {
 			}
 
 			// Apply button — same disabled-button-with-tooltip pattern as OutfitDesignerHandler
-			var button = Traverse.Create(_screen)
+			var button = Traverse.Create(_designerScreen)
 				.Field<KButton>("primaryButton").Value;
 			if (button == null) return;
 
