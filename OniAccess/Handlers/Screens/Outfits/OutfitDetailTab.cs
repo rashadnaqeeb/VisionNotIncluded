@@ -89,10 +89,12 @@ namespace OniAccess.Handlers.Screens.Outfits {
 				TryAddButton(browserScreen, "editOutfitButton", DetailAction.Edit);
 
 				if (outfit.CanWriteName)
-					TryAddButton(browserScreen, "renameOutfitButton", DetailAction.Rename);
+					TryAddButton(browserScreen, "renameOutfitButton", DetailAction.Rename,
+						(string)STRINGS.UI.OUTFIT_BROWSER_SCREEN.TOOLTIP_RENAME_OUTFIT);
 
 				if (outfit.CanDelete)
-					TryAddButton(browserScreen, "deleteOutfitButton", DetailAction.Delete);
+					TryAddButton(browserScreen, "deleteOutfitButton", DetailAction.Delete,
+						(string)STRINGS.UI.OUTFIT_BROWSER_SCREEN.TOOLTIP_DELETE_OUTFIT);
 			}
 		}
 
@@ -151,10 +153,12 @@ namespace OniAccess.Handlers.Screens.Outfits {
 			}
 		}
 
-		private void TryAddButton(OutfitBrowserScreen screen, string fieldName, DetailAction action) {
+		private void TryAddButton(OutfitBrowserScreen screen, string fieldName, DetailAction action, string fallbackLabel = null) {
 			var button = Traverse.Create(screen).Field<KButton>(fieldName).Value;
 			if (button == null || !button.isInteractable) return;
 			string label = button.GetComponentInChildren<LocText>()?.text;
+			if (string.IsNullOrEmpty(label))
+				label = fallbackLabel;
 			if (string.IsNullOrEmpty(label)) return;
 			_items.Add(new DetailItem { text = label, action = action });
 		}

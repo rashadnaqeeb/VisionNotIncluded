@@ -76,6 +76,18 @@ namespace OniAccess.Handlers.Screens {
 				});
 			}
 
+			// Text input fields (e.g., rename popup). Add before buttons so
+			// the tab order is: message → input → actions.
+			var inputFields = screen.GetComponentsInChildren<KInputTextField>(false);
+			foreach (var field in inputFields) {
+				if (field == null || !field.gameObject.activeInHierarchy) continue;
+				_widgets.Add(new TextInputWidget {
+					Label = field.text,
+					Component = field,
+					GameObject = field.gameObject
+				});
+			}
+
 			// Find confirm/cancel buttons. ConfirmDialogScreen stores these as
 			// GameObject fields (not KButton), so get as GameObject first, then
 			// GetComponent<KButton>. InfoDialogScreen uses button panels instead.
