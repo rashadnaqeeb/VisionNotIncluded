@@ -24,10 +24,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 
 				if (buildingGo != null && !ctx.Claimed.Contains(buildingGo))
 					ReadBuilding(buildingGo, cell, tokens);
+				ReadReplacement(cell, ObjectLayer.ReplacementTravelTube, tokens);
 
 				if (foundationGo != null && foundationGo != buildingGo
 					&& !ctx.Claimed.Contains(foundationGo))
 					ReadBuilding(foundationGo, cell, tokens);
+				ReadReplacement(cell, ObjectLayer.ReplacementTile, tokens);
+				ReadReplacement(cell, ObjectLayer.ReplacementLadder, tokens);
 
 				if (!Grid.HasTube[cell])
 					ScanForTubeConnections(cell, tokens);
@@ -52,6 +55,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 						ReadPixelPack(backwallGo, cell, tokens);
 					}
 				}
+				if (!IsOverlayFocused())
+					ReadReplacement(cell, ObjectLayer.ReplacementBackwall, tokens);
 			} catch (System.Exception ex) {
 				Util.Log.Error($"BuildingSection.Read: {ex}");
 			}
@@ -118,6 +123,17 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				int origin = Grid.PosToCell(building.transform.GetPosition());
 				ReadCellOfInterest(go, building, origin, cell, tokens);
 			}
+		}
+
+		private static void ReadReplacement(
+				int cell, ObjectLayer layer, List<string> tokens) {
+			var go = Grid.Objects[cell, (int)layer];
+			if (go == null) return;
+			var sel = go.GetComponent<KSelectable>();
+			if (sel == null) return;
+			tokens.Add(string.Format(
+				(string)STRINGS.ONIACCESS.GLANCE.REPLACING_WITH,
+				sel.GetName()));
 		}
 
 		private static void AppendTubeShape(int cell, List<string> tokens) {

@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.2.2
 
+* Tile cursor now announces buildings queued for replacement (e.g. placing an insulated tile over a regular tile)
 * Supply Closet: overjoyed response designer is now accessible -- browse balloon artist facades, select and apply them
 * Supply Closet: Duplicants screen is now accessible -- browse personalities, cycle outfit types, view outfit details, and open the editor or wardrobe
 

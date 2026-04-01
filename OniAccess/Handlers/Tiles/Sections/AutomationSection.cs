@@ -33,6 +33,14 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				if (sel != null)
 					tokens.Add(ConduitSection.ConstructionName(go, sel));
 			}
+			var repGo = Grid.Objects[cell, (int)ObjectLayer.ReplacementLogicWire];
+			if (repGo != null) {
+				var repSel = repGo.GetComponent<KSelectable>();
+				if (repSel != null)
+					tokens.Add(string.Format(
+						(string)STRINGS.ONIACCESS.GLANCE.REPLACING_WITH,
+						repSel.GetName()));
+			}
 			if (tokens.Count > 0) {
 				if (!ConfigManager.Config.PipeShapeEarcons) {
 					var conn = ConduitSection.FormatConnections(

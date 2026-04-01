@@ -27,24 +27,28 @@ namespace OniAccess.Handlers.Tiles {
 		internal static readonly ICellSection Disease = new Sections.DiseaseSection();
 		internal static readonly ICellSection Power = new Sections.ConduitSection(
 			() => Game.Instance.electricalConduitSystem,
+			ObjectLayer.ReplacementWire,
 			(int)ObjectLayer.Wire, (int)ObjectLayer.WireConnectors);
 		internal static readonly ICellSection Plumbing = new Sections.ConduitSection(
 			() => Game.Instance.liquidConduitSystem,
 			() => FlowTracker.Liquid,
 			cell => Game.Instance.liquidConduitFlow.GetConduit(cell).idx,
 			cell => Game.Instance.liquidConduitFlow.IsConduitEmpty(cell),
+			ObjectLayer.ReplacementLiquidConduit,
 			(int)ObjectLayer.LiquidConduit, (int)ObjectLayer.LiquidConduitConnection);
 		internal static readonly ICellSection Ventilation = new Sections.ConduitSection(
 			() => Game.Instance.gasConduitSystem,
 			() => FlowTracker.Gas,
 			cell => Game.Instance.gasConduitFlow.GetConduit(cell).idx,
 			cell => Game.Instance.gasConduitFlow.IsConduitEmpty(cell),
+			ObjectLayer.ReplacementGasConduit,
 			(int)ObjectLayer.GasConduit, (int)ObjectLayer.GasConduitConnection);
 		internal static readonly ICellSection Conveyor = new Sections.ConduitSection(
 			() => Game.Instance.solidConduitSystem,
 			() => FlowTracker.Solid,
 			cell => Game.Instance.solidConduitFlow.GetConduit(cell).idx,
 			cell => Game.Instance.solidConduitFlow.IsConduitEmpty(cell),
+			ObjectLayer.ReplacementSolidConduit,
 			(int)ObjectLayer.SolidConduit, (int)ObjectLayer.SolidConduitConnection);
 		internal static readonly ICellSection Automation = new Sections.AutomationSection();
 		internal static readonly ICellSection Temperature = new Sections.TemperatureSection();

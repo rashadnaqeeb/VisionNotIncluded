@@ -10,25 +10,29 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// </summary>
 	public class ConduitSection: ICellSection {
 		private readonly int[] _layers;
+		private readonly int _replacementLayer;
 		private readonly Func<IUtilityNetworkMgr> _getManager;
 		private readonly Func<FlowTracker> _getFlowTracker;
 		private readonly Func<int, int> _getConduitIdx;
 		private readonly Func<int, bool> _isConduitEmpty;
 
 		public ConduitSection(Func<IUtilityNetworkMgr> getManager,
+				ObjectLayer replacementLayer,
 				params int[] layers)
-			: this(getManager, null, null, null, layers) {
+			: this(getManager, null, null, null, replacementLayer, layers) {
 		}
 
 		public ConduitSection(Func<IUtilityNetworkMgr> getManager,
 				Func<FlowTracker> getFlowTracker,
 				Func<int, int> getConduitIdx,
 				Func<int, bool> isConduitEmpty,
+				ObjectLayer replacementLayer,
 				params int[] layers) {
 			_getManager = getManager;
 			_getFlowTracker = getFlowTracker;
 			_getConduitIdx = getConduitIdx;
 			_isConduitEmpty = isConduitEmpty;
+			_replacementLayer = (int)replacementLayer;
 			_layers = layers;
 		}
 
@@ -54,6 +58,14 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				var sel = go.GetComponent<KSelectable>();
 				if (sel != null)
 					tokens.Add(ConstructionName(go, sel));
+			}
+			var repGo = Grid.Objects[cell, _replacementLayer];
+			if (repGo != null) {
+				var repSel = repGo.GetComponent<KSelectable>();
+				if (repSel != null)
+					tokens.Add(string.Format(
+						(string)STRINGS.ONIACCESS.GLANCE.REPLACING_WITH,
+						repSel.GetName()));
 			}
 			bridgeConnections |= FindJointPlateConnections(cell);
 			if (tokens.Count > 0 && !ConfigManager.Config.PipeShapeEarcons)
