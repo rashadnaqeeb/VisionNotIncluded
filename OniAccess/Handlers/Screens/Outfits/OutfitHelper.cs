@@ -34,16 +34,22 @@ namespace OniAccess.Handlers.Screens.Outfits {
 		}
 
 		internal static string GetOutfitTypeLabel(ClothingOutfitUtility.OutfitType type) {
+			string typeName;
 			switch (type) {
 				case ClothingOutfitUtility.OutfitType.Clothing:
-					return STRINGS.UI.OUTFIT_BROWSER_SCREEN.TOOLTIP_FILTER_BY_CLOTHING;
+					typeName = (string)STRINGS.ONIACCESS.WARDROBE.TYPE_CLOTHING;
+					break;
 				case ClothingOutfitUtility.OutfitType.AtmoSuit:
-					return STRINGS.UI.OUTFIT_BROWSER_SCREEN.TOOLTIP_FILTER_BY_ATMO_SUITS;
+					typeName = (string)STRINGS.ONIACCESS.WARDROBE.TYPE_ATMO_SUIT;
+					break;
 				case ClothingOutfitUtility.OutfitType.JetSuit:
-					return STRINGS.UI.OUTFIT_BROWSER_SCREEN.TOOLTIP_FILTER_BY_JET_SUITS;
+					typeName = (string)STRINGS.ONIACCESS.WARDROBE.TYPE_JET_SUIT;
+					break;
 				default:
-					return type.ToString();
+					typeName = type.ToString();
+					break;
 			}
+			return string.Format((string)STRINGS.ONIACCESS.WARDROBE.OUTFIT_TYPE, typeName);
 		}
 
 		// ========================================
@@ -116,13 +122,18 @@ namespace OniAccess.Handlers.Screens.Outfits {
 			foreach (var category in categories) {
 				string slotName = PermitCategories.GetDisplayName(category);
 				if (itemLookup.TryGetValue(category, out var item)) {
+					string itemText = item.Name;
+					if (!string.IsNullOrEmpty(item.Description)
+						&& !item.Description.Equals("n/a", System.StringComparison.OrdinalIgnoreCase))
+						itemText += ", " + item.Description;
 					result.Add(string.Format(
 						(string)STRINGS.ONIACCESS.WARDROBE.SLOT_ITEM,
-						slotName, item.Name));
+						slotName, itemText));
 				} else {
+					string defaultName = KleiItemsUI.GetNoneClothingItemStrings(category).name;
 					result.Add(string.Format(
 						(string)STRINGS.ONIACCESS.WARDROBE.SLOT_ITEM,
-						slotName, (string)STRINGS.ONIACCESS.WARDROBE.SLOT_EMPTY));
+						slotName, defaultName));
 				}
 			}
 
@@ -160,14 +171,23 @@ namespace OniAccess.Handlers.Screens.Outfits {
 
 			string name = item.Name;
 			string rarity = item.Rarity.GetLocStringName();
+			string label;
 			if (item.IsOwnableOnServer()) {
 				int count = PermitItems.GetOwnedCount(item);
 				if (count > 0)
-					return name + ", " + rarity;
-				return name + ", " + rarity + ", "
-					+ (string)STRINGS.ONIACCESS.INVENTORY.UNOWNED;
+					label = name + ", " + rarity;
+				else
+					label = name + ", " + rarity + ", "
+						+ (string)STRINGS.ONIACCESS.INVENTORY.UNOWNED;
+			} else {
+				label = name + ", " + rarity;
 			}
-			return name + ", " + rarity;
+
+			if (!string.IsNullOrEmpty(item.Description)
+				&& !item.Description.Equals("n/a", System.StringComparison.OrdinalIgnoreCase))
+				label += ", " + item.Description;
+
+			return label;
 		}
 	}
 }

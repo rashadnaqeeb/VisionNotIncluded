@@ -145,7 +145,11 @@ namespace STRINGS {
 			public static LocString DETAIL_TAB = "Details";
 			// {0} = slot display name, {1} = item name or "None"
 			public static LocString SLOT_ITEM = "{0}: {1}";
-			public static LocString SLOT_EMPTY = "empty";
+			// {0} = type name (Clothing, Atmo Suit, Jet Suit)
+			public static LocString OUTFIT_TYPE = "Type: {0}";
+			public static LocString TYPE_CLOTHING = "Clothing";
+			public static LocString TYPE_ATMO_SUIT = "Atmo Suit";
+			public static LocString TYPE_JET_SUIT = "Jet Suit";
 			public static LocString CONTAINS_LOCKED = "contains unowned items";
 			public static LocString NO_OUTFITS = "No outfits";
 		}

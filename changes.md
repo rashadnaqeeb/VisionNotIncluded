@@ -2,6 +2,10 @@
 
 ## Unreleased changes since 1.2.1
 
+* Wardrobe and designer: clothing items now include their descriptions in speech output
+* Wardrobe and designer: empty slots now say the default item name (e.g. "Default Gloves") instead of "empty"
+* Wardrobe type filter now says "Type: Clothing" instead of the tooltip sentence
+* Designer Save/Copy buttons now read their correct labels
 * Supply Closet wardrobe: browse, edit, rename, and delete outfits across Clothing, Atmo Suit, and Jet Suit types
 * Supply Closet outfit designer: create and modify outfits by selecting items for each slot
 * Research screen search now matches TechItem names and descriptions, so typing "electrolyzer" or "breathable" finds the right tech

@@ -89,7 +89,7 @@ namespace OniAccess.Handlers.Screens.Outfits {
 						.GetItemForCategory(categories[idx]);
 					if (currentItem.HasValue)
 						return slotName + ": " + currentItem.Unwrap().Name;
-					return slotName + ": " + (string)STRINGS.ONIACCESS.WARDROBE.SLOT_EMPTY;
+					return slotName + ": " + KleiItemsUI.GetNoneClothingItemStrings(categories[idx]).name;
 				}
 				return GetActionLabel(idx - categories.Length);
 			}
@@ -238,15 +238,20 @@ namespace OniAccess.Handlers.Screens.Outfits {
 		// ========================================
 
 		private string GetActionLabel(int actionIndex) {
-			var primaryButton = Traverse.Create(_designerScreen)
-				.Field<KButton>("primaryButton").Value;
-			var secondaryButton = Traverse.Create(_designerScreen)
-				.Field<KButton>("secondaryButton").Value;
-
-			if (actionIndex == 0 && primaryButton != null)
-				return primaryButton.GetComponentInChildren<LocText>()?.text;
-			if (actionIndex == 1 && secondaryButton != null)
-				return secondaryButton.GetComponentInChildren<LocText>()?.text;
+			if (_designerScreen.Config.targetMinionInstance.HasValue) {
+				if (actionIndex == 0) {
+					string minionName = _designerScreen.Config.targetMinionInstance.Value.GetProperName();
+					return ((string)STRINGS.UI.OUTFIT_DESIGNER_SCREEN.MINION_INSTANCE.BUTTON_APPLY_TO_MINION)
+						.Replace("{MinionName}", minionName);
+				}
+				if (actionIndex == 1)
+					return (string)STRINGS.UI.OUTFIT_DESIGNER_SCREEN.MINION_INSTANCE.BUTTON_APPLY_TO_TEMPLATE;
+			} else {
+				if (actionIndex == 0)
+					return (string)STRINGS.UI.OUTFIT_DESIGNER_SCREEN.OUTFIT_TEMPLATE.BUTTON_SAVE;
+				if (actionIndex == 1)
+					return (string)STRINGS.UI.OUTFIT_DESIGNER_SCREEN.OUTFIT_TEMPLATE.BUTTON_COPY;
+			}
 			return null;
 		}
 
