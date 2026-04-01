@@ -14,9 +14,9 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles {
 			_profiles[toolType] = profile;
 		}
 
-		public GlanceComposer GetComposer(Type toolType) {
+		public ToolProfile GetProfile(Type toolType) {
 			if (_profiles.TryGetValue(toolType, out var profile))
-				return profile.Composer;
+				return profile;
 			return null;
 		}
 
@@ -36,10 +36,7 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles {
 			var emptyPipe = new Sections.EmptyPipeToolSection();
 			var disconnect = new Sections.DisconnectToolSection();
 
-			registry.Register(typeof(DigTool), new ToolProfile("DigTool",
-				new GlanceComposer(new List<ICellSection> {
-					Selection, dig, GlanceComposer.Building
-				}.AsReadOnly())));
+			registry.Register(typeof(DigTool), MakeProfile("DigTool", dig));
 			registry.Register(typeof(MopTool), MakeProfile("MopTool", mop));
 			registry.Register(typeof(DisinfectTool), MakeProfile("DisinfectTool", disinfect));
 			registry.Register(typeof(ClearTool), MakeProfile("ClearTool", sweep));
@@ -75,9 +72,9 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles {
 
 		private static ToolProfile MakeProfile(string name, ICellSection toolSection) {
 			var sections = new List<ICellSection> {
-				Selection, toolSection, GlanceComposer.Building, GlanceComposer.Element
+				Selection, toolSection
 			}.AsReadOnly();
-			return new ToolProfile(name, new GlanceComposer(sections));
+			return new ToolProfile(name, sections);
 		}
 	}
 }

@@ -20,16 +20,10 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 				&& Grid.Objects[cell, (int)ObjectLayer.Building] == null
 				&& Grid.Objects[cell, (int)ObjectLayer.FoundationTile] == null) {
 				var element = Grid.Element[cell];
-				if (element != null) {
-					tokens.Add(element.name);
-					if (element.IsSolid) {
-						string hardness = GameUtil.GetHardnessString(element);
-						if (!string.IsNullOrEmpty(hardness))
-							tokens.Add(hardness);
-					}
-					float mass = Grid.Mass[cell];
-					if (mass > 0f)
-						tokens.Add(GameUtil.GetFormattedMass(mass));
+				if (element != null && element.IsSolid) {
+					string hardness = GameUtil.GetHardnessString(element);
+					if (!string.IsNullOrEmpty(hardness))
+						tokens.Add(hardness);
 				}
 			}
 

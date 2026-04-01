@@ -37,7 +37,7 @@ namespace OniAccess.Handlers.Build {
 		private readonly RectangleSelection _rectSelection = new RectangleSelection();
 		private bool _rectMode;
 		private bool CanUseRectMode => _def.PlacementOffsets.Length == 1 && !_isUtility;
-		private GlanceComposer _rectComposer;
+		private ToolProfile _rectProfile;
 
 		private static readonly ConsumedKey[] _consumedKeys = {
 			new ConsumedKey(KKeyCode.Space),
@@ -156,13 +156,14 @@ namespace OniAccess.Handlers.Build {
 			_def = def;
 			_isUtility = BuildMenuData.IsUtilityBuilding(def);
 			if (CanUseRectMode) {
-				_rectComposer = new GlanceComposer(new List<ICellSection> {
-					ToolProfileRegistry.Selection,
-					GlanceComposer.Building,
-					new Tiles.ToolProfiles.Sections.BuildPrioritySection(),
-					GlanceComposer.Element,
-					new Tiles.ToolProfiles.Sections.BuildExtentSection()
-				}.AsReadOnly());
+				_rectProfile = new ToolProfile("BuildRectMode",
+					new GlanceComposer(new List<ICellSection> {
+						ToolProfileRegistry.Selection,
+						GlanceComposer.Building,
+						new Tiles.ToolProfiles.Sections.BuildPrioritySection(),
+						GlanceComposer.Element,
+						new Tiles.ToolProfiles.Sections.BuildExtentSection()
+					}.AsReadOnly()));
 			}
 		}
 
@@ -199,9 +200,9 @@ namespace OniAccess.Handlers.Build {
 
 		private void SetupBuildMode() {
 			if (TileCursor.Instance != null) {
-				var composer = ToolProfileRegistry.Instance.GetComposer(
+				var profile = ToolProfileRegistry.Instance.GetProfile(
 					_isUtility ? GetUtilityToolType() : typeof(BuildTool));
-				TileCursor.Instance.ActiveToolComposer = composer;
+				TileCursor.Instance.ActiveToolProfile = profile;
 			}
 		}
 
@@ -209,7 +210,7 @@ namespace OniAccess.Handlers.Build {
 			Instance = null;
 
 			if (TileCursor.Instance != null)
-				TileCursor.Instance.ActiveToolComposer = null;
+				TileCursor.Instance.ActiveToolProfile = null;
 
 			if (Game.Instance != null)
 				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
@@ -240,7 +241,7 @@ namespace OniAccess.Handlers.Build {
 
 			if (data is PrebuildTool) {
 				if (TileCursor.Instance != null)
-					TileCursor.Instance.ActiveToolComposer = null;
+					TileCursor.Instance.ActiveToolProfile = null;
 				string error = GetPrebuildError();
 				if (!string.IsNullOrEmpty(error))
 					SpeechPipeline.SpeakInterrupt(error);
@@ -835,7 +836,7 @@ namespace OniAccess.Handlers.Build {
 			_rectMode = !_rectMode;
 			if (_rectMode) {
 				if (TileCursor.Instance != null)
-					TileCursor.Instance.ActiveToolComposer = _rectComposer;
+					TileCursor.Instance.ActiveToolProfile = _rectProfile;
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_ON);
 			} else {

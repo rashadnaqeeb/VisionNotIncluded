@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.2.2
 
+* Tools now preserve overlay context -- activating dig, sweep, or other tools on a temperature or conduit overlay keeps that overlay's information in speech
 * Tile cursor now announces buildings queued for replacement (e.g. placing an insulated tile over a regular tile)
 * Supply Closet: wardrobe now includes a "None" option to clear a duplicant's outfit back to default
 * Supply Closet: overjoyed response designer is now accessible -- browse balloon artist facades, select and apply them

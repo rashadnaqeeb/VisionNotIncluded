@@ -107,8 +107,8 @@ namespace OniAccess.Handlers.Tools {
 			_toolInfo = FindToolInfo(activeTool);
 
 			if (TileCursor.Instance != null && _toolInfo != null) {
-				var composer = ToolProfileRegistry.Instance.GetComposer(_toolInfo.ToolType);
-				TileCursor.Instance.ActiveToolComposer = composer;
+				var profile = ToolProfileRegistry.Instance.GetProfile(_toolInfo.ToolType);
+				TileCursor.Instance.ActiveToolProfile = profile;
 			}
 
 			if (Game.Instance != null) {
@@ -136,7 +136,7 @@ namespace OniAccess.Handlers.Tools {
 			Instance = null;
 
 			if (TileCursor.Instance != null)
-				TileCursor.Instance.ActiveToolComposer = null;
+				TileCursor.Instance.ActiveToolProfile = null;
 
 			if (Game.Instance != null)
 				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);

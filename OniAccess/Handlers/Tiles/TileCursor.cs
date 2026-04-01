@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using OniAccess.Handlers.Tiles.ToolProfiles;
 using ProcGen;
 using UnityEngine;
 
@@ -32,7 +33,7 @@ namespace OniAccess.Handlers.Tiles {
 		private static bool IsTimelapsing =>
 			Game.Instance?.timelapser?.CapturingTimelapseScreenshot == true;
 
-		public GlanceComposer ActiveToolComposer { get; set; }
+		public ToolProfile ActiveToolProfile { get; set; }
 
 		public int Radius => RadiusSteps[_radiusStepIndex];
 		public int CursorSize => Radius * 2 + 1;
@@ -287,12 +288,16 @@ namespace OniAccess.Handlers.Tiles {
 			if (!Grid.IsVisible(_cell))
 				return AttachCoordinates((string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 
-			GlanceComposer composer = ActiveToolComposer;
-			HashedString mode = OverlayModes.None.ID;
-			if (composer == null) {
-				var overlayScreen = OverlayScreen.Instance;
-				mode = overlayScreen != null ? overlayScreen.GetMode() : OverlayModes.None.ID;
-				composer = _registry.GetComposer(mode);
+			var overlayScreen = OverlayScreen.Instance;
+			HashedString mode = overlayScreen != null ? overlayScreen.GetMode() : OverlayModes.None.ID;
+			GlanceComposer composer = _registry.GetComposer(mode);
+
+			var profile = ActiveToolProfile;
+			if (profile != null) {
+				if (profile.IsOverride)
+					composer = profile.Composer;
+				else
+					composer = composer.WithPrepended(profile.PrependSections);
 			}
 
 			string content2 = composer.Compose(_cell);
