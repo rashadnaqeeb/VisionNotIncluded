@@ -99,6 +99,11 @@ namespace OniAccess.Handlers.Screens.Outfits {
 				text = OutfitHelper.GetAllOutfitTypeLabel(outfitType)
 			});
 
+			// Outfit name from the game's description panel
+			// Skipped for JoyResponse — the composition line already shows the facade
+			if (outfitType != ClothingOutfitUtility.OutfitType.JoyResponse)
+				AddOutfitName();
+
 			// Outfit composition
 			if (outfitType == ClothingOutfitUtility.OutfitType.JoyResponse) {
 				var composition = OutfitHelper.GetJoyResponseComposition(_gridItem);
@@ -178,6 +183,28 @@ namespace OniAccess.Handlers.Screens.Outfits {
 		// ========================================
 		// BUTTONS
 		// ========================================
+
+		private void AddOutfitName() {
+			try {
+				var panel = Traverse.Create(_parent.BrowserScreen)
+					.Field<OutfitDescriptionPanel>("outfitDescriptionPanel").Value;
+				if (panel == null) return;
+
+				string name = panel.outfitNameLabel?.text;
+				if (!string.IsNullOrEmpty(name))
+					_items.Add(new DetailItem { text = name });
+
+				// JoyResponse shows the facade name in the description label
+				if (panel.outfitDescriptionLabel != null
+					&& panel.outfitDescriptionLabel.gameObject.activeSelf) {
+					string desc = panel.outfitDescriptionLabel.text;
+					if (!string.IsNullOrEmpty(desc))
+						_items.Add(new DetailItem { text = desc });
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"MinionDetailTab: failed to read outfit name: {ex.Message}");
+			}
+		}
 
 		private void AddEditButton(ClothingOutfitUtility.OutfitType outfitType) {
 			var screen = _parent.BrowserScreen;

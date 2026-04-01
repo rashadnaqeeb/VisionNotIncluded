@@ -98,12 +98,22 @@ namespace OniAccess.Handlers.Screens.Outfits {
 
 		private static string GetDupeLabel(MinionBrowserScreen.GridItem item) {
 			string name = item.GetName();
-			string personalityName = item.GetPersonality().Name;
+			var personality = item.GetPersonality();
+			string personalityName = personality.Name;
+
+			string label;
 			if (name != personalityName)
-				return string.Format(
+				label = string.Format(
 					(string)STRINGS.ONIACCESS.WARDROBE.DUPE_RENAMED,
 					name, personalityName);
-			return name;
+			else
+				label = name;
+
+			string desc = personality.description;
+			if (!string.IsNullOrEmpty(desc))
+				label += ", " + desc;
+
+			return label;
 		}
 
 		private void NavigateToDupe(MinionBrowserScreen.GridItem dupe) {
