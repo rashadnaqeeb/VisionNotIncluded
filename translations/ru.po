@@ -2201,6 +2201,11 @@ msgctxt "STRINGS.ONIACCESS.HANDLERS.HELP"
 msgid "Help"
 msgstr "Справка"
 
+#. STRINGS.ONIACCESS.HANDLERS.INVENTORY
+msgctxt "STRINGS.ONIACCESS.HANDLERS.INVENTORY"
+msgid "Inventory"
+msgstr "Инвентарь"
+
 #. STRINGS.ONIACCESS.HANDLERS.ITEM_DROP
 msgctxt "STRINGS.ONIACCESS.HANDLERS.ITEM_DROP"
 msgid "Claim blueprints"
@@ -2230,6 +2235,11 @@ msgstr "Выбор дубликантов"
 msgctxt "STRINGS.ONIACCESS.HANDLERS.MODS"
 msgid "Mods"
 msgstr "Моды"
+
+#. STRINGS.ONIACCESS.HANDLERS.OUTFIT_DESIGNER
+msgctxt "STRINGS.ONIACCESS.HANDLERS.OUTFIT_DESIGNER"
+msgid "Outfit designer"
+msgstr "Дизайнер нарядов"
 
 #. STRINGS.ONIACCESS.HANDLERS.PAUSE_MENU
 msgctxt "STRINGS.ONIACCESS.HANDLERS.PAUSE_MENU"
@@ -2265,6 +2275,11 @@ msgstr "Переводы"
 msgctxt "STRINGS.ONIACCESS.HANDLERS.VIDEO"
 msgid "Video"
 msgstr "Видео"
+
+#. STRINGS.ONIACCESS.HANDLERS.WARDROBE
+msgctxt "STRINGS.ONIACCESS.HANDLERS.WARDROBE"
+msgid "Wardrobe"
+msgstr "Гардероб"
 
 #. STRINGS.ONIACCESS.HANDLERS.WELCOME_MESSAGE
 msgctxt "STRINGS.ONIACCESS.HANDLERS.WELCOME_MESSAGE"
@@ -2360,6 +2375,11 @@ msgstr "Навигация по элементам"
 msgctxt "STRINGS.ONIACCESS.HELP.OPEN_CONFIG"
 msgid "Open settings"
 msgstr "Открыть настройки"
+
+#. STRINGS.ONIACCESS.HELP.OPEN_FILTER
+msgctxt "STRINGS.ONIACCESS.HELP.OPEN_FILTER"
+msgid "Open filter"
+msgstr "Открыть фильтр"
 
 #. STRINGS.ONIACCESS.HELP.OPEN_GROUP
 msgctxt "STRINGS.ONIACCESS.HELP.OPEN_GROUP"
@@ -2546,6 +2566,126 @@ msgctxt "STRINGS.ONIACCESS.INFO.TRAIT"
 msgid "Trait"
 msgstr "Черта"
 
+#. STRINGS.ONIACCESS.INVENTORY.ALREADY_OWNED
+msgctxt "STRINGS.ONIACCESS.INVENTORY.ALREADY_OWNED"
+msgid "already owned"
+msgstr "уже приобретено"
+
+#. STRINGS.ONIACCESS.INVENTORY.BUY
+msgctxt "STRINGS.ONIACCESS.INVENTORY.BUY"
+msgid "Buy for {0} filaments"
+msgstr "Купить за {0} филаментов"
+
+#. STRINGS.ONIACCESS.INVENTORY.CONFIRM_BUY
+msgctxt "STRINGS.ONIACCESS.INVENTORY.CONFIRM_BUY"
+msgid "Buy {0} for {1} filaments?"
+msgstr "Купить {0} за {1} филаментов?"
+
+#. STRINGS.ONIACCESS.INVENTORY.CONFIRM_SELL
+msgctxt "STRINGS.ONIACCESS.INVENTORY.CONFIRM_SELL"
+msgid "Sell {0} for {1} filaments?"
+msgstr "Продать {0} за {1} филаментов?"
+
+#. STRINGS.ONIACCESS.INVENTORY.DETAIL_TAB
+msgctxt "STRINGS.ONIACCESS.INVENTORY.DETAIL_TAB"
+msgid "Details"
+msgstr "Подробности"
+
+#. STRINGS.ONIACCESS.INVENTORY.DLC_FILTER
+msgctxt "STRINGS.ONIACCESS.INVENTORY.DLC_FILTER"
+msgid "Collection: {0}"
+msgstr "Коллекция: {0}"
+
+#. STRINGS.ONIACCESS.INVENTORY.FACADE_FOR
+msgctxt "STRINGS.ONIACCESS.INVENTORY.FACADE_FOR"
+msgid "Blueprint for {0}"
+msgstr "Чертёж для {0}"
+
+#. STRINGS.ONIACCESS.INVENTORY.FILAMENTS
+msgctxt "STRINGS.ONIACCESS.INVENTORY.FILAMENTS"
+msgid "Filaments: {0}"
+msgstr "Филаменты: {0}"
+
+#. STRINGS.ONIACCESS.INVENTORY.FILTER_DLC_ALL
+msgctxt "STRINGS.ONIACCESS.INVENTORY.FILTER_DLC_ALL"
+msgid "all"
+msgstr "все"
+
+#. STRINGS.ONIACCESS.INVENTORY.FILTER_OWNERSHIP_ALL
+msgctxt "STRINGS.ONIACCESS.INVENTORY.FILTER_OWNERSHIP_ALL"
+msgid "all"
+msgstr "все"
+
+#. STRINGS.ONIACCESS.INVENTORY.FILTER_OWNERSHIP_DOUBLES
+msgctxt "STRINGS.ONIACCESS.INVENTORY.FILTER_OWNERSHIP_DOUBLES"
+msgid "doubles only"
+msgstr "только дубликаты"
+
+#. STRINGS.ONIACCESS.INVENTORY.FILTER_OWNERSHIP_OWNED
+msgctxt "STRINGS.ONIACCESS.INVENTORY.FILTER_OWNERSHIP_OWNED"
+msgid "owned only"
+msgstr "только приобретённые"
+
+#. STRINGS.ONIACCESS.INVENTORY.GALLERY_TAB
+msgctxt "STRINGS.ONIACCESS.INVENTORY.GALLERY_TAB"
+msgid "Gallery"
+msgstr "Галерея"
+
+#. STRINGS.ONIACCESS.INVENTORY.NOT_FOR_SALE
+msgctxt "STRINGS.ONIACCESS.INVENTORY.NOT_FOR_SALE"
+msgid "not for sale"
+msgstr "не продаётся"
+
+#. STRINGS.ONIACCESS.INVENTORY.NOT_FOR_SALE_YET
+msgctxt "STRINGS.ONIACCESS.INVENTORY.NOT_FOR_SALE_YET"
+msgid "not yet available"
+msgstr "ещё не доступно"
+
+#. STRINGS.ONIACCESS.INVENTORY.OWNED
+msgctxt "STRINGS.ONIACCESS.INVENTORY.OWNED"
+msgid "owned {0}"
+msgstr "приобретено {0}"
+
+#. STRINGS.ONIACCESS.INVENTORY.OWNERSHIP_FILTER
+msgctxt "STRINGS.ONIACCESS.INVENTORY.OWNERSHIP_FILTER"
+msgid "Ownership: {0}"
+msgstr "Владение: {0}"
+
+#. STRINGS.ONIACCESS.INVENTORY.SELL
+msgctxt "STRINGS.ONIACCESS.INVENTORY.SELL"
+msgid "Sell for {0} filaments"
+msgstr "Продать за {0} филаментов"
+
+#. STRINGS.ONIACCESS.INVENTORY.SELL_NONE
+msgctxt "STRINGS.ONIACCESS.INVENTORY.SELL_NONE"
+msgid "Sell, none owned"
+msgstr "Продать, нет в наличии"
+
+#. STRINGS.ONIACCESS.INVENTORY.TOO_EXPENSIVE
+msgctxt "STRINGS.ONIACCESS.INVENTORY.TOO_EXPENSIVE"
+msgid "too expensive, {0} filaments"
+msgstr "слишком дорого, {0} филаментов"
+
+#. STRINGS.ONIACCESS.INVENTORY.TRANSACTION_FAILED
+msgctxt "STRINGS.ONIACCESS.INVENTORY.TRANSACTION_FAILED"
+msgid "Transaction failed"
+msgstr "Транзакция не удалась"
+
+#. STRINGS.ONIACCESS.INVENTORY.TRANSACTION_LOADING
+msgctxt "STRINGS.ONIACCESS.INVENTORY.TRANSACTION_LOADING"
+msgid "Processing"
+msgstr "Обработка"
+
+#. STRINGS.ONIACCESS.INVENTORY.TRANSACTION_SUCCESS
+msgctxt "STRINGS.ONIACCESS.INVENTORY.TRANSACTION_SUCCESS"
+msgid "Transaction complete"
+msgstr "Транзакция завершена"
+
+#. STRINGS.ONIACCESS.INVENTORY.UNOWNED
+msgctxt "STRINGS.ONIACCESS.INVENTORY.UNOWNED"
+msgid "unowned"
+msgstr "не приобретено"
+
 #. STRINGS.ONIACCESS.KEY_BINDINGS.BINDINGS_RESET
 msgctxt "STRINGS.ONIACCESS.KEY_BINDINGS.BINDINGS_RESET"
 msgid "All bindings reset to defaults"
@@ -2645,6 +2785,11 @@ msgstr "Открыть меню уведомлений"
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.PLAY_VIDEO"
 msgid "play video"
 msgstr "воспроизвести видео"
+
+#. STRINGS.ONIACCESS.OUTFIT_DESIGNER.SELECTED
+msgctxt "STRINGS.ONIACCESS.OUTFIT_DESIGNER.SELECTED"
+msgid "selected"
+msgstr "выбрано"
 
 #. STRINGS.ONIACCESS.PANELS.ACHIEVEMENTS
 msgctxt "STRINGS.ONIACCESS.PANELS.ACHIEVEMENTS"
@@ -5500,6 +5645,51 @@ msgstr "Калории до голодной смерти"
 msgctxt "STRINGS.ONIACCESS.VITALS_SCREEN.HANDLER_NAME"
 msgid "Vitals table"
 msgstr "Таблица показателей"
+
+#. STRINGS.ONIACCESS.WARDROBE.CONTAINS_LOCKED
+msgctxt "STRINGS.ONIACCESS.WARDROBE.CONTAINS_LOCKED"
+msgid "contains unowned items"
+msgstr "содержит неприобретённые предметы"
+
+#. STRINGS.ONIACCESS.WARDROBE.DETAIL_TAB
+msgctxt "STRINGS.ONIACCESS.WARDROBE.DETAIL_TAB"
+msgid "Details"
+msgstr "Подробности"
+
+#. STRINGS.ONIACCESS.WARDROBE.GALLERY_TAB
+msgctxt "STRINGS.ONIACCESS.WARDROBE.GALLERY_TAB"
+msgid "Outfits"
+msgstr "Наряды"
+
+#. STRINGS.ONIACCESS.WARDROBE.NO_OUTFITS
+msgctxt "STRINGS.ONIACCESS.WARDROBE.NO_OUTFITS"
+msgid "No outfits"
+msgstr "Нет нарядов"
+
+#. STRINGS.ONIACCESS.WARDROBE.OUTFIT_TYPE
+msgctxt "STRINGS.ONIACCESS.WARDROBE.OUTFIT_TYPE"
+msgid "Type: {0}"
+msgstr "Тип: {0}"
+
+#. STRINGS.ONIACCESS.WARDROBE.SLOT_ITEM
+msgctxt "STRINGS.ONIACCESS.WARDROBE.SLOT_ITEM"
+msgid "{0}: {1}"
+msgstr "{0}: {1}"
+
+#. STRINGS.ONIACCESS.WARDROBE.TYPE_ATMO_SUIT
+msgctxt "STRINGS.ONIACCESS.WARDROBE.TYPE_ATMO_SUIT"
+msgid "Atmo Suit"
+msgstr "Атмокостюм"
+
+#. STRINGS.ONIACCESS.WARDROBE.TYPE_CLOTHING
+msgctxt "STRINGS.ONIACCESS.WARDROBE.TYPE_CLOTHING"
+msgid "Clothing"
+msgstr "Одежда"
+
+#. STRINGS.ONIACCESS.WARDROBE.TYPE_JET_SUIT
+msgctxt "STRINGS.ONIACCESS.WARDROBE.TYPE_JET_SUIT"
+msgid "Jet Suit"
+msgstr "Реактивный костюм"
 
 #. STRINGS.ONIACCESS.WORLD_GEN.COMPLETE
 msgctxt "STRINGS.ONIACCESS.WORLD_GEN.COMPLETE"

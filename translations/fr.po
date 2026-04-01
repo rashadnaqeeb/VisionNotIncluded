@@ -2201,6 +2201,11 @@ msgctxt "STRINGS.ONIACCESS.HANDLERS.HELP"
 msgid "Help"
 msgstr "Aide"
 
+#. STRINGS.ONIACCESS.HANDLERS.INVENTORY
+msgctxt "STRINGS.ONIACCESS.HANDLERS.INVENTORY"
+msgid "Inventory"
+msgstr "Inventaire"
+
 #. STRINGS.ONIACCESS.HANDLERS.ITEM_DROP
 msgctxt "STRINGS.ONIACCESS.HANDLERS.ITEM_DROP"
 msgid "Claim blueprints"
@@ -2230,6 +2235,11 @@ msgstr "Sélectionner les Duplicants"
 msgctxt "STRINGS.ONIACCESS.HANDLERS.MODS"
 msgid "Mods"
 msgstr "Mods"
+
+#. STRINGS.ONIACCESS.HANDLERS.OUTFIT_DESIGNER
+msgctxt "STRINGS.ONIACCESS.HANDLERS.OUTFIT_DESIGNER"
+msgid "Outfit designer"
+msgstr "Créateur de tenues"
 
 #. STRINGS.ONIACCESS.HANDLERS.PAUSE_MENU
 msgctxt "STRINGS.ONIACCESS.HANDLERS.PAUSE_MENU"
@@ -2265,6 +2275,11 @@ msgstr "Traductions"
 msgctxt "STRINGS.ONIACCESS.HANDLERS.VIDEO"
 msgid "Video"
 msgstr "Vidéo"
+
+#. STRINGS.ONIACCESS.HANDLERS.WARDROBE
+msgctxt "STRINGS.ONIACCESS.HANDLERS.WARDROBE"
+msgid "Wardrobe"
+msgstr "Garde-robe"
 
 #. STRINGS.ONIACCESS.HANDLERS.WELCOME_MESSAGE
 msgctxt "STRINGS.ONIACCESS.HANDLERS.WELCOME_MESSAGE"
@@ -2360,6 +2375,11 @@ msgstr "Parcourir les éléments"
 msgctxt "STRINGS.ONIACCESS.HELP.OPEN_CONFIG"
 msgid "Open settings"
 msgstr "Ouvrir les paramètres"
+
+#. STRINGS.ONIACCESS.HELP.OPEN_FILTER
+msgctxt "STRINGS.ONIACCESS.HELP.OPEN_FILTER"
+msgid "Open filter"
+msgstr "Ouvrir le filtre"
 
 #. STRINGS.ONIACCESS.HELP.OPEN_GROUP
 msgctxt "STRINGS.ONIACCESS.HELP.OPEN_GROUP"
@@ -2546,6 +2566,126 @@ msgctxt "STRINGS.ONIACCESS.INFO.TRAIT"
 msgid "Trait"
 msgstr "Trait"
 
+#. STRINGS.ONIACCESS.INVENTORY.ALREADY_OWNED
+msgctxt "STRINGS.ONIACCESS.INVENTORY.ALREADY_OWNED"
+msgid "already owned"
+msgstr "déjà possédé"
+
+#. STRINGS.ONIACCESS.INVENTORY.BUY
+msgctxt "STRINGS.ONIACCESS.INVENTORY.BUY"
+msgid "Buy for {0} filaments"
+msgstr "Acheter pour {0} filaments"
+
+#. STRINGS.ONIACCESS.INVENTORY.CONFIRM_BUY
+msgctxt "STRINGS.ONIACCESS.INVENTORY.CONFIRM_BUY"
+msgid "Buy {0} for {1} filaments?"
+msgstr "Acheter {0} pour {1} filaments ?"
+
+#. STRINGS.ONIACCESS.INVENTORY.CONFIRM_SELL
+msgctxt "STRINGS.ONIACCESS.INVENTORY.CONFIRM_SELL"
+msgid "Sell {0} for {1} filaments?"
+msgstr "Vendre {0} pour {1} filaments ?"
+
+#. STRINGS.ONIACCESS.INVENTORY.DETAIL_TAB
+msgctxt "STRINGS.ONIACCESS.INVENTORY.DETAIL_TAB"
+msgid "Details"
+msgstr "Détails"
+
+#. STRINGS.ONIACCESS.INVENTORY.DLC_FILTER
+msgctxt "STRINGS.ONIACCESS.INVENTORY.DLC_FILTER"
+msgid "Collection: {0}"
+msgstr "Collection : {0}"
+
+#. STRINGS.ONIACCESS.INVENTORY.FACADE_FOR
+msgctxt "STRINGS.ONIACCESS.INVENTORY.FACADE_FOR"
+msgid "Blueprint for {0}"
+msgstr "Plan pour {0}"
+
+#. STRINGS.ONIACCESS.INVENTORY.FILAMENTS
+msgctxt "STRINGS.ONIACCESS.INVENTORY.FILAMENTS"
+msgid "Filaments: {0}"
+msgstr "Filaments : {0}"
+
+#. STRINGS.ONIACCESS.INVENTORY.FILTER_DLC_ALL
+msgctxt "STRINGS.ONIACCESS.INVENTORY.FILTER_DLC_ALL"
+msgid "all"
+msgstr "toutes"
+
+#. STRINGS.ONIACCESS.INVENTORY.FILTER_OWNERSHIP_ALL
+msgctxt "STRINGS.ONIACCESS.INVENTORY.FILTER_OWNERSHIP_ALL"
+msgid "all"
+msgstr "tous"
+
+#. STRINGS.ONIACCESS.INVENTORY.FILTER_OWNERSHIP_DOUBLES
+msgctxt "STRINGS.ONIACCESS.INVENTORY.FILTER_OWNERSHIP_DOUBLES"
+msgid "doubles only"
+msgstr "doublons uniquement"
+
+#. STRINGS.ONIACCESS.INVENTORY.FILTER_OWNERSHIP_OWNED
+msgctxt "STRINGS.ONIACCESS.INVENTORY.FILTER_OWNERSHIP_OWNED"
+msgid "owned only"
+msgstr "possédés uniquement"
+
+#. STRINGS.ONIACCESS.INVENTORY.GALLERY_TAB
+msgctxt "STRINGS.ONIACCESS.INVENTORY.GALLERY_TAB"
+msgid "Gallery"
+msgstr "Galerie"
+
+#. STRINGS.ONIACCESS.INVENTORY.NOT_FOR_SALE
+msgctxt "STRINGS.ONIACCESS.INVENTORY.NOT_FOR_SALE"
+msgid "not for sale"
+msgstr "pas à vendre"
+
+#. STRINGS.ONIACCESS.INVENTORY.NOT_FOR_SALE_YET
+msgctxt "STRINGS.ONIACCESS.INVENTORY.NOT_FOR_SALE_YET"
+msgid "not yet available"
+msgstr "pas encore disponible"
+
+#. STRINGS.ONIACCESS.INVENTORY.OWNED
+msgctxt "STRINGS.ONIACCESS.INVENTORY.OWNED"
+msgid "owned {0}"
+msgstr "possédés {0}"
+
+#. STRINGS.ONIACCESS.INVENTORY.OWNERSHIP_FILTER
+msgctxt "STRINGS.ONIACCESS.INVENTORY.OWNERSHIP_FILTER"
+msgid "Ownership: {0}"
+msgstr "Possession : {0}"
+
+#. STRINGS.ONIACCESS.INVENTORY.SELL
+msgctxt "STRINGS.ONIACCESS.INVENTORY.SELL"
+msgid "Sell for {0} filaments"
+msgstr "Vendre pour {0} filaments"
+
+#. STRINGS.ONIACCESS.INVENTORY.SELL_NONE
+msgctxt "STRINGS.ONIACCESS.INVENTORY.SELL_NONE"
+msgid "Sell, none owned"
+msgstr "Vendre, aucun possédé"
+
+#. STRINGS.ONIACCESS.INVENTORY.TOO_EXPENSIVE
+msgctxt "STRINGS.ONIACCESS.INVENTORY.TOO_EXPENSIVE"
+msgid "too expensive, {0} filaments"
+msgstr "trop cher, {0} filaments"
+
+#. STRINGS.ONIACCESS.INVENTORY.TRANSACTION_FAILED
+msgctxt "STRINGS.ONIACCESS.INVENTORY.TRANSACTION_FAILED"
+msgid "Transaction failed"
+msgstr "Transaction échouée"
+
+#. STRINGS.ONIACCESS.INVENTORY.TRANSACTION_LOADING
+msgctxt "STRINGS.ONIACCESS.INVENTORY.TRANSACTION_LOADING"
+msgid "Processing"
+msgstr "Traitement en cours"
+
+#. STRINGS.ONIACCESS.INVENTORY.TRANSACTION_SUCCESS
+msgctxt "STRINGS.ONIACCESS.INVENTORY.TRANSACTION_SUCCESS"
+msgid "Transaction complete"
+msgstr "Transaction terminée"
+
+#. STRINGS.ONIACCESS.INVENTORY.UNOWNED
+msgctxt "STRINGS.ONIACCESS.INVENTORY.UNOWNED"
+msgid "unowned"
+msgstr "non possédé"
+
 #. STRINGS.ONIACCESS.KEY_BINDINGS.BINDINGS_RESET
 msgctxt "STRINGS.ONIACCESS.KEY_BINDINGS.BINDINGS_RESET"
 msgid "All bindings reset to defaults"
@@ -2645,6 +2785,11 @@ msgstr "Ouvrir le menu des notifications"
 msgctxt "STRINGS.ONIACCESS.NOTIFICATIONS.PLAY_VIDEO"
 msgid "play video"
 msgstr "lire la vidéo"
+
+#. STRINGS.ONIACCESS.OUTFIT_DESIGNER.SELECTED
+msgctxt "STRINGS.ONIACCESS.OUTFIT_DESIGNER.SELECTED"
+msgid "selected"
+msgstr "sélectionné"
 
 #. STRINGS.ONIACCESS.PANELS.ACHIEVEMENTS
 msgctxt "STRINGS.ONIACCESS.PANELS.ACHIEVEMENTS"
@@ -5500,6 +5645,51 @@ msgstr "Calories restantes avant la famine"
 msgctxt "STRINGS.ONIACCESS.VITALS_SCREEN.HANDLER_NAME"
 msgid "Vitals table"
 msgstr "Table des signes vitaux"
+
+#. STRINGS.ONIACCESS.WARDROBE.CONTAINS_LOCKED
+msgctxt "STRINGS.ONIACCESS.WARDROBE.CONTAINS_LOCKED"
+msgid "contains unowned items"
+msgstr "contient des éléments non possédés"
+
+#. STRINGS.ONIACCESS.WARDROBE.DETAIL_TAB
+msgctxt "STRINGS.ONIACCESS.WARDROBE.DETAIL_TAB"
+msgid "Details"
+msgstr "Détails"
+
+#. STRINGS.ONIACCESS.WARDROBE.GALLERY_TAB
+msgctxt "STRINGS.ONIACCESS.WARDROBE.GALLERY_TAB"
+msgid "Outfits"
+msgstr "Tenues"
+
+#. STRINGS.ONIACCESS.WARDROBE.NO_OUTFITS
+msgctxt "STRINGS.ONIACCESS.WARDROBE.NO_OUTFITS"
+msgid "No outfits"
+msgstr "Aucune tenue"
+
+#. STRINGS.ONIACCESS.WARDROBE.OUTFIT_TYPE
+msgctxt "STRINGS.ONIACCESS.WARDROBE.OUTFIT_TYPE"
+msgid "Type: {0}"
+msgstr "Type : {0}"
+
+#. STRINGS.ONIACCESS.WARDROBE.SLOT_ITEM
+msgctxt "STRINGS.ONIACCESS.WARDROBE.SLOT_ITEM"
+msgid "{0}: {1}"
+msgstr "{0} : {1}"
+
+#. STRINGS.ONIACCESS.WARDROBE.TYPE_ATMO_SUIT
+msgctxt "STRINGS.ONIACCESS.WARDROBE.TYPE_ATMO_SUIT"
+msgid "Atmo Suit"
+msgstr "Combinaison pressurisée"
+
+#. STRINGS.ONIACCESS.WARDROBE.TYPE_CLOTHING
+msgctxt "STRINGS.ONIACCESS.WARDROBE.TYPE_CLOTHING"
+msgid "Clothing"
+msgstr "Vêtements"
+
+#. STRINGS.ONIACCESS.WARDROBE.TYPE_JET_SUIT
+msgctxt "STRINGS.ONIACCESS.WARDROBE.TYPE_JET_SUIT"
+msgid "Jet Suit"
+msgstr "Combinaison jet"
 
 #. STRINGS.ONIACCESS.WORLD_GEN.COMPLETE
 msgctxt "STRINGS.ONIACCESS.WORLD_GEN.COMPLETE"
