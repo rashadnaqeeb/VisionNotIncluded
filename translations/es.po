@@ -2050,6 +2050,11 @@ msgstr "salida de radbolt"
 msgctxt "STRINGS.ONIACCESS.GLANCE.RADBOLT_OUTPUT_DIRECTION"
 msgid "radbolt output, {0}"
 msgstr "salida de radbolt, {0}"
+
+#. STRINGS.ONIACCESS.GLANCE.REPLACING_WITH
+msgctxt "STRINGS.ONIACCESS.GLANCE.REPLACING_WITH"
+msgid "replacing with {0}"
+msgstr "reemplazando por {0}"
 #. STRINGS.ONIACCESS.GLANCE.SHAPE_ALONE
 msgctxt "STRINGS.ONIACCESS.GLANCE.SHAPE_ALONE"
 msgid "unconnected"
@@ -2164,6 +2169,11 @@ msgctxt "STRINGS.ONIACCESS.HANDLERS.DISINFECT_SETTINGS"
 msgid "disinfect settings"
 msgstr "ajustes de desinfección"
 
+#. STRINGS.ONIACCESS.HANDLERS.DUPLICANT_BROWSER
+msgctxt "STRINGS.ONIACCESS.HANDLERS.DUPLICANT_BROWSER"
+msgid "Duplicants"
+msgstr "Duplicantes"
+
 #. STRINGS.ONIACCESS.HANDLERS.ENTITY_PICKER
 msgctxt "STRINGS.ONIACCESS.HANDLERS.ENTITY_PICKER"
 msgid "object selection"
@@ -2208,6 +2218,11 @@ msgstr "Inventario"
 msgctxt "STRINGS.ONIACCESS.HANDLERS.ITEM_DROP"
 msgid "Claim blueprints"
 msgstr "Reclamar planos"
+
+#. STRINGS.ONIACCESS.HANDLERS.JOY_RESPONSE_DESIGNER
+msgctxt "STRINGS.ONIACCESS.HANDLERS.JOY_RESPONSE_DESIGNER"
+msgid "Overjoyed response designer"
+msgstr "Diseñador de respuesta eufórica"
 
 #. STRINGS.ONIACCESS.HANDLERS.KEY_BINDINGS
 msgctxt "STRINGS.ONIACCESS.HANDLERS.KEY_BINDINGS"
@@ -5652,6 +5667,11 @@ msgctxt "STRINGS.ONIACCESS.WARDROBE.DETAIL_TAB"
 msgid "Details"
 msgstr "Detalles"
 
+#. STRINGS.ONIACCESS.WARDROBE.DUPE_RENAMED
+msgctxt "STRINGS.ONIACCESS.WARDROBE.DUPE_RENAMED"
+msgid "{0} ({1})"
+msgstr "{0} ({1})"
+
 #. STRINGS.ONIACCESS.WARDROBE.GALLERY_TAB
 msgctxt "STRINGS.ONIACCESS.WARDROBE.GALLERY_TAB"
 msgid "Outfits"
@@ -5686,6 +5706,11 @@ msgstr "Ropa"
 msgctxt "STRINGS.ONIACCESS.WARDROBE.TYPE_JET_SUIT"
 msgid "Jet Suit"
 msgstr "Traje jet"
+
+#. STRINGS.ONIACCESS.WARDROBE.TYPE_JOY_RESPONSE
+msgctxt "STRINGS.ONIACCESS.WARDROBE.TYPE_JOY_RESPONSE"
+msgid "Overjoyed Response"
+msgstr "Respuesta eufórica"
 
 #. STRINGS.ONIACCESS.WORLD_GEN.COMPLETE
 msgctxt "STRINGS.ONIACCESS.WORLD_GEN.COMPLETE"
