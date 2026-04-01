@@ -7,11 +7,13 @@ namespace OniAccess.Speech {
 		[StructLayout(LayoutKind.Sequential)]
 		private struct PrismConfig {
 			public byte version;
-			public IntPtr hwnd;
 		}
 
 		const int PRISM_OK = 0;
 		const int PRISM_ERROR_NOT_SPEAKING = 10;
+
+		[DllImport("prism", CallingConvention = CallingConvention.Cdecl)]
+		private static extern PrismConfig prism_config_init();
 
 		[DllImport("prism", CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr prism_init(ref PrismConfig cfg);
@@ -49,7 +51,7 @@ namespace OniAccess.Speech {
 			if (_initialized) return _available;
 
 			try {
-				var config = new PrismConfig { version = 1, hwnd = IntPtr.Zero };
+				var config = prism_config_init();
 				_context = prism_init(ref config);
 				if (_context == IntPtr.Zero) {
 					Log.Error("prism_init returned null");
