@@ -2481,7 +2481,9 @@ namespace OniAccess.Widgets {
 					items.Add(new LabelWidget {
 						Label = capturedText.GetParsedText(),
 						GameObject = capturedSection.gameObject,
-						SpeechFunc = () => capturedText.GetParsedText()
+						SpeechFunc = () => string.Format(
+							(string)STRINGS.ONIACCESS.SIDESCREENS.STORING,
+							capturedText.GetParsedText())
 					});
 				}
 			}
