@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Database;
 using HarmonyLib;
 using UnityEngine;
 
@@ -54,6 +55,28 @@ namespace OniAccess.Handlers.Screens.Details {
 				if (section.Items.Count > 0)
 					sections.Add(section);
 			}
+
+			AppendAppearanceWidget(target, sections);
+		}
+
+		private static void AppendAppearanceWidget(GameObject target, List<DetailSection> sections) {
+			var identity = target.GetComponent<MinionIdentity>();
+			if (identity == null) return;
+
+			var personality = Db.Get().Personalities.Get(identity.personalityResourceId);
+			if (personality == null) return;
+
+			string key = "STRINGS.ONIACCESS.DUPE_DESCRIPTIONS."
+				+ personality.Name.Replace("-", "_").ToUpper();
+			if (!Strings.TryGet(key, out var entry)) return;
+
+			var bioSection = sections.Find(s => s.Key == "bioPanel");
+			if (bioSection == null) return;
+
+			bioSection.Items.Add(new Widgets.LabelWidget {
+				Key = "appearance",
+				Label = string.Format((string)STRINGS.ONIACCESS.INFO.DUPE_DESCRIPTION, entry.String)
+			});
 		}
 
 		private static MinionPersonalityPanel FindPanel() {

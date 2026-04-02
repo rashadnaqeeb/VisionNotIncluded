@@ -109,6 +109,11 @@ namespace OniAccess.Handlers.Screens.Outfits {
 			else
 				label = name;
 
+			string descKey = "STRINGS.ONIACCESS.DUPE_DESCRIPTIONS."
+				+ personalityName.Replace("-", "_").ToUpper();
+			if (Strings.TryGet(descKey, out var descEntry))
+				label += ", " + descEntry.String;
+
 			string desc = personality.description;
 			if (!string.IsNullOrEmpty(desc))
 				label += ", " + desc;

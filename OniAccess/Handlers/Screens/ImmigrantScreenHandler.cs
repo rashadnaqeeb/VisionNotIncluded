@@ -315,6 +315,15 @@ namespace OniAccess.Handlers.Screens {
 
 			// Description
 			try {
+				string descKey = "STRINGS.ONIACCESS.DUPE_DESCRIPTIONS."
+					+ stats.personality.Name.Replace("-", "_").ToUpper();
+				if (Strings.TryGet(descKey, out var descEntry)) {
+					_widgets.Add(new LabelWidget {
+						Label = string.Format((string)STRINGS.ONIACCESS.INFO.DUPE_DESCRIPTION, descEntry.String),
+						GameObject = container.gameObject
+					});
+				}
+
 				var descLocText = traverse.Field("description").GetValue<LocText>();
 				if (descLocText != null && !string.IsNullOrEmpty(descLocText.text)) {
 					_widgets.Add(new LabelWidget {

@@ -461,6 +461,18 @@ namespace OniAccess.Handlers.Screens {
 
 		private void DiscoverDescriptionWidget(CharacterContainer container, Traverse traverse) {
 			try {
+				var stats = traverse.Field("stats").GetValue<MinionStartingStats>();
+				if (stats != null) {
+					string key = "STRINGS.ONIACCESS.DUPE_DESCRIPTIONS."
+						+ stats.personality.Name.Replace("-", "_").ToUpper();
+					if (Strings.TryGet(key, out var entry)) {
+						_widgets.Add(new LabelWidget {
+							Label = string.Format((string)STRINGS.ONIACCESS.INFO.DUPE_DESCRIPTION, entry.String),
+							GameObject = container.gameObject
+						});
+					}
+				}
+
 				var descLocText = traverse.Field("description")
 					.GetValue<LocText>();
 				if (descLocText != null && !string.IsNullOrEmpty(descLocText.text)) {
