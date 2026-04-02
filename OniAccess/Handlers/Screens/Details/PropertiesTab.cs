@@ -85,6 +85,7 @@ namespace OniAccess.Handlers.Screens.Details {
 
 			AppendRangeWidget(target, sections);
 			AppendPathingWidget(target, sections);
+			AppendDescriptionWidget(target, sections);
 			AppendReachWidget(target, sections);
 		}
 
@@ -142,6 +143,36 @@ namespace OniAccess.Handlers.Screens.Details {
 			detailsSection.Items.Insert(0, new LabelWidget {
 				Key = "pathing",
 				SpeechFunc = () => FormatPathing(navigator)
+			});
+		}
+
+		private static void AppendDescriptionWidget(GameObject target, List<DetailSection> sections) {
+			if (target.GetComponent<CreatureBrain>() == null) return;
+
+			var prefabId = target.GetComponent<KPrefabID>();
+			if (prefabId == null) return;
+
+			string id = prefabId.PrefabID().ToString().ToUpper();
+			string key = "STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS." + id;
+			if (!Strings.TryGet(key, out var entry)) {
+				if (!id.EndsWith("BABY")) return;
+				key = "STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS."
+					+ id.Substring(0, id.Length - 4);
+				if (!Strings.TryGet(key, out entry)) return;
+			}
+
+			var detailsSection = sections.Find(s => s.Key == "detailsPanel");
+			if (detailsSection == null) {
+				detailsSection = new DetailSection { Key = "detailsPanel", Header = "Details" };
+				sections.Add(detailsSection);
+			}
+
+			var insertIndex = detailsSection.Items.FindIndex(w => w.Key == "pathing");
+			insertIndex = insertIndex >= 0 ? insertIndex + 1 : detailsSection.Items.Count;
+
+			detailsSection.Items.Insert(insertIndex, new LabelWidget {
+				Key = "description",
+				Label = string.Format((string)STRINGS.ONIACCESS.INFO.CRITTER_DESCRIPTION, entry.String)
 			});
 		}
 

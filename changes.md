@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.2.2
 
+* Critter descriptions now appear on the Properties tab -- these describe what each critter looks like (shape, color, features, size)
 * Duplicant details screen now includes a work reach explanation covering vertical and horizontal range, diagonal reach for digging, and storage reach
 * Storage tile item selection side screen is now accessible -- browse and select which item to store
 * Plant and seed names no longer say "(Original)" once mutations are unlocked
