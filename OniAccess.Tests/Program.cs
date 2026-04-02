@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
+using OniAccess.ConduitTracking;
 using OniAccess.Handlers;
 using OniAccess.Handlers.Build;
 using OniAccess.Handlers.Screens.Details;
@@ -341,6 +342,18 @@ namespace OniAccess.Tests {
 			results.Add(MergerMissingKeyFallback());
 			results.Add(MergerTypeMismatchReplaces());
 			results.Add(MergerUpdateFromCopiesFields());
+
+			// --- FlowTracker ---
+			results.Add(FlowTrackerGetDirectionCountsUninitialized());
+			results.Add(FlowTrackerGetDirectionCountsOutOfRange());
+			results.Add(FlowTrackerGetDirectionCountsSingleSample());
+			results.Add(FlowTrackerGetDirectionCountsPartialBuffer());
+			results.Add(FlowTrackerGetDirectionCountsWrappedBuffer());
+			results.Add(FlowTrackerGetDirectionCountsMultiConduit());
+			results.Add(FlowTrackerGetElementCountsSkipsDirNone());
+			results.Add(FlowTrackerGetElementCountsGroupsByElement());
+			results.Add(FlowTrackerGetElementCountsWrapped());
+			results.Add(FlowTrackerClearResetsState());
 
 			int passed = 0, failed = 0;
 			foreach (var (name, ok, detail) in results) {
@@ -3697,6 +3710,239 @@ namespace OniAccess.Tests {
 			bool ok = oldW.Label == "New" && oldW.SuppressTooltip;
 			return Assert("MergerUpdateFromCopiesFields", ok,
 				$"Label={oldW.Label}, SuppressTooltip={oldW.SuppressTooltip}");
+		}
+
+		// ========================================
+		// FlowTracker tests
+		// ========================================
+
+		private static readonly BindingFlags FTFlags =
+			BindingFlags.NonPublic | BindingFlags.Instance;
+
+		/// <summary>
+		/// Injects internal state into a FlowTracker for testing the
+		/// read methods without needing ConduitFlow game objects.
+		/// </summary>
+		static FlowTracker MakeFlowTracker(int conduitCount, int samplesRecorded,
+				int writePos, int[] buffer, SimHashes[] elementBuffer) {
+			var tracker = new FlowTracker();
+			var t = typeof(FlowTracker);
+			t.GetField("_conduitCount", FTFlags).SetValue(tracker, conduitCount);
+			t.GetField("_samplesRecorded", FTFlags).SetValue(tracker, samplesRecorded);
+			t.GetField("_writePos", FTFlags).SetValue(tracker, writePos);
+			t.GetField("_buffer", FTFlags).SetValue(tracker, buffer);
+			t.GetField("_elementBuffer", FTFlags).SetValue(tracker, elementBuffer);
+			return tracker;
+		}
+
+		static (string, bool, string) FlowTrackerGetDirectionCountsUninitialized() {
+			var tracker = new FlowTracker();
+			var counts = new int[5];
+			int samples = tracker.GetDirectionCounts(0, counts);
+			bool ok = samples == 0
+				&& counts[0] == 0 && counts[1] == 0 && counts[2] == 0
+				&& counts[3] == 0 && counts[4] == 0;
+			return Assert("FlowTrackerGetDirectionCountsUninitialized", ok,
+				$"samples={samples}");
+		}
+
+		static (string, bool, string) FlowTrackerGetDirectionCountsOutOfRange() {
+			// 2 conduits, 1 sample — query index 5 (out of range)
+			var buffer = new int[2 * FlowTracker.BufferSize];
+			var elements = new SimHashes[2 * FlowTracker.BufferSize];
+			var tracker = MakeFlowTracker(2, 1, 1, buffer, elements);
+			var counts = new int[5];
+			int samples = tracker.GetDirectionCounts(5, counts);
+			bool ok = samples == 0;
+			return Assert("FlowTrackerGetDirectionCountsOutOfRange", ok,
+				$"samples={samples}, expected 0 for out-of-range index");
+		}
+
+		static (string, bool, string) FlowTrackerGetDirectionCountsSingleSample() {
+			// 1 conduit, 1 sample at slot 0 with DirUp
+			int conduits = 1;
+			var buffer = new int[conduits * FlowTracker.BufferSize];
+			var elements = new SimHashes[conduits * FlowTracker.BufferSize];
+			buffer[0] = FlowTracker.DirUp;
+			var tracker = MakeFlowTracker(conduits, 1, 1, buffer, elements);
+			var counts = new int[5];
+			int samples = tracker.GetDirectionCounts(0, counts);
+			bool ok = samples == 1 && counts[FlowTracker.DirUp] == 1
+				&& counts[FlowTracker.DirNone] == 0;
+			return Assert("FlowTrackerGetDirectionCountsSingleSample", ok,
+				$"samples={samples}, up={counts[FlowTracker.DirUp]}");
+		}
+
+		static (string, bool, string) FlowTrackerGetDirectionCountsPartialBuffer() {
+			// 1 conduit, 5 samples (not yet wrapped). Slots 0-4 filled.
+			// Pattern: Up, Down, Left, Right, Up
+			int conduits = 1;
+			var buffer = new int[conduits * FlowTracker.BufferSize];
+			var elements = new SimHashes[conduits * FlowTracker.BufferSize];
+			buffer[0] = FlowTracker.DirUp;
+			buffer[1] = FlowTracker.DirDown;
+			buffer[2] = FlowTracker.DirLeft;
+			buffer[3] = FlowTracker.DirRight;
+			buffer[4] = FlowTracker.DirUp;
+			var tracker = MakeFlowTracker(conduits, 5, 5, buffer, elements);
+			var counts = new int[5];
+			int samples = tracker.GetDirectionCounts(0, counts);
+			bool ok = samples == 5
+				&& counts[FlowTracker.DirUp] == 2
+				&& counts[FlowTracker.DirDown] == 1
+				&& counts[FlowTracker.DirLeft] == 1
+				&& counts[FlowTracker.DirRight] == 1;
+			return Assert("FlowTrackerGetDirectionCountsPartialBuffer", ok,
+				$"samples={samples}, up={counts[FlowTracker.DirUp]}, " +
+				$"down={counts[FlowTracker.DirDown]}, " +
+				$"left={counts[FlowTracker.DirLeft]}, " +
+				$"right={counts[FlowTracker.DirRight]}");
+		}
+
+		static (string, bool, string) FlowTrackerGetDirectionCountsWrappedBuffer() {
+			// 1 conduit, buffer fully wrapped (samplesRecorded > BufferSize).
+			// writePos=3 means oldest slot is 3, newest is 2.
+			// Fill all 20 slots: slots 0-2 = DirLeft, slots 3-19 = DirRight.
+			// Reading order starts at slot 3, so we expect 17 Right + 3 Left.
+			int conduits = 1;
+			var buffer = new int[conduits * FlowTracker.BufferSize];
+			var elements = new SimHashes[conduits * FlowTracker.BufferSize];
+			for (int i = 0; i < FlowTracker.BufferSize; i++)
+				buffer[i] = i < 3 ? FlowTracker.DirLeft : FlowTracker.DirRight;
+			// samplesRecorded=25 (> BufferSize), writePos=3
+			var tracker = MakeFlowTracker(conduits, 25, 3, buffer, elements);
+			var counts = new int[5];
+			int samples = tracker.GetDirectionCounts(0, counts);
+			bool ok = samples == FlowTracker.BufferSize
+				&& counts[FlowTracker.DirRight] == 17
+				&& counts[FlowTracker.DirLeft] == 3;
+			return Assert("FlowTrackerGetDirectionCountsWrappedBuffer", ok,
+				$"samples={samples}, right={counts[FlowTracker.DirRight]}, " +
+				$"left={counts[FlowTracker.DirLeft]}");
+		}
+
+		static (string, bool, string) FlowTrackerGetDirectionCountsMultiConduit() {
+			// 3 conduits, 2 samples. Verify correct per-conduit indexing.
+			// Slot layout: [slot * conduitCount + conduitIdx]
+			// Slot 0: conduit0=Up, conduit1=Down, conduit2=Left
+			// Slot 1: conduit0=Right, conduit1=Up, conduit2=Down
+			int conduits = 3;
+			var buffer = new int[conduits * FlowTracker.BufferSize];
+			var elements = new SimHashes[conduits * FlowTracker.BufferSize];
+			// Slot 0
+			buffer[0 * conduits + 0] = FlowTracker.DirUp;
+			buffer[0 * conduits + 1] = FlowTracker.DirDown;
+			buffer[0 * conduits + 2] = FlowTracker.DirLeft;
+			// Slot 1
+			buffer[1 * conduits + 0] = FlowTracker.DirRight;
+			buffer[1 * conduits + 1] = FlowTracker.DirUp;
+			buffer[1 * conduits + 2] = FlowTracker.DirDown;
+			var tracker = MakeFlowTracker(conduits, 2, 2, buffer, elements);
+
+			var c0 = new int[5];
+			tracker.GetDirectionCounts(0, c0);
+			var c1 = new int[5];
+			tracker.GetDirectionCounts(1, c1);
+			var c2 = new int[5];
+			tracker.GetDirectionCounts(2, c2);
+
+			bool ok = c0[FlowTracker.DirUp] == 1 && c0[FlowTracker.DirRight] == 1
+				&& c1[FlowTracker.DirDown] == 1 && c1[FlowTracker.DirUp] == 1
+				&& c2[FlowTracker.DirLeft] == 1 && c2[FlowTracker.DirDown] == 1;
+			return Assert("FlowTrackerGetDirectionCountsMultiConduit", ok,
+				$"c0: up={c0[FlowTracker.DirUp]} right={c0[FlowTracker.DirRight]}, " +
+				$"c1: down={c1[FlowTracker.DirDown]} up={c1[FlowTracker.DirUp]}, " +
+				$"c2: left={c2[FlowTracker.DirLeft]} down={c2[FlowTracker.DirDown]}");
+		}
+
+		static (string, bool, string) FlowTrackerGetElementCountsSkipsDirNone() {
+			// 1 conduit, 3 samples: DirNone, DirUp, DirNone.
+			// GetElementDirectionCounts should only report the DirUp sample.
+			int conduits = 1;
+			var buffer = new int[conduits * FlowTracker.BufferSize];
+			var elements = new SimHashes[conduits * FlowTracker.BufferSize];
+			buffer[0] = FlowTracker.DirNone;
+			elements[0] = SimHashes.Water;
+			buffer[1] = FlowTracker.DirUp;
+			elements[1] = SimHashes.Water;
+			buffer[2] = FlowTracker.DirNone;
+			elements[2] = SimHashes.Water;
+			var tracker = MakeFlowTracker(conduits, 3, 3, buffer, elements);
+			var counts = new Dictionary<SimHashes, int[]>();
+			int samples = tracker.GetElementDirectionCounts(0, counts);
+			bool hasWater = counts.TryGetValue(SimHashes.Water, out int[] dirs);
+			bool ok = samples == 3 && hasWater
+				&& dirs[FlowTracker.DirUp] == 1
+				&& dirs[FlowTracker.DirNone] == 0;
+			return Assert("FlowTrackerGetElementCountsSkipsDirNone", ok,
+				$"samples={samples}, hasWater={hasWater}, " +
+				$"up={dirs?[FlowTracker.DirUp]}, none={dirs?[FlowTracker.DirNone]}");
+		}
+
+		static (string, bool, string) FlowTrackerGetElementCountsGroupsByElement() {
+			// 1 conduit, 4 samples with two different elements.
+			int conduits = 1;
+			var buffer = new int[conduits * FlowTracker.BufferSize];
+			var elements = new SimHashes[conduits * FlowTracker.BufferSize];
+			buffer[0] = FlowTracker.DirUp;    elements[0] = SimHashes.Water;
+			buffer[1] = FlowTracker.DirDown;   elements[1] = SimHashes.Oxygen;
+			buffer[2] = FlowTracker.DirUp;    elements[2] = SimHashes.Water;
+			buffer[3] = FlowTracker.DirLeft;   elements[3] = SimHashes.Oxygen;
+			var tracker = MakeFlowTracker(conduits, 4, 4, buffer, elements);
+			var counts = new Dictionary<SimHashes, int[]>();
+			int samples = tracker.GetElementDirectionCounts(0, counts);
+			bool hasWater = counts.TryGetValue(SimHashes.Water, out int[] waterDirs);
+			bool hasOxygen = counts.TryGetValue(SimHashes.Oxygen, out int[] oxygenDirs);
+			bool ok = samples == 4 && counts.Count == 2
+				&& hasWater && waterDirs[FlowTracker.DirUp] == 2
+				&& hasOxygen && oxygenDirs[FlowTracker.DirDown] == 1
+				&& oxygenDirs[FlowTracker.DirLeft] == 1;
+			return Assert("FlowTrackerGetElementCountsGroupsByElement", ok,
+				$"samples={samples}, elements={counts.Count}, " +
+				$"water.up={waterDirs?[FlowTracker.DirUp]}, " +
+				$"oxygen.down={oxygenDirs?[FlowTracker.DirDown]}, " +
+				$"oxygen.left={oxygenDirs?[FlowTracker.DirLeft]}");
+		}
+
+		static (string, bool, string) FlowTrackerGetElementCountsWrapped() {
+			// 1 conduit, buffer wrapped. Verify element counts use correct
+			// start slot and read the full ring.
+			int conduits = 1;
+			var buffer = new int[conduits * FlowTracker.BufferSize];
+			var elements = new SimHashes[conduits * FlowTracker.BufferSize];
+			// Fill all slots with DirUp/Water, except slot 0 = DirDown/Oxygen
+			for (int i = 0; i < FlowTracker.BufferSize; i++) {
+				buffer[i] = FlowTracker.DirUp;
+				elements[i] = SimHashes.Water;
+			}
+			buffer[0] = FlowTracker.DirDown;
+			elements[0] = SimHashes.Oxygen;
+			// writePos=1 means slot 1 is oldest, slot 0 is newest
+			var tracker = MakeFlowTracker(conduits, 30, 1, buffer, elements);
+			var counts = new Dictionary<SimHashes, int[]>();
+			int samples = tracker.GetElementDirectionCounts(0, counts);
+			bool hasWater = counts.TryGetValue(SimHashes.Water, out int[] waterDirs);
+			bool hasOxygen = counts.TryGetValue(SimHashes.Oxygen, out int[] oxygenDirs);
+			bool ok = samples == FlowTracker.BufferSize
+				&& hasWater && waterDirs[FlowTracker.DirUp] == 19
+				&& hasOxygen && oxygenDirs[FlowTracker.DirDown] == 1;
+			return Assert("FlowTrackerGetElementCountsWrapped", ok,
+				$"samples={samples}, water.up={waterDirs?[FlowTracker.DirUp]}, " +
+				$"oxygen.down={oxygenDirs?[FlowTracker.DirDown]}");
+		}
+
+		static (string, bool, string) FlowTrackerClearResetsState() {
+			int conduits = 1;
+			var buffer = new int[conduits * FlowTracker.BufferSize];
+			var elements = new SimHashes[conduits * FlowTracker.BufferSize];
+			buffer[0] = FlowTracker.DirUp;
+			var tracker = MakeFlowTracker(conduits, 1, 1, buffer, elements);
+			tracker.Clear();
+			var counts = new int[5];
+			int samples = tracker.GetDirectionCounts(0, counts);
+			bool ok = samples == 0;
+			return Assert("FlowTrackerClearResetsState", ok,
+				$"samples={samples} after Clear, expected 0");
 		}
 
 	}
