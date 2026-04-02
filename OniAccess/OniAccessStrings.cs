@@ -1380,6 +1380,8 @@ namespace STRINGS {
 			public static LocString RANGE = "Range: {0} to {1}";
 			// {0} = pathing description
 			public static LocString PATHING = "Pathing behaviour: {0}";
+			// Synthetic details-screen entry explaining duplicant work reach mechanics
+			public static LocString REACH = "Work reach: A duplicant can work on targets up to 2 tiles above their head, 3 tiles below their feet, and 2 tiles to either side. Storage tasks are an exception, reaching 3 tiles to either side instead of 2. When a target is at a diagonal, digging and tile construction can reach through that corner even if both tiles are solid. Other tasks require at least one of those corner tiles to be open. Otherwise, solid tiles always block work reach. The game recalculates valid work positions whenever terrain changes, for example from digging or construction.";
 			// {0} = raw NavGrid name for unmapped grids
 			public static LocString PATHING_UNKNOWN = "{0} (unknown)";
 

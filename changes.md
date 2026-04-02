@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.2.2
 
+* Duplicant details screen now includes a work reach explanation covering vertical and horizontal range, diagonal reach for digging, and storage reach
 * Storage tile item selection side screen is now accessible -- browse and select which item to store
 * Plant and seed names no longer say "(Original)" once mutations are unlocked
 * Duplicant physical appearance descriptions now appear in colony start, printing pod, supply closet duplicant list, and the Bio tab -- these describe what each dupe looks like (skin, hair, clothing, expression, posture)

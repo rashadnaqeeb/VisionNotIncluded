@@ -85,6 +85,7 @@ namespace OniAccess.Handlers.Screens.Details {
 
 			AppendRangeWidget(target, sections);
 			AppendPathingWidget(target, sections);
+			AppendReachWidget(target, sections);
 		}
 
 		private static void AppendRangeWidget(GameObject target, List<DetailSection> sections) {
@@ -141,6 +142,24 @@ namespace OniAccess.Handlers.Screens.Details {
 			detailsSection.Items.Insert(0, new LabelWidget {
 				Key = "pathing",
 				SpeechFunc = () => FormatPathing(navigator)
+			});
+		}
+
+		private static void AppendReachWidget(GameObject target, List<DetailSection> sections) {
+			if (target.GetComponent<MinionIdentity>() == null) return;
+
+			var detailsSection = sections.Find(s => s.Key == "detailsPanel");
+			if (detailsSection == null) {
+				detailsSection = new DetailSection { Key = "detailsPanel", Header = "Details" };
+				sections.Add(detailsSection);
+			}
+
+			var insertIndex = detailsSection.Items.FindIndex(w => w.Key == "pathing");
+			insertIndex = insertIndex >= 0 ? insertIndex + 1 : detailsSection.Items.Count;
+
+			detailsSection.Items.Insert(insertIndex, new LabelWidget {
+				Key = "reach",
+				SpeechFunc = () => (string)STRINGS.ONIACCESS.DETAILS.REACH
 			});
 		}
 
