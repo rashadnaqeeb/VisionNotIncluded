@@ -7,21 +7,7 @@ namespace OniAccess.Audio {
 	public class FollowMovementEarcon: MonoBehaviour {
 		public static FollowMovementEarcon Instance { get; private set; }
 
-		const float SegmentSeconds = 0.055f;
-		const float FadeSeconds = 0.005f;
 		static float Volume => ConfigManager.Config.FollowMovementVolume;
-
-		const float PanLeft = -0.79f;
-		const float PanRight = 0.79f;
-		const float PanCenter = 0f;
-
-		const int ToneUp = 0;
-		const int ToneDown = 1;
-		const int ToneHorizontal = 2;
-		const int ToneCount = 3;
-
-		static readonly float[] Frequencies = { 709f, 297f, 457f };
-		static readonly float[] Harmonics = { 1.0f };
 
 		enum MoveDirection {
 			None, Up, Down, Left, Right,
@@ -38,7 +24,7 @@ namespace OniAccess.Audio {
 
 		private void Awake() {
 			Instance = this;
-			GenerateTones();
+			_tones = DirectionTones.GenerateSet(DirectionTones.DefaultHarmonics);
 		}
 
 		private void OnDestroy() {
@@ -50,14 +36,6 @@ namespace OniAccess.Audio {
 			}
 			if (Instance == this)
 				Instance = null;
-		}
-
-		private void GenerateTones() {
-			_tones = new Sound[ToneCount];
-			for (int i = 0; i < ToneCount; i++) {
-				_tones[i] = ToneGenerator.CreateSegmentTone(
-					Frequencies[i], SegmentSeconds, FadeSeconds, Harmonics);
-			}
 		}
 
 		private void Update() {
@@ -132,14 +110,14 @@ namespace OniAccess.Audio {
 			int toneIndex;
 			float pan;
 			switch (direction) {
-				case MoveDirection.Up: toneIndex = ToneUp; pan = PanCenter; break;
-				case MoveDirection.Down: toneIndex = ToneDown; pan = PanCenter; break;
-				case MoveDirection.Left: toneIndex = ToneHorizontal; pan = PanLeft; break;
-				case MoveDirection.Right: toneIndex = ToneHorizontal; pan = PanRight; break;
-				case MoveDirection.UpLeft: toneIndex = ToneUp; pan = PanLeft; break;
-				case MoveDirection.UpRight: toneIndex = ToneUp; pan = PanRight; break;
-				case MoveDirection.DownLeft: toneIndex = ToneDown; pan = PanLeft; break;
-				case MoveDirection.DownRight: toneIndex = ToneDown; pan = PanRight; break;
+				case MoveDirection.Up: toneIndex = DirectionTones.ToneUp; pan = DirectionTones.PanCenter; break;
+				case MoveDirection.Down: toneIndex = DirectionTones.ToneDown; pan = DirectionTones.PanCenter; break;
+				case MoveDirection.Left: toneIndex = DirectionTones.ToneHorizontal; pan = DirectionTones.PanLeft; break;
+				case MoveDirection.Right: toneIndex = DirectionTones.ToneHorizontal; pan = DirectionTones.PanRight; break;
+				case MoveDirection.UpLeft: toneIndex = DirectionTones.ToneUp; pan = DirectionTones.PanLeft; break;
+				case MoveDirection.UpRight: toneIndex = DirectionTones.ToneUp; pan = DirectionTones.PanRight; break;
+				case MoveDirection.DownLeft: toneIndex = DirectionTones.ToneDown; pan = DirectionTones.PanLeft; break;
+				case MoveDirection.DownRight: toneIndex = DirectionTones.ToneDown; pan = DirectionTones.PanRight; break;
 				default: return;
 			}
 			StopChannel();

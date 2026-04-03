@@ -8,25 +8,11 @@ namespace OniAccess.Audio {
 	public class ScannerDirectionEarcon: MonoBehaviour {
 		public static ScannerDirectionEarcon Instance { get; private set; }
 
-		const float SegmentSeconds = 0.055f;
 		const float GapSeconds = 0.01f;
-		const float FadeSeconds = 0.005f;
 		const float MinVolumeRatio = 0.1f;
 		const float MaxDistanceTiles = 100f;
 
 		static float BaseVolume => ConfigManager.Config.ScannerDirectionVolume;
-
-		const float PanLeft = -0.79f;
-		const float PanRight = 0.79f;
-		const float PanCenter = 0f;
-
-		const int ToneUp = 0;
-		const int ToneDown = 1;
-		const int ToneHorizontal = 2;
-		const int ToneCount = 3;
-
-		static readonly float[] Frequencies = { 709f, 297f, 457f };
-		static readonly float[] Harmonics = { 1.0f };
 
 		private Sound[] _tones;
 		private Coroutine _activeSequence;
@@ -36,7 +22,7 @@ namespace OniAccess.Audio {
 
 		private void Awake() {
 			Instance = this;
-			GenerateTones();
+			_tones = DirectionTones.GenerateSet(DirectionTones.DefaultHarmonics);
 		}
 
 		private void OnDestroy() {
@@ -50,14 +36,6 @@ namespace OniAccess.Audio {
 				Instance = null;
 		}
 
-		private void GenerateTones() {
-			_tones = new Sound[ToneCount];
-			for (int i = 0; i < ToneCount; i++) {
-				_tones[i] = ToneGenerator.CreateSegmentTone(
-					Frequencies[i], SegmentSeconds, FadeSeconds, Harmonics);
-			}
-		}
-
 		public void Play(int cursorCell, int targetCell) {
 			CancelAll();
 			if (!ConfigManager.Config.ScannerDirectionEarcons)
@@ -67,7 +45,7 @@ namespace OniAccess.Audio {
 			int dx = Grid.CellColumn(targetCell) - Grid.CellColumn(cursorCell);
 
 			if (dy == 0 && dx == 0) {
-				PlayTone(ToneHorizontal, PanCenter, BaseVolume);
+				PlayTone(DirectionTones.ToneHorizontal, DirectionTones.PanCenter, BaseVolume);
 				return;
 			}
 
@@ -83,12 +61,12 @@ namespace OniAccess.Audio {
 		private (int toneIndex, float pan, float volume)[] BuildSequence(int dy, int dx) {
 			if (dy != 0 && dx != 0)
 				return new[] {
-					(dy > 0 ? ToneUp : ToneDown, PanCenter, VolumeForDistance(Mathf.Abs(dy))),
-					(ToneHorizontal, dx > 0 ? PanRight : PanLeft, VolumeForDistance(Mathf.Abs(dx)))
+					(dy > 0 ? DirectionTones.ToneUp : DirectionTones.ToneDown, DirectionTones.PanCenter, VolumeForDistance(Mathf.Abs(dy))),
+					(DirectionTones.ToneHorizontal, dx > 0 ? DirectionTones.PanRight : DirectionTones.PanLeft, VolumeForDistance(Mathf.Abs(dx)))
 				};
 			if (dy != 0)
-				return new[] { (dy > 0 ? ToneUp : ToneDown, PanCenter, VolumeForDistance(Mathf.Abs(dy))) };
-			return new[] { (ToneHorizontal, dx > 0 ? PanRight : PanLeft, VolumeForDistance(Mathf.Abs(dx))) };
+				return new[] { (dy > 0 ? DirectionTones.ToneUp : DirectionTones.ToneDown, DirectionTones.PanCenter, VolumeForDistance(Mathf.Abs(dy))) };
+			return new[] { (DirectionTones.ToneHorizontal, dx > 0 ? DirectionTones.PanRight : DirectionTones.PanLeft, VolumeForDistance(Mathf.Abs(dx))) };
 		}
 
 		private float VolumeForDistance(int tiles) {
@@ -107,7 +85,7 @@ namespace OniAccess.Audio {
 		private IEnumerator RunSequence((int toneIndex, float pan, float volume)[] segments) {
 			for (int i = 0; i < segments.Length; i++) {
 				PlayTone(segments[i].toneIndex, segments[i].pan, segments[i].volume);
-				yield return new WaitForSecondsRealtime(SegmentSeconds);
+				yield return new WaitForSecondsRealtime(DirectionTones.SegmentSeconds);
 				StopChannel();
 				if (i < segments.Length - 1)
 					yield return new WaitForSecondsRealtime(GapSeconds);

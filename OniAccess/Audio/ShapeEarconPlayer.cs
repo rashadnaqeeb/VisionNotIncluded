@@ -9,33 +9,12 @@ namespace OniAccess.Audio {
 	public class ShapeEarconPlayer: MonoBehaviour {
 		public static ShapeEarconPlayer Instance { get; private set; }
 
-		const float SegmentSeconds = 0.055f;
 		const float GapSeconds = 0.01f;
-		const float FadeSeconds = 0.005f;
 		static float Volume => ConfigManager.Config.PipeShapeVolume;
 
-		const float PanLeft = -0.79f;
-		const float PanRight = 0.79f;
-		const float PanCenter = 0f;
-
-		// Harmonic profiles: [fundamental, 2nd, 3rd...]
-		static readonly float[] WireHarmonics = { 1.0f };
 		static readonly float[] PipeHarmonics = { 1.0f, 0.9f };
 
-		// Each category has 3 tones: index 0 = up, 1 = down, 2 = horizontal
-		const int ToneUp = 0;
-		const int ToneDown = 1;
-		const int ToneHorizontal = 2;
-		const int TonesPerCategory = 3;
-
 		enum ToneCategory { Wire, Pipe, Count }
-
-		static readonly float[][] Frequencies = {
-			// Wire: up, down, horizontal
-			new[] { 709f, 297f, 457f },
-			// Pipe (also used for rail): same pitch range, different timbre
-			new[] { 709f, 297f, 457f },
-		};
 
 		readonly struct Segment {
 			public readonly int ToneIndex;
@@ -69,18 +48,11 @@ namespace OniAccess.Audio {
 		}
 
 		private void GenerateTones() {
-			int total = (int)ToneCategory.Count * TonesPerCategory;
-			_tones = new Sound[total];
-
-			var harmonicSets = new[] { WireHarmonics, PipeHarmonics };
-			for (int cat = 0; cat < (int)ToneCategory.Count; cat++) {
-				for (int tone = 0; tone < TonesPerCategory; tone++) {
-					int idx = cat * TonesPerCategory + tone;
-					_tones[idx] = ToneGenerator.CreateSegmentTone(
-						Frequencies[cat][tone], SegmentSeconds,
-						FadeSeconds, harmonicSets[cat]);
-				}
-			}
+			var wire = DirectionTones.GenerateSet(DirectionTones.DefaultHarmonics);
+			var pipe = DirectionTones.GenerateSet(PipeHarmonics);
+			_tones = new Sound[wire.Length + pipe.Length];
+			wire.CopyTo(_tones, 0);
+			pipe.CopyTo(_tones, wire.Length);
 		}
 
 		public void OnCursorMoved(int cell, HashedString overlayMode) {
@@ -126,7 +98,7 @@ namespace OniAccess.Audio {
 		private IEnumerator RunSequence(Segment[] segments) {
 			for (int i = 0; i < segments.Length; i++) {
 				PlaySegment(segments[i]);
-				yield return new WaitForSecondsRealtime(SegmentSeconds);
+				yield return new WaitForSecondsRealtime(DirectionTones.SegmentSeconds);
 				StopChannel();
 				if (i < segments.Length - 1)
 					yield return new WaitForSecondsRealtime(GapSeconds);
@@ -166,71 +138,71 @@ namespace OniAccess.Audio {
 			int count = (up ? 1 : 0) + (down ? 1 : 0)
 				+ (left ? 1 : 0) + (right ? 1 : 0);
 
-			int b = (int)category * TonesPerCategory;
-			int u = b + ToneUp;
-			int d = b + ToneDown;
-			int h = b + ToneHorizontal;
+			int b = (int)category * DirectionTones.TonesPerSet;
+			int u = b + DirectionTones.ToneUp;
+			int d = b + DirectionTones.ToneDown;
+			int h = b + DirectionTones.ToneHorizontal;
 
 			switch (count) {
 				case 0:
 					return null;
 				case 1:
-					if (up) return new[] { new Segment(u, PanCenter) };
-					if (down) return new[] { new Segment(d, PanCenter) };
-					if (left) return new[] { new Segment(h, PanLeft) };
-					return new[] { new Segment(h, PanRight) };
+					if (up) return new[] { new Segment(u, DirectionTones.PanCenter) };
+					if (down) return new[] { new Segment(d, DirectionTones.PanCenter) };
+					if (left) return new[] { new Segment(h, DirectionTones.PanLeft) };
+					return new[] { new Segment(h, DirectionTones.PanRight) };
 				case 2:
 					if (up && down)
 						return new[] {
-							new Segment(u, PanCenter),
-							new Segment(d, PanCenter)
+							new Segment(u, DirectionTones.PanCenter),
+							new Segment(d, DirectionTones.PanCenter)
 						};
 					if (left && right)
 						return new[] {
-							new Segment(h, PanLeft),
-							new Segment(h, PanRight)
+							new Segment(h, DirectionTones.PanLeft),
+							new Segment(h, DirectionTones.PanRight)
 						};
 					// Corner — up corners lead with up; down corners
 					// lead with horizontal to match T-form ordering.
 					if (up)
 						return new[] {
-							new Segment(u, PanCenter),
-							new Segment(h, left ? PanLeft : PanRight)
+							new Segment(u, DirectionTones.PanCenter),
+							new Segment(h, left ? DirectionTones.PanLeft : DirectionTones.PanRight)
 						};
 					return new[] {
-						new Segment(h, left ? PanLeft : PanRight),
-						new Segment(d, PanCenter)
+						new Segment(h, left ? DirectionTones.PanLeft : DirectionTones.PanRight),
+						new Segment(d, DirectionTones.PanCenter)
 					};
 				case 3:
 					if (!up)
 						return new[] {
-							new Segment(h, PanLeft),
-							new Segment(d, PanCenter),
-							new Segment(h, PanRight)
+							new Segment(h, DirectionTones.PanLeft),
+							new Segment(d, DirectionTones.PanCenter),
+							new Segment(h, DirectionTones.PanRight)
 						};
 					if (!down)
 						return new[] {
-							new Segment(h, PanLeft),
-							new Segment(u, PanCenter),
-							new Segment(h, PanRight)
+							new Segment(h, DirectionTones.PanLeft),
+							new Segment(u, DirectionTones.PanCenter),
+							new Segment(h, DirectionTones.PanRight)
 						};
 					if (!left)
 						return new[] {
-							new Segment(u, PanCenter),
-							new Segment(h, PanRight),
-							new Segment(d, PanCenter)
+							new Segment(u, DirectionTones.PanCenter),
+							new Segment(h, DirectionTones.PanRight),
+							new Segment(d, DirectionTones.PanCenter)
 						};
 					return new[] {
-						new Segment(u, PanCenter),
-						new Segment(h, PanLeft),
-						new Segment(d, PanCenter)
+						new Segment(u, DirectionTones.PanCenter),
+						new Segment(h, DirectionTones.PanLeft),
+						new Segment(d, DirectionTones.PanCenter)
 					};
 				default:
 					return new[] {
-						new Segment(u, PanCenter),
-						new Segment(h, PanRight),
-						new Segment(d, PanCenter),
-						new Segment(h, PanLeft)
+						new Segment(u, DirectionTones.PanCenter),
+						new Segment(h, DirectionTones.PanRight),
+						new Segment(d, DirectionTones.PanCenter),
+						new Segment(h, DirectionTones.PanLeft)
 					};
 			}
 		}
