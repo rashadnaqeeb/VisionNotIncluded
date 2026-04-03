@@ -16,7 +16,7 @@ When a build fails on a type or method signature, look it up in `ONI-Decompiled/
 
 ## Project Structure
 
-- `OniAccess/` - mod source code (C#, .NET Framework 4.7.2, Harmony patches)
+- `OniAccess/` - mod source code (C#, .NET Framework 4.8, Harmony patches)
 - `ONI-Decompiled/` - decompiled game source for reference (read-only, not part of build)
 - `docs/` - design documentation
 - `docs/game-mechanics/` - game mechanics reference (topic files, wiki articles, strategy guides). See its CLAUDE.md for details.
@@ -82,10 +82,6 @@ This mod runs on Harmony patches and reflection. Both fail in ways that produce 
 - Key detection goes in `Tick()` via `UnityEngine.Input.GetKeyDown()`. `HandleKeyDown()` is primarily for Escape interception through KButtonEvent
 - `UnityEngine.Input` must be fully qualified inside the `OniAccess.Input` namespace. Bare `Input` resolves to the namespace, not the Unity class
 - **Show-lifecycle patches**: Always check the decompiled source to see whether the screen declares `Show` or `OnShow`, then patch whichever it declares. If it declares neither (e.g. `CodexScreen`), patch `typeof(KScreen)` instead and filter with `__instance is ScreenType` in the postfix — Harmony requires the target method to be declared on the patched type, not just inherited
-
-## Release
-
-Use `/release X.Y.Z` to run the full release workflow.
 
 ## Game Log
 
