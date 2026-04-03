@@ -274,6 +274,15 @@ namespace OniAccess.Handlers.Build {
 			return card.errorMessage;
 		}
 
+		private bool HandlePrebuildError() {
+			if (!IsInPrebuildMode()) return false;
+			PlaySound("Negative");
+			string error = GetPrebuildError();
+			SpeechPipeline.SpeakInterrupt(
+				error ?? (string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
+			return true;
+		}
+
 		// ========================================
 		// KEY HANDLING
 		// ========================================
@@ -315,11 +324,7 @@ namespace OniAccess.Handlers.Build {
 					} else
 						QuickCancel();
 				} else if (!InputUtil.AnyModifierHeld()) {
-					if (IsInPrebuildMode()) {
-						PlaySound("Negative");
-						string error = GetPrebuildError();
-						SpeechPipeline.SpeakInterrupt(
-							error ?? (string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
+					if (HandlePrebuildError()) {
 					} else if (_rectMode)
 						RectSetCorner();
 					else if (_isUtility)
@@ -332,11 +337,7 @@ namespace OniAccess.Handlers.Build {
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)
 				&& !InputUtil.AnyModifierHeld()) {
-				if (IsInPrebuildMode()) {
-					PlaySound("Negative");
-					string error = GetPrebuildError();
-					SpeechPipeline.SpeakInterrupt(
-						error ?? (string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
+				if (HandlePrebuildError()) {
 				} else if (_rectMode)
 					RectConfirm();
 				else if (_isUtility)
@@ -348,22 +349,14 @@ namespace OniAccess.Handlers.Build {
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R)) {
 				if (InputUtil.ShiftHeld()) {
-					if (IsInPrebuildMode()) {
-						PlaySound("Negative");
-						string error = GetPrebuildError();
-						SpeechPipeline.SpeakInterrupt(
-							error ?? (string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
+					if (HandlePrebuildError()) {
 					} else {
 						RotateReverse();
 					}
 					return true;
 				}
 				if (!InputUtil.AnyModifierHeld()) {
-					if (IsInPrebuildMode()) {
-						PlaySound("Negative");
-						string error = GetPrebuildError();
-						SpeechPipeline.SpeakInterrupt(
-							error ?? (string)STRINGS.ONIACCESS.BUILD_MENU.NOT_BUILDABLE);
+					if (HandlePrebuildError()) {
 					} else {
 						Rotate();
 					}
