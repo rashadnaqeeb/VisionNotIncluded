@@ -2244,8 +2244,8 @@ msgstr "주기 {0}"
 
 #. STRINGS.ONIACCESS.GAME_STATE.CYCLE_STATUS
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.CYCLE_STATUS"
-msgid "Cycle {0}, block {1}"
-msgstr "주기 {0}, 블록 {1}"
+msgid "Block {1}, cycle {0}"
+msgstr "블록 {1}, 주기 {0}"
 
 #. STRINGS.ONIACCESS.GAME_STATE.DUPES_CLUSTER
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.DUPES_CLUSTER"
@@ -4841,6 +4841,11 @@ msgctxt "STRINGS.ONIACCESS.SKILLS.XP_PROGRESS"
 msgid "{0} of {1} experience to next point"
 msgstr "다음 포인트까지 경험치 {1} 중 {0}"
 
+#. STRINGS.ONIACCESS.SKIP.AT_BOUNDARY
+msgctxt "STRINGS.ONIACCESS.SKIP.AT_BOUNDARY"
+msgid "map edge"
+msgstr "맵 가장자리"
+
 #. STRINGS.ONIACCESS.SKIP.COUNT_FORMAT
 msgctxt "STRINGS.ONIACCESS.SKIP.COUNT_FORMAT"
 msgid "{0} {1}"
@@ -5161,6 +5166,11 @@ msgctxt "STRINGS.ONIACCESS.SUPPLY_CLOSET.OFFLINE"
 msgid "Not connected to server"
 msgstr "서버에 연결되지 않음"
 
+#. STRINGS.ONIACCESS.TABLE.ALL_WORLDS
+msgctxt "STRINGS.ONIACCESS.TABLE.ALL_WORLDS"
+msgid "All"
+msgstr "전체"
+
 #. STRINGS.ONIACCESS.TABLE.JUMP_FIRST_LAST
 msgctxt "STRINGS.ONIACCESS.TABLE.JUMP_FIRST_LAST"
 msgid "Jump to first or last row"
@@ -5195,6 +5205,11 @@ msgstr "{0}, 내림차순 정렬"
 msgctxt "STRINGS.ONIACCESS.TABLE.STORED"
 msgid "Stored"
 msgstr "저장됨"
+
+#. STRINGS.ONIACCESS.TABLE.SWITCH_WORLD
+msgctxt "STRINGS.ONIACCESS.TABLE.SWITCH_WORLD"
+msgid "Switch between worlds"
+msgstr "세계 전환"
 
 #. STRINGS.ONIACCESS.TELEPAD.NEW_ACHIEVEMENTS
 msgctxt "STRINGS.ONIACCESS.TELEPAD.NEW_ACHIEVEMENTS"
@@ -5545,6 +5560,11 @@ msgstr "치우기 지정됨"
 msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_SWEEP_PRIORITY"
 msgid "marked for sweep, priority {0}"
 msgstr "치우기 지정됨, 우선순위 {0}"
+
+#. STRINGS.ONIACCESS.TOOLS.MISSING_DIG_SKILL
+msgctxt "STRINGS.ONIACCESS.TOOLS.MISSING_DIG_SKILL"
+msgid "missing dig skill"
+msgstr "굴착 기술 부족"
 
 #. STRINGS.ONIACCESS.TOOLS.MOP_ORDER
 msgctxt "STRINGS.ONIACCESS.TOOLS.MOP_ORDER"

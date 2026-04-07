@@ -2243,8 +2243,8 @@ msgstr "Ciclo {0}"
 
 #. STRINGS.ONIACCESS.GAME_STATE.CYCLE_STATUS
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.CYCLE_STATUS"
-msgid "Cycle {0}, block {1}"
-msgstr "Ciclo {0}, bloque {1}"
+msgid "Block {1}, cycle {0}"
+msgstr "Bloque {1}, ciclo {0}"
 
 #. STRINGS.ONIACCESS.GAME_STATE.DUPES_CLUSTER
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.DUPES_CLUSTER"
@@ -4837,6 +4837,11 @@ msgctxt "STRINGS.ONIACCESS.SKILLS.XP_PROGRESS"
 msgid "{0} of {1} experience to next point"
 msgstr "{0} de {1} experiencia para el siguiente punto"
 
+#. STRINGS.ONIACCESS.SKIP.AT_BOUNDARY
+msgctxt "STRINGS.ONIACCESS.SKIP.AT_BOUNDARY"
+msgid "map edge"
+msgstr "borde del mapa"
+
 #. STRINGS.ONIACCESS.SKIP.COUNT_FORMAT
 msgctxt "STRINGS.ONIACCESS.SKIP.COUNT_FORMAT"
 msgid "{0} {1}"
@@ -5157,6 +5162,11 @@ msgctxt "STRINGS.ONIACCESS.SUPPLY_CLOSET.OFFLINE"
 msgid "Not connected to server"
 msgstr "Sin conexión al servidor"
 
+#. STRINGS.ONIACCESS.TABLE.ALL_WORLDS
+msgctxt "STRINGS.ONIACCESS.TABLE.ALL_WORLDS"
+msgid "All"
+msgstr "Todos"
+
 #. STRINGS.ONIACCESS.TABLE.JUMP_FIRST_LAST
 msgctxt "STRINGS.ONIACCESS.TABLE.JUMP_FIRST_LAST"
 msgid "Jump to first or last row"
@@ -5191,6 +5201,11 @@ msgstr "{0}, ordenado de mayor a menor"
 msgctxt "STRINGS.ONIACCESS.TABLE.STORED"
 msgid "Stored"
 msgstr "Almacenado"
+
+#. STRINGS.ONIACCESS.TABLE.SWITCH_WORLD
+msgctxt "STRINGS.ONIACCESS.TABLE.SWITCH_WORLD"
+msgid "Switch between worlds"
+msgstr "Cambiar entre mundos"
 
 #. STRINGS.ONIACCESS.TELEPAD.NEW_ACHIEVEMENTS
 msgctxt "STRINGS.ONIACCESS.TELEPAD.NEW_ACHIEVEMENTS"
@@ -5541,6 +5556,11 @@ msgstr "marcado para barrer"
 msgctxt "STRINGS.ONIACCESS.TOOLS.MARKED_SWEEP_PRIORITY"
 msgid "marked for sweep, priority {0}"
 msgstr "marcado para barrer, prioridad {0}"
+
+#. STRINGS.ONIACCESS.TOOLS.MISSING_DIG_SKILL
+msgctxt "STRINGS.ONIACCESS.TOOLS.MISSING_DIG_SKILL"
+msgid "missing dig skill"
+msgstr "falta habilidad de excavación"
 
 #. STRINGS.ONIACCESS.TOOLS.MOP_ORDER
 msgctxt "STRINGS.ONIACCESS.TOOLS.MOP_ORDER"
