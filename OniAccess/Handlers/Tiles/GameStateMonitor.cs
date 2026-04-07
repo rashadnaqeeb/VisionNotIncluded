@@ -200,7 +200,9 @@ namespace OniAccess.Handlers.Tiles {
 
 			if (parts.Count > 0) {
 				string status = string.Join(", ", parts);
-				if (ClusterManager.Instance.WorldContainers.Count > 1) {
+				var worlds = ClusterManager.Instance.WorldContainers;
+				if (worlds.Count > 1 && worlds.Exists(
+						w => w != ClusterManager.Instance.activeWorld && w.IsDiscovered)) {
 					string worldName = ClusterManager.Instance.activeWorld
 						.GetComponent<ClusterGridEntity>().Name;
 					status = worldName + ": " + status;
