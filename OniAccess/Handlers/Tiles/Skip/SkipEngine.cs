@@ -83,7 +83,11 @@ namespace OniAccess.Handlers.Tiles.Skip {
 				}
 			}
 
-			return (string)STRINGS.ONIACCESS.SKIP.NO_CHANGE_BOUNDARY;
+			if (steps == 0)
+				return (string)STRINGS.ONIACCESS.SKIP.AT_BOUNDARY;
+
+			string edgeSpeech = cursor.JumpTo(current);
+			return FormatTileCount(steps) + ", " + edgeSpeech;
 		}
 
 		private static string FormatTileCount(int count) {

@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.3.0
 
+* Cursor skip now jumps to the map edge instead of stopping in place when no change is found
 * Colony status (S) now starts with the world name
 * Cycle status (Q) now says block before cycle
 * Dig tool now warns when a tile requires a dig skill no duplicant has

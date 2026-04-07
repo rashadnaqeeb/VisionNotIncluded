@@ -1853,6 +1853,7 @@ namespace STRINGS {
 			public static LocString TILE_SINGULAR = "tile";
 			public static LocString TILE_PLURAL = "tiles";
 			public static LocString NO_CHANGE_BOUNDARY = "no change till map boundary";
+			public static LocString AT_BOUNDARY = "map edge";
 			public static LocString HELP_SKIP = "Skip cursor to next change";
 			public static LocString HELP_SKIP_DEFAULT = "Skip by building or element (ignore overlay)";
 		}
