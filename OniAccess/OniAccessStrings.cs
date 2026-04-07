@@ -911,6 +911,7 @@ namespace STRINGS {
 			// {0} = priority level (int) when present
 			public static LocString DIG_ORDER = "dig order";
 			public static LocString DIG_ORDER_PRIORITY = "dig order, priority {0}";
+			public static LocString MISSING_DIG_SKILL = "missing dig skill";
 			public static LocString MOP_ORDER = "mop order";
 			public static LocString MOP_ORDER_PRIORITY = "mop order, priority {0}";
 			public static LocString MARKED_DISINFECT = "marked for disinfect";

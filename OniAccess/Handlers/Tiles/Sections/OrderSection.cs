@@ -12,7 +12,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	public class OrderSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var parts = new List<string>();
-			CollectDigOrder(cell, parts);
+			CollectDigOrder(cell, ctx, parts);
 			CollectMopOrder(cell, parts);
 			CollectSweepOrder(cell, parts);
 			CollectHarvestOrder(cell, parts);
@@ -28,10 +28,11 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			return new[] { string.Join(", ", parts.ToArray()) };
 		}
 
-		private static void CollectDigOrder(int cell, List<string> parts) {
+		private static void CollectDigOrder(int cell, CellContext ctx, List<string> parts) {
 			var go = Grid.Objects[cell, (int)ObjectLayer.DigPlacer];
 			if (go == null) return;
 			if (go.GetComponent<Diggable>() == null) return;
+			if (ctx.Claimed.Contains(go)) return;
 			string label = MaybeBlocked(
 				(string)STRINGS.ONIACCESS.GLANCE.ORDER_DIG,
 				go, Db.Get().BuildingStatusItems.DigUnreachable);
