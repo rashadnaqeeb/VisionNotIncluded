@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.3.0
 
+* Colony status (S) now starts with the world name
+* Cycle status (Q) now says block before cycle
 * Dig tool now warns when a tile requires a dig skill no duplicant has
 * Updated Prism speech library from v0.9.0 to v0.11.1
 

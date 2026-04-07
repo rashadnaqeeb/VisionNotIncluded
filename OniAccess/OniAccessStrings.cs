@@ -828,7 +828,7 @@ namespace STRINGS {
 			// {0} = cycle number (int)
 			public static LocString CYCLE = "Cycle {0}";
 			// {0} = cycle number (int), {1} = schedule block/hour (int, 0-23)
-			public static LocString CYCLE_STATUS = "Cycle {0}, block {1}";
+			public static LocString CYCLE_STATUS = "Block {1}, cycle {0}";
 			public static LocString READ_CYCLE_STATUS = "Read cycle status";
 			public static LocString READ_TIME_PLAYED = "Read total playtime";
 			public static LocString RED_ALERT_OFF = "Red Alert off";

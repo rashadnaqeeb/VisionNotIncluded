@@ -198,8 +198,12 @@ namespace OniAccess.Handlers.Tiles {
 				parts.Add(ebank);
 			});
 
-			if (parts.Count > 0)
-				SpeechPipeline.SpeakInterrupt(string.Join(", ", parts));
+			if (parts.Count > 0) {
+				string worldName = ClusterManager.Instance.activeWorld
+					.GetComponent<ClusterGridEntity>().Name;
+				SpeechPipeline.SpeakInterrupt(
+					worldName + ": " + string.Join(", ", parts));
+			}
 		}
 
 		private static void TryAddStatus(
