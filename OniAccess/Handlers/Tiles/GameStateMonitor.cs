@@ -199,10 +199,13 @@ namespace OniAccess.Handlers.Tiles {
 			});
 
 			if (parts.Count > 0) {
-				string worldName = ClusterManager.Instance.activeWorld
-					.GetComponent<ClusterGridEntity>().Name;
-				SpeechPipeline.SpeakInterrupt(
-					worldName + ": " + string.Join(", ", parts));
+				string status = string.Join(", ", parts);
+				if (ClusterManager.Instance.WorldContainers.Count > 1) {
+					string worldName = ClusterManager.Instance.activeWorld
+						.GetComponent<ClusterGridEntity>().Name;
+					status = worldName + ": " + status;
+				}
+				SpeechPipeline.SpeakInterrupt(status);
 			}
 		}
 
