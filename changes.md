@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.3.0
+## Unreleased changes since 1.3.1
+
+## 1.3.1
 
 * Tab/Shift+Tab in table screens (priorities, consumables, vitals) cycles through worlds to filter duplicants by colony
 * Cursor skip now jumps to the map edge instead of stopping in place when no change is found
