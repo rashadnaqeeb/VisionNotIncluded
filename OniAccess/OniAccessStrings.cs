@@ -2054,6 +2054,8 @@ namespace STRINGS {
 		public class SIDESCREENS {
 			// Appended to rocket pilot info when an auto-pilot module is active
 			public static LocString COPILOT_ROBO = "Copilot: Robo-Pilot";
+			// Spice Grinder recipe dropdown label
+			public static LocString SELECT_SPICE = "Select spice";
 			// Storage tile current selection: {0} = item name or "None"
 			public static LocString STORING = "Storing: {0}";
 		}

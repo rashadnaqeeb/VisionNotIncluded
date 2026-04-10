@@ -2772,8 +2772,7 @@ namespace OniAccess.Widgets {
 			}
 			if (members.Count == 0) return;
 
-			string groupLabel = screen.GetTitle();
-			if (string.IsNullOrEmpty(groupLabel)) groupLabel = members[0].Label;
+			string groupLabel = (string)STRINGS.ONIACCESS.SIDESCREENS.SELECT_SPICE;
 			var radioMembers = members;
 			var capturedTarget = targetProducer;
 
