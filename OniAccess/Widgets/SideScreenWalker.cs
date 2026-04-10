@@ -490,6 +490,11 @@ namespace OniAccess.Widgets {
 			}
 			if (!found) return false;
 
+			// Force the container active so children are activeInHierarchy
+			// and their toggles respond to clicks. The visual state is
+			// irrelevant for blind users.
+			containerObj.gameObject.SetActive(true);
+
 			var children = new List<Widget>();
 			for (int i = 0; i < containerT.childCount; i++) {
 				var child = containerT.GetChild(i);
