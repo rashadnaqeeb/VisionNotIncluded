@@ -46,6 +46,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<PlanterSideScreen>(WalkPlanter);
 			SideScreenWalker.RegisterOverride<ProgressBarSideScreen>(WalkProgressBar);
 			SideScreenWalker.RegisterOverride<SingleSliderSideScreen>(WalkSingleSlider);
+			SideScreenWalker.RegisterOverride<ConfigureConsumerSideScreen>(WalkConfigureConsumer);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -2738,6 +2739,67 @@ namespace OniAccess.Widgets {
 				Label = captured.GetProgressBarLabel(),
 				GameObject = screen.gameObject,
 				SpeechFunc = () => captured.GetProgressBarLabel()
+			});
+		}
+		static void WalkConfigureConsumer(ConfigureConsumerSideScreen screen, List<Widget> items) {
+			List<HierarchyReferences> settingToggles;
+			IConfigurableConsumerOption[] settings;
+			IConfigurableConsumer targetProducer;
+			try {
+				var tv = Traverse.Create(screen);
+				settingToggles = tv.Field<List<HierarchyReferences>>("settingToggles").Value;
+				settings = tv.Field<IConfigurableConsumerOption[]>("settings").Value;
+				targetProducer = tv.Field<IConfigurableConsumer>("targetProducer").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkConfigureConsumer: field read failed: {ex.Message}");
+				return;
+			}
+			if (settingToggles == null || settings == null || targetProducer == null) return;
+
+			items.Clear();
+
+			var members = new List<SideScreenWalker.RadioMember>();
+			for (int i = 0; i < settingToggles.Count && i < settings.Length; i++) {
+				var href = settingToggles[i];
+				var capturedSetting = settings[i];
+				var capturedProducer = targetProducer;
+				string label = href.GetReference<LocText>("Label").GetParsedText();
+				members.Add(new SideScreenWalker.RadioMember {
+					Label = label,
+					MultiToggleRef = href.GetReference<MultiToggle>("Toggle"),
+					IsActive = () => capturedProducer.GetSelectedOption() == capturedSetting
+				});
+			}
+			if (members.Count == 0) return;
+
+			string groupLabel = screen.GetTitle();
+			if (string.IsNullOrEmpty(groupLabel)) groupLabel = members[0].Label;
+			var radioMembers = members;
+			var capturedTarget = targetProducer;
+
+			items.Add(new DropdownWidget {
+				Label = groupLabel,
+				Component = members[0].MultiToggleRef,
+				SuppressTooltip = true,
+				GameObject = screen.gameObject,
+				Tag = radioMembers,
+				SpeechFunc = () => {
+					var selected = capturedTarget.GetSelectedOption();
+					string name = selected != null
+						? selected.GetName()
+						: (string)STRINGS.UI.UISIDESCREENS.FABRICATORSIDESCREEN.NORECIPESELECTED;
+					return $"{groupLabel}, {name}";
+				}
+			});
+
+			items.Add(new LabelWidget {
+				Label = "description",
+				GameObject = screen.gameObject,
+				SpeechFunc = () => {
+					var selected = capturedTarget.GetSelectedOption();
+					if (selected == null) return null;
+					return WidgetOps.CleanTooltipEntry(selected.GetDetailedDescription());
+				}
 			});
 		}
 	}

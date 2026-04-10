@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.3.4
 
+- Add Spice Grinder recipe selection screen with dropdown cycling and description readout
 - Fix unable to drill into categories on side screens like the pedestal
 - Fix cursor unable to reach map edges at high zoom levels
 
