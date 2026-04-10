@@ -4,7 +4,8 @@ using UnityEngine;
 namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
 	/// Reads all buildings at a cell across ObjectLayer.Building,
-	/// ObjectLayer.FoundationTile, and ObjectLayer.Backwall.
+	/// ObjectLayer.FoundationTile, ObjectLayer.Backwall, and
+	/// ObjectLayer.AttachableBuilding.
 	/// Plants also occupy ObjectLayer.Building.
 	///
 	/// For each building: utility ports (when overlay active), name,
@@ -57,6 +58,10 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				}
 				if (!IsOverlayFocused())
 					ReadReplacement(cell, ObjectLayer.ReplacementBackwall, tokens);
+
+				var attachableGo = Grid.Objects[cell, (int)ObjectLayer.AttachableBuilding];
+				if (attachableGo != null && !ctx.Claimed.Contains(attachableGo))
+					ReadBuilding(attachableGo, cell, tokens);
 			} catch (System.Exception ex) {
 				Util.Log.Error($"BuildingSection.Read: {ex}");
 			}

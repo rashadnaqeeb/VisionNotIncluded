@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.3.2
 
+* Oil Well Caps (and other attachable buildings) now appear in the tile cursor, scanner order detection, and area scanner -- previously invisible because they use a different object layer than normal buildings
+
 ## 1.3.2
 
 * Type-ahead navigation in storage filter side screens (conveyor loader, storage bins, storage tile item picker, and element/liquid/gas/logic filters) no longer silently hides items from the list -- previously, the letters you typed to jump to an item would also land in a hidden search box, leaving rows filtered out until you reloaded the save

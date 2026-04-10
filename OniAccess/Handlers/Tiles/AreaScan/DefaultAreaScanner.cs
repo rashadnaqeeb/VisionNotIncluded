@@ -96,7 +96,13 @@ namespace OniAccess.Handlers.Tiles.AreaScan {
 
 		private static void CountBuilding(int cell, Dictionary<string, int> buildings,
 				HashSet<UnityEngine.GameObject> seen) {
-			var go = Grid.Objects[cell, (int)ObjectLayer.Building];
+			CountBuildingOnLayer(cell, ObjectLayer.Building, buildings, seen);
+			CountBuildingOnLayer(cell, ObjectLayer.AttachableBuilding, buildings, seen);
+		}
+
+		private static void CountBuildingOnLayer(int cell, ObjectLayer layer,
+				Dictionary<string, int> buildings, HashSet<UnityEngine.GameObject> seen) {
+			var go = Grid.Objects[cell, (int)layer];
 			if (go == null) return;
 			if (go.GetComponent<Growing>() != null) return;
 			var uncoverable = go.GetComponent<Uncoverable>();
@@ -141,28 +147,11 @@ namespace OniAccess.Handlers.Tiles.AreaScan {
 			if (Grid.Objects[cell, (int)ObjectLayer.MopPlacer] != null)
 				Increment(orders, Strings.Get("STRINGS.UI.TOOLS.MOP.TOOLNAME"));
 
-			var buildingGo = Grid.Objects[cell, (int)ObjectLayer.Building];
-			if (buildingGo != null && seenBuildings.Add(buildingGo)) {
-				var constructable = buildingGo.GetComponent<Constructable>();
-				if (constructable != null)
-					Increment(orders, Strings.Get("STRINGS.UI.TOOLS.BUILD.TOOLNAME"));
-				var decon = buildingGo.GetComponent<Deconstructable>();
-				if (decon != null && decon.IsMarkedForDeconstruction())
-					Increment(orders,
-						Strings.Get("STRINGS.UI.TOOLS.DECONSTRUCT.TOOLNAME"));
-				var harvest = buildingGo.GetComponent<HarvestDesignatable>();
-				if (harvest != null && harvest.MarkedForHarvest)
-					Increment(orders,
-						Strings.Get("STRINGS.UI.TOOLS.HARVEST.TOOLNAME"));
-				var uproot = buildingGo.GetComponent<Uprootable>();
-				if (uproot != null && uproot.IsMarkedForUproot)
-					Increment(orders,
-						Strings.Get("STRINGS.UI.TOOLS.UPROOT.TOOLNAME"));
-			}
+			CountOrdersOnBuildingLayer(cell, ObjectLayer.Building, orders, seenBuildings);
+			CountOrdersOnBuildingLayer(cell, ObjectLayer.AttachableBuilding, orders, seenBuildings);
 
 			var foundationGo = Grid.Objects[cell, (int)ObjectLayer.FoundationTile];
-			if (foundationGo != null && foundationGo != buildingGo
-					&& seenBuildings.Add(foundationGo)) {
+			if (foundationGo != null && seenBuildings.Add(foundationGo)) {
 				var constructable = foundationGo.GetComponent<Constructable>();
 				if (constructable != null)
 					Increment(orders, Strings.Get("STRINGS.UI.TOOLS.BUILD.TOOLNAME"));
@@ -187,6 +176,27 @@ namespace OniAccess.Handlers.Tiles.AreaScan {
 					}
 				}
 			}
+		}
+
+		private static void CountOrdersOnBuildingLayer(int cell, ObjectLayer layer,
+				Dictionary<string, int> orders, HashSet<UnityEngine.GameObject> seen) {
+			var go = Grid.Objects[cell, (int)layer];
+			if (go == null || !seen.Add(go)) return;
+			var constructable = go.GetComponent<Constructable>();
+			if (constructable != null)
+				Increment(orders, Strings.Get("STRINGS.UI.TOOLS.BUILD.TOOLNAME"));
+			var decon = go.GetComponent<Deconstructable>();
+			if (decon != null && decon.IsMarkedForDeconstruction())
+				Increment(orders,
+					Strings.Get("STRINGS.UI.TOOLS.DECONSTRUCT.TOOLNAME"));
+			var harvest = go.GetComponent<HarvestDesignatable>();
+			if (harvest != null && harvest.MarkedForHarvest)
+				Increment(orders,
+					Strings.Get("STRINGS.UI.TOOLS.HARVEST.TOOLNAME"));
+			var uproot = go.GetComponent<Uprootable>();
+			if (uproot != null && uproot.IsMarkedForUproot)
+				Increment(orders,
+					Strings.Get("STRINGS.UI.TOOLS.UPROOT.TOOLNAME"));
 		}
 
 		private static void Increment(Dictionary<string, int> dict, string key) {

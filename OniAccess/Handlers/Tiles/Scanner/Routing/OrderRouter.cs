@@ -143,6 +143,8 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 		/// </summary>
 		public static string GetBuildOrderType(int cell) {
 			var go = Grid.Objects[cell, (int)ObjectLayer.Building];
+			if (go == null || go.GetComponent<Constructable>() == null)
+				go = Grid.Objects[cell, (int)ObjectLayer.AttachableBuilding];
 			if (go == null) return null;
 			var constructable = go.GetComponent<Constructable>();
 			if (constructable == null) return null;
@@ -154,12 +156,15 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 		/// </summary>
 		public static string GetBuildOrderName(int cell) {
 			var go = Grid.Objects[cell, (int)ObjectLayer.Building];
+			if (go == null || go.GetComponent<Constructable>() == null)
+				go = Grid.Objects[cell, (int)ObjectLayer.AttachableBuilding];
 			if (go == null) return null;
 			return go.GetComponent<KSelectable>()?.GetName();
 		}
 
 		private static readonly int[] _deconstructLayers = {
 			(int)ObjectLayer.Building,
+			(int)ObjectLayer.AttachableBuilding,
 			(int)ObjectLayer.FoundationTile,
 			(int)ObjectLayer.Backwall,
 			(int)ObjectLayer.Gantry,
