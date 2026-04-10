@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.3.3
 
+- Updated Prism speech library to v0.11.3
 - Fix Alt+Left/Right not navigating history in the Codex content tab
 - Help screen now shows keys for the active tab instead of a fixed list on all tabbed screens (Codex, Research, Skills, Schedule, Starmap, Inventory, Outfits)
 - Pressing Escape or Backspace while type-ahead search is active now clears the search first instead of closing the screen or navigating history
