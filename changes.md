@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.3.3
+## Unreleased changes since 1.3.4
+
+## 1.3.4
 
 - Updated Prism speech library to v0.11.3
 - Fix Alt+Left/Right not navigating history in the Codex content tab
