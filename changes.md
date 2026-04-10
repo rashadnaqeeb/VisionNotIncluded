@@ -2,7 +2,7 @@
 
 ## Unreleased changes since 1.3.3
 
-- Pressing Escape while type-ahead search is active now clears the search first instead of closing the screen
+- Pressing Escape or Backspace while type-ahead search is active now clears the search first instead of closing the screen or navigating history
 
 ## 1.3.3
 

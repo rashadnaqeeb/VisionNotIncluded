@@ -69,9 +69,9 @@ namespace OniAccess.Handlers.Screens.Codex {
 		}
 
 		public bool HandleInput() {
-			if (TryHistoryNavigation())
+			if (base.Tick())
 				return true;
-			return base.Tick();
+			return TryHistoryNavigation();
 		}
 
 		public new bool HandleKeyDown(KButtonEvent e) {
