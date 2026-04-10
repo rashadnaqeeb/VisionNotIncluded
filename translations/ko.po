@@ -3041,6 +3041,16 @@ msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.TOGGLE_MODE"
 msgid "Toggle selection mode"
 msgstr "선택 모드 전환"
 
+#. STRINGS.ONIACCESS.HELP.TREE_LEFT_RIGHT
+msgctxt "STRINGS.ONIACCESS.HELP.TREE_LEFT_RIGHT"
+msgid "Cycle siblings"
+msgstr "형제 항목 순환"
+
+#. STRINGS.ONIACCESS.HELP.TREE_UP_DOWN
+msgctxt "STRINGS.ONIACCESS.HELP.TREE_UP_DOWN"
+msgid "Navigate to prerequisite or dependent"
+msgstr "선행 또는 후속 항목으로 이동"
+
 #. STRINGS.ONIACCESS.HELP.TYPE_SEARCH
 msgctxt "STRINGS.ONIACCESS.HELP.TYPE_SEARCH"
 msgid "Type-ahead search"

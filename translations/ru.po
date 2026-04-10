@@ -3041,6 +3041,16 @@ msgctxt "STRINGS.ONIACCESS.HELP.TOOLS_HELP.TOGGLE_MODE"
 msgid "Toggle selection mode"
 msgstr "Переключить режим выделения"
 
+#. STRINGS.ONIACCESS.HELP.TREE_LEFT_RIGHT
+msgctxt "STRINGS.ONIACCESS.HELP.TREE_LEFT_RIGHT"
+msgid "Cycle siblings"
+msgstr "Переключить соседние элементы"
+
+#. STRINGS.ONIACCESS.HELP.TREE_UP_DOWN
+msgctxt "STRINGS.ONIACCESS.HELP.TREE_UP_DOWN"
+msgid "Navigate to prerequisite or dependent"
+msgstr "Перейти к предшественнику или зависимому"
+
 #. STRINGS.ONIACCESS.HELP.TYPE_SEARCH
 msgctxt "STRINGS.ONIACCESS.HELP.TYPE_SEARCH"
 msgid "Type-ahead search"
