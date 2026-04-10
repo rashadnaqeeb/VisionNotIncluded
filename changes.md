@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.3.4
+## Unreleased changes since 1.3.5
+
+## 1.3.5
 
 - Add Spice Grinder recipe selection screen with dropdown cycling and description readout
 - Fix unable to drill into categories on side screens like the pedestal
