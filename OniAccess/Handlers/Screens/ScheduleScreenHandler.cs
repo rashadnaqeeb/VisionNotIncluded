@@ -28,31 +28,6 @@ namespace OniAccess.Handlers.Screens {
 
 		public override bool CapturesAllInput => true;
 
-		private static readonly List<HelpEntry> _schedulesHelpEntries = new List<HelpEntry> {
-			new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
-			new HelpEntry("Left/Right", STRINGS.ONIACCESS.SCHEDULE.HELP_NAVIGATE_BLOCKS),
-			new HelpEntry("Home/End", STRINGS.ONIACCESS.SCHEDULE.HELP_JUMP_BLOCK),
-			new HelpEntry("1/2/3/4", STRINGS.ONIACCESS.SCHEDULE.HELP_SELECT_BRUSH),
-			new HelpEntry("Space", STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT),
-			new HelpEntry("Shift+Left/Right", STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT_MOVE),
-			new HelpEntry("Shift+Home/End", STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT_RANGE),
-			new HelpEntry("Ctrl+Up/Down", STRINGS.ONIACCESS.SCHEDULE.HELP_REORDER_SCHEDULE),
-			new HelpEntry("Ctrl+Left/Right", STRINGS.ONIACCESS.SCHEDULE.HELP_ROTATE),
-			new HelpEntry("Enter", STRINGS.ONIACCESS.SCHEDULE.HELP_OPTIONS),
-			new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL),
-		};
-
-		private static readonly List<HelpEntry> _dupesHelpEntries = new List<HelpEntry> {
-			new HelpEntry("A-Z", STRINGS.ONIACCESS.HELP.TYPE_SEARCH),
-			new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
-			new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
-			new HelpEntry("Left/Right", STRINGS.ONIACCESS.SCHEDULE.HELP_CHANGE_SCHEDULE),
-			new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL),
-		};
-
-		public override IReadOnlyList<HelpEntry> HelpEntries =>
-			ActiveTabIndex == (int)TabId.Schedules ? _schedulesHelpEntries : _dupesHelpEntries;
-
 		// ========================================
 		// LIFECYCLE
 		// ========================================

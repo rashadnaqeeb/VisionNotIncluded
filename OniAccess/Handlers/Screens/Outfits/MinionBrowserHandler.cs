@@ -34,17 +34,6 @@ namespace OniAccess.Handlers.Screens.Outfits {
 
 		internal MinionBrowserScreen BrowserScreen => _browserScreen;
 
-		private static readonly List<HelpEntry> _helpEntries = new List<HelpEntry> {
-			new HelpEntry("A-Z", STRINGS.ONIACCESS.HELP.TYPE_SEARCH),
-			new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
-			new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
-			new HelpEntry("Left/Right", STRINGS.ONIACCESS.HELP.ADJUST_VALUE),
-			new HelpEntry("Enter", STRINGS.ONIACCESS.HELP.SELECT_ITEM),
-			new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL),
-		};
-
-		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
-
 		// ========================================
 		// LIFECYCLE
 		// ========================================

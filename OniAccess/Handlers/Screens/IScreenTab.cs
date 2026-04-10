@@ -7,6 +7,12 @@ namespace OniAccess.Handlers.Screens {
 	/// </summary>
 	public interface IScreenTab {
 		string TabName { get; }
+
+		/// <summary>
+		/// Help entries shown by ? when this tab is active.
+		/// Null means no tab-specific help (parent handler's entries are used).
+		/// </summary>
+		System.Collections.Generic.IReadOnlyList<HelpEntry> HelpEntries { get; }
 		void OnTabActivated(bool announce);
 		void OnTabDeactivated();
 

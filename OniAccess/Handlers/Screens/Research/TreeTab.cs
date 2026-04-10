@@ -23,6 +23,14 @@ namespace OniAccess.Handlers.Screens.Research {
 
 		public string TabName => (string)STRINGS.ONIACCESS.RESEARCH.TREE_TAB;
 
+		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
+			new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.TREE_UP_DOWN),
+			new HelpEntry("Left/Right", STRINGS.ONIACCESS.HELP.TREE_LEFT_RIGHT),
+			new HelpEntry("Enter", STRINGS.ONIACCESS.RESEARCH.QUEUE_CANCEL_HELP),
+		}.AsReadOnly();
+
+		public IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
+
 		// ========================================
 		// IScreenTab
 		// ========================================

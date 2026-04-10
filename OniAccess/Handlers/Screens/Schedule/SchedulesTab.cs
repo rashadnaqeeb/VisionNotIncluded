@@ -35,6 +35,21 @@ namespace OniAccess.Handlers.Screens.Schedule {
 
 		public string TabName => (string)STRINGS.ONIACCESS.SCHEDULE.SCHEDULES_TAB;
 
+		private static readonly IReadOnlyList<HelpEntry> _helpEntries = new List<HelpEntry> {
+			new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
+			new HelpEntry("Left/Right", STRINGS.ONIACCESS.SCHEDULE.HELP_NAVIGATE_BLOCKS),
+			new HelpEntry("Home/End", STRINGS.ONIACCESS.SCHEDULE.HELP_JUMP_BLOCK),
+			new HelpEntry("1/2/3/4", STRINGS.ONIACCESS.SCHEDULE.HELP_SELECT_BRUSH),
+			new HelpEntry("Space", STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT),
+			new HelpEntry("Shift+Left/Right", STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT_MOVE),
+			new HelpEntry("Shift+Home/End", STRINGS.ONIACCESS.SCHEDULE.HELP_PAINT_RANGE),
+			new HelpEntry("Ctrl+Up/Down", STRINGS.ONIACCESS.SCHEDULE.HELP_REORDER_SCHEDULE),
+			new HelpEntry("Ctrl+Left/Right", STRINGS.ONIACCESS.SCHEDULE.HELP_ROTATE),
+			new HelpEntry("Enter", STRINGS.ONIACCESS.SCHEDULE.HELP_OPTIONS),
+		}.AsReadOnly();
+
+		public IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
+
 		internal SchedulesTab(ScheduleScreenHandler parent) {
 			_parent = parent;
 		}

@@ -195,6 +195,8 @@ namespace STRINGS {
 			public static LocString TOGGLE_OPTION = "Toggle option";
 			public static LocString OPEN_CONFIG = "Open settings";
 			public static LocString OPEN_FILTER = "Open filter";
+			public static LocString TREE_UP_DOWN = "Navigate to prerequisite or dependent";
+			public static LocString TREE_LEFT_RIGHT = "Cycle siblings";
 
 			// Help entries for tool-specific keys
 			public class TOOLS_HELP {

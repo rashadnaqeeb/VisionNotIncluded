@@ -30,19 +30,6 @@ namespace OniAccess.Handlers.Screens.Inventory {
 
 		internal KleiInventoryScreen InventoryScreen => _screen as KleiInventoryScreen;
 
-		private static readonly List<HelpEntry> _helpEntries = new List<HelpEntry> {
-			new HelpEntry("A-Z", STRINGS.ONIACCESS.HELP.TYPE_SEARCH),
-			new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
-			new HelpEntry("Ctrl+Up/Down", STRINGS.ONIACCESS.HELP.JUMP_GROUP),
-			new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
-			new HelpEntry("Enter/Right", STRINGS.ONIACCESS.HELP.OPEN_GROUP),
-			new HelpEntry("Left", STRINGS.ONIACCESS.HELP.GO_BACK),
-			new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL),
-			new HelpEntry("Ctrl+F", STRINGS.ONIACCESS.HELP.OPEN_FILTER),
-		};
-
-		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
-
 		// ========================================
 		// LIFECYCLE
 		// ========================================

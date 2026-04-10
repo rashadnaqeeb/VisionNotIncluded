@@ -210,20 +210,30 @@ namespace OniAccess.Handlers.Screens.Codex {
 		}
 
 		// ========================================
+		// Left/Right override — Alt+Arrow navigates history
+		// ========================================
+
+		protected override void HandleLeftRight(int direction, int stepLevel) {
+			if (InputUtil.AltHeld())
+				NavigateHistory(back: direction < 0);
+		}
+
+		// ========================================
 		// History navigation (Alt+Left / Backspace / Alt+Right)
 		// ========================================
 
 		private bool TryHistoryNavigation() {
-			bool altHeld = InputUtil.AltHeld();
+			bool back = UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Backspace);
 
-			bool back = (altHeld && UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow))
-				|| UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Backspace);
-			bool forward = altHeld && UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow);
+			if (!back) return false;
 
-			if (!back && !forward) return false;
+			NavigateHistory(back: true);
+			return true;
+		}
 
+		private void NavigateHistory(bool back) {
 			var codexScreen = _parent.CodexScreen;
-			if (codexScreen == null) return false;
+			if (codexScreen == null) return;
 
 			var t = Traverse.Create(codexScreen);
 			int idx = t.Field<int>("currentHistoryIdx").Value;
@@ -232,18 +242,16 @@ namespace OniAccess.Handlers.Screens.Codex {
 			if (back) {
 				if (idx <= 0) {
 					SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.CODEX.NO_BACK);
-					return true;
+					return;
 				}
 				t.Method("HistoryStepBack").GetValue();
 			} else {
 				if (idx >= history.Count - 1) {
 					SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.CODEX.NO_FORWARD);
-					return true;
+					return;
 				}
 				t.Method("HistoryStepForward").GetValue();
 			}
-
-			return true;
 		}
 
 		// ========================================

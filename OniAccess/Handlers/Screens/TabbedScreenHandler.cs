@@ -22,7 +22,25 @@ namespace OniAccess.Handlers.Screens {
 		private IScreenTab[] _tabArray;
 		private int _activeTabIndex;
 
+		private static readonly HelpEntry _tabSwitchHelp =
+			new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL);
+
 		protected TabbedScreenHandler(KScreen screen) : base(screen) { }
+
+		/// <summary>
+		/// Returns the active tab's help entries plus Tab/Shift+Tab.
+		/// Subclasses can override to add screen-level entries.
+		/// </summary>
+		public override System.Collections.Generic.IReadOnlyList<HelpEntry> HelpEntries {
+			get {
+				var tabEntries = _tabArray[_activeTabIndex].HelpEntries;
+				if (tabEntries == null)
+					return new System.Collections.Generic.List<HelpEntry> { _tabSwitchHelp };
+				var entries = new System.Collections.Generic.List<HelpEntry>(tabEntries);
+				entries.Add(_tabSwitchHelp);
+				return entries;
+			}
+		}
 
 		/// <summary>
 		/// Set by subclass constructors after creating tab objects.

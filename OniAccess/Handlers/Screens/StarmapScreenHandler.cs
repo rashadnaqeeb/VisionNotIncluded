@@ -37,17 +37,6 @@ namespace OniAccess.Handlers.Screens {
 		internal Spacecraft ActiveRocket => _activeRocket;
 		internal SpaceDestination SelectedDestination => _selectedDestination;
 
-		private static readonly List<HelpEntry> _helpEntries = new List<HelpEntry> {
-			new HelpEntry("A-Z", STRINGS.ONIACCESS.HELP.TYPE_SEARCH),
-			new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
-			new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
-			new HelpEntry("Enter", STRINGS.ONIACCESS.HELP.SELECT_ITEM),
-			new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL),
-			new HelpEntry("Space", STRINGS.ONIACCESS.STARMAP.LAUNCH_HELP),
-		};
-
-		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
-
 		// ========================================
 		// LIFECYCLE
 		// ========================================
