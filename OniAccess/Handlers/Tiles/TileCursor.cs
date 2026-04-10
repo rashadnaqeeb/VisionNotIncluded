@@ -147,8 +147,7 @@ namespace OniAccess.Handlers.Tiles {
 		public string Move(Direction direction) {
 			if (Radius == 0) {
 				int candidate = GetNeighbor(_cell, direction);
-				if (candidate == Grid.InvalidCell || !IsInWorldBounds(candidate)
-						|| !IsCameraReachable(candidate)) {
+				if (candidate == Grid.InvalidCell || !IsInWorldBounds(candidate)) {
 					PlayBoundarySound();
 					return null;
 				}
@@ -241,16 +240,20 @@ namespace OniAccess.Handlers.Tiles {
 				return null;
 			}
 			if (Camera.main == null) return null;
-			Vector3 center = Camera.main.transform.position;
-			int cell = Grid.PosToCell(center);
-			if (Grid.IsValidCell(cell) && cell != _cell && IsInWorldBounds(cell)) {
-				_cell = cell;
-				UpdateBiomeTracking();
+			var ctrl = CameraController.Instance;
+			bool gameMoving = ctrl != null
+				&& (ctrl.isTargetPosSet || ctrl.followTarget != null);
+			if (gameMoving) {
+				Vector3 center = Camera.main.transform.position;
+				int cell = Grid.PosToCell(center);
+				if (Grid.IsValidCell(cell) && cell != _cell && IsInWorldBounds(cell)) {
+					_cell = cell;
+					UpdateBiomeTracking();
+				}
 			}
 			LockMouseToCell(_cell);
 
-			bool panning = CameraController.Instance != null
-				&& CameraController.Instance.isTargetPosSet;
+			bool panning = ctrl != null && ctrl.isTargetPosSet;
 			if (_wasPanning && !panning) {
 				_wasPanning = false;
 				return BuildCellSpeech();
@@ -392,30 +395,6 @@ namespace OniAccess.Handlers.Tiles {
 			Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
 			KInputManager.isMousePosLocked = true;
 			KInputManager.lockedMousePos = screenPos;
-		}
-
-		/// <summary>
-		/// Check whether the camera can center on this cell without being
-		/// pushed back by ConstrainToWorld. Replicates the game's clamping
-		/// logic: viewport rays at the 1/3 mark must stay within world bounds.
-		/// </summary>
-		internal static bool IsCameraReachable(int cell) {
-			var cam = Camera.main;
-			if (cam == null) return true;
-			var world = ClusterManager.Instance.activeWorld;
-			Vector3 cellPos = Grid.CellToPosCCC(cell, Grid.SceneLayer.Move);
-			float ortho = cam.orthographicSize;
-			float aspect = cam.aspect;
-			float viewHalfH = ortho * 0.33f;
-			float viewHalfW = ortho * aspect * 0.33f;
-			float minX = (float)world.minimumBounds.x * Grid.CellSizeInMeters;
-			float maxX = (float)world.maximumBounds.x * Grid.CellSizeInMeters;
-			float minY = (float)world.minimumBounds.y * Grid.CellSizeInMeters;
-			float maxY = (float)world.maximumBounds.y * Grid.CellSizeInMeters * 1.1f;
-			return cellPos.x - viewHalfW >= minX
-				&& cellPos.x + viewHalfW <= maxX
-				&& cellPos.y - viewHalfH >= minY
-				&& cellPos.y + viewHalfH <= maxY;
 		}
 
 		private static void SnapCameraToCell(int cell) {

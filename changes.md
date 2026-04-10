@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.3.4
 
+- Fix cursor unable to reach map edges at high zoom levels
+
 ## 1.3.4
 
 - Updated Prism speech library to v0.11.3
