@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.3.2
 
+* Properties tab now shows sky visibility for telescopes, space scanners, and mission control stations -- lists which columns are blocked so you can find and dig out obstructions
 * Oil Well Caps (and other attachable buildings) now appear in the tile cursor, scanner order detection, and area scanner -- previously invisible because they use a different object layer than normal buildings
 
 ## 1.3.2

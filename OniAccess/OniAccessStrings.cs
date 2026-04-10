@@ -1381,6 +1381,18 @@ namespace STRINGS {
 			public static LocString HEADER_ITEM = "{0}, {1}";
 			// {0} = bottom-left coordinates, {1} = top-right coordinates
 			public static LocString RANGE = "Range: {0} to {1}";
+			// Sky visibility for buildings that scan at a fixed height (telescopes, mission control).
+			// {0} = relative Y coordinate of the scan row (integer)
+			public static LocString SKY_CLEAR_AT_HEIGHT = "Sky clear at height {0}";
+			// Sky visibility for buildings with diagonal scan patterns (space scanner)
+			// where there is no single scan height to report
+			public static LocString SKY_CLEAR = "Sky clear";
+			// {0} = relative Y coordinate of the scan row (integer),
+			// {1} = comma-separated list of relative X positions of blocked columns
+			public static LocString SKY_BLOCKED_AT_HEIGHT = "Blocked columns at height {0}: {1}";
+			// {0} = semicolon-separated coordinate pairs (e.g. "3, 45; 7, 48")
+			// for diagonal scan patterns where each blocked column is at a different height
+			public static LocString SKY_BLOCKED = "Blocked: {0}";
 			// {0} = pathing description
 			public static LocString PATHING = "Pathing behaviour: {0}";
 			// Synthetic details-screen entry explaining duplicant work reach mechanics

@@ -84,6 +84,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			}
 
 			AppendRangeWidget(target, sections);
+			AppendSkyVisibilityWidget(target, sections);
 			AppendPathingWidget(target, sections);
 			AppendDescriptionWidget(target, sections);
 			AppendReachWidget(target, sections);
@@ -192,6 +193,58 @@ namespace OniAccess.Handlers.Screens.Details {
 				Key = "reach",
 				SpeechFunc = () => (string)STRINGS.ONIACCESS.DETAILS.REACH
 			});
+		}
+
+		private static void AppendSkyVisibilityWidget(GameObject target, List<DetailSection> sections) {
+			if (!Util.SkyVisibility.TryGetSkyVisibilityInfo(target, out var info))
+				return;
+
+			var detailsSection = sections.Find(s => s.Key == "detailsPanel");
+			if (detailsSection == null) {
+				detailsSection = new DetailSection { Key = "detailsPanel", Header = "Details" };
+				sections.Add(detailsSection);
+			}
+
+			detailsSection.Items.Add(new LabelWidget {
+				Key = "skyVisibility",
+				SpeechFunc = () => FormatSkyVisibility(target, info)
+			});
+		}
+
+		private static string FormatSkyVisibility(GameObject target, SkyVisibilityInfo info) {
+			var blocked = Util.SkyVisibility.GetBlockedColumns(target, info);
+			int originCell = GridCoordinates.GetOriginCell();
+			int originX = Grid.CellColumn(originCell);
+			int originY = Grid.CellRow(originCell);
+
+			if (blocked.Count == 0) {
+				if (info.verticalStep == 0) {
+					int scanY = Grid.CellRow(Grid.OffsetCell(
+						Grid.PosToCell(target), info.scanLeftOffset));
+					return string.Format(
+						(string)STRINGS.ONIACCESS.DETAILS.SKY_CLEAR_AT_HEIGHT,
+						scanY - originY);
+				}
+				return (string)STRINGS.ONIACCESS.DETAILS.SKY_CLEAR;
+			}
+
+			if (info.verticalStep == 0) {
+				int scanY = Grid.CellRow(Grid.OffsetCell(
+					Grid.PosToCell(target), info.scanLeftOffset));
+				var xValues = new List<string>(blocked.Count);
+				foreach (var (wx, _) in blocked)
+					xValues.Add((wx - originX).ToString());
+				return string.Format(
+					(string)STRINGS.ONIACCESS.DETAILS.SKY_BLOCKED_AT_HEIGHT,
+					scanY - originY, string.Join(", ", xValues));
+			}
+
+			var pairs = new List<string>(blocked.Count);
+			foreach (var (wx, wy) in blocked)
+				pairs.Add(GridCoordinates.Format(wx, wy));
+			return string.Format(
+				(string)STRINGS.ONIACCESS.DETAILS.SKY_BLOCKED,
+				string.Join("; ", pairs));
 		}
 
 		private static string FormatPathing(Navigator navigator) {
