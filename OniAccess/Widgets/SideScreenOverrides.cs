@@ -47,6 +47,7 @@ namespace OniAccess.Widgets {
 			SideScreenWalker.RegisterOverride<ProgressBarSideScreen>(WalkProgressBar);
 			SideScreenWalker.RegisterOverride<SingleSliderSideScreen>(WalkSingleSlider);
 			SideScreenWalker.RegisterOverride<ConfigureConsumerSideScreen>(WalkConfigureConsumer);
+			SideScreenWalker.RegisterOverride<ValveSideScreen>(WalkValve);
 		}
 
 		static void WalkPixelPack(PixelPackSideScreen pixelPack, List<Widget> items) {
@@ -2800,6 +2801,55 @@ namespace OniAccess.Widgets {
 					return WidgetOps.CleanTooltipEntry(selected.GetDetailedDescription());
 				}
 			});
+		}
+		static void WalkValve(ValveSideScreen screen, List<Widget> items) {
+			KSlider slider;
+			KNumberInputField numInput;
+			LocText unitsLt;
+			try {
+				var tv = Traverse.Create(screen);
+				slider = tv.Field<KSlider>("flowSlider").Value;
+				numInput = tv.Field<KNumberInputField>("numberInput").Value;
+				unitsLt = tv.Field<LocText>("unitsLabel").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Warn($"WalkValve: field read failed: {ex.Message}");
+				return;
+			}
+
+			items.Clear();
+
+			var capturedSlider = slider;
+			var capturedUnitsLt = unitsLt;
+			items.Add(new LabelWidget {
+				Label = "current flow",
+				GameObject = screen.gameObject,
+				SpeechFunc = () => GameUtil.GetFormattedMass(capturedSlider.value, GameUtil.TimeSlice.PerSecond, GameUtil.MetricMassFormat.Gram)
+			});
+
+			items.Add(new SliderWidget {
+				Label = SideScreenWalker.ReadLocText(unitsLt, "flow"),
+				Component = slider,
+				GameObject = slider.gameObject,
+				SpeechFunc = () => {
+					string units = SideScreenWalker.ReadLocText(capturedUnitsLt, "flow");
+					string val = GameUtil.GetFormattedMass(capturedSlider.value, GameUtil.TimeSlice.PerSecond, GameUtil.MetricMassFormat.Gram);
+					return $"{units}, {val}, {(string)STRINGS.ONIACCESS.STATES.SLIDER}";
+				}
+			});
+
+			if (numInput != null) {
+				var capturedInput = numInput;
+				items.Add(new TextInputWidget {
+					Label = SideScreenWalker.ReadLocText(unitsLt, "value"),
+					Component = numInput,
+					GameObject = numInput.gameObject,
+					SpeechFunc = () => {
+						string units = SideScreenWalker.ReadLocText(capturedUnitsLt, "value");
+						string val = capturedInput.field != null ? capturedInput.field.text : "";
+						return $"{units}, {val}, {(string)STRINGS.ONIACCESS.STATES.INPUT_FIELD}";
+					}
+				});
+			}
 		}
 	}
 }
