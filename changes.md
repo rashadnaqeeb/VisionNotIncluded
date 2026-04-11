@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.3.5
+## Unreleased changes since 1.3.6
+
+## 1.3.6
 
 - Fix valve side screen reading flow rate as a percentage instead of grams per second
 
