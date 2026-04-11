@@ -86,6 +86,7 @@ namespace OniAccess.Tests {
 			results.Add(SearchTierPositionSorting());
 			results.Add(SearchSpaceMultiWord());
 			results.Add(SearchTrailingSpaceIgnored());
+			results.Add(SearchNameLengthTiebreaker());
 			results.Add(MatchTierAccentInsensitive());
 			results.Add(MatchTierAccentedQuery());
 			results.Add(MatchTierLigatureOe());
@@ -1020,6 +1021,30 @@ namespace OniAccess.Tests {
 			bool ok = search.ResultCount == 1 && search.SelectedOriginalIndex == 3;
 			return Assert("SearchTrailingSpaceIgnored", ok,
 				$"ResultCount={search.ResultCount}, SelectedOriginalIndex={search.SelectedOriginalIndex}");
+		}
+
+		private static (string, bool, string) SearchNameLengthTiebreaker() {
+			// In tiers 0-1 (start-of-string), shorter names should rank first
+			// when match positions are equal — "wood" is closer to an exact match than "wooden"
+			var items = new[] { "Wood Club", "Wooden", "Wood" };
+			string nameByIndex(int i) => i >= 0 && i < items.Length ? items[i] : null;
+
+			var search = new TypeAheadSearch();
+			search.AddChar('w');
+			search.Search(items.Length, nameByIndex);
+
+			// Expected order: Wood(2,t1,len=4), Wooden(1,t1,len=6), Wood Club(0,t1,len=9)
+			bool ok = search.ResultCount == 3 && search.SelectedOriginalIndex == 2;
+			if (ok) {
+				search.NavigateResults(1);
+				ok = search.SelectedOriginalIndex == 1;
+			}
+			if (ok) {
+				search.NavigateResults(1);
+				ok = search.SelectedOriginalIndex == 0;
+			}
+			return Assert("SearchNameLengthTiebreaker", ok,
+				$"ResultCount={search.ResultCount}, First={search.SelectedOriginalIndex}");
 		}
 
 		// ========================================
