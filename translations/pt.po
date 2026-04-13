@@ -4906,6 +4906,16 @@ msgctxt "STRINGS.ONIACCESS.SKIP.TILE_SINGULAR"
 msgid "tile"
 msgstr "bloco"
 
+#. STRINGS.ONIACCESS.SPEECH.DUPE_TRAPPED
+msgctxt "STRINGS.ONIACCESS.SPEECH.DUPE_TRAPPED"
+msgid "{0} is trapped"
+msgstr "{0} está preso"
+
+#. STRINGS.ONIACCESS.SPEECH.DUPE_UNTRAPPED
+msgctxt "STRINGS.ONIACCESS.SPEECH.DUPE_UNTRAPPED"
+msgid "{0} no longer trapped"
+msgstr "{0} não está mais preso"
+
 #. STRINGS.ONIACCESS.SPEECH.HANDLER_FAILED
 msgctxt "STRINGS.ONIACCESS.SPEECH.HANDLER_FAILED"
 msgid "Error, {0} failed"
