@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.3.6
 
+- Trapped duplicants are now announced immediately when they become trapped, even if you're viewing a different world. A follow-up message confirms when they're no longer trapped.
+
 ## 1.3.6
 
 - Fix valve side screen reading flow rate as a percentage instead of grams per second

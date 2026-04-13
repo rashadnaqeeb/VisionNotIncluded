@@ -23,6 +23,10 @@ namespace STRINGS {
 			public static LocString NO_COMMANDS = "No commands available in this context";
 			// {0} = screen handler display name (e.g. "Key Bindings", "Minion Select")
 			public static LocString HANDLER_FAILED = "Error, {0} failed";
+			// {0} = Duplicant proper name
+			public static LocString DUPE_TRAPPED = "{0} is trapped";
+			// {0} = Duplicant proper name
+			public static LocString DUPE_UNTRAPPED = "{0} no longer trapped";
 		}
 
 		// Type-ahead search feedback
