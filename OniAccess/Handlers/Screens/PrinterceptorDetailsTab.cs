@@ -109,8 +109,9 @@ namespace OniAccess.Handlers.Screens {
 				return;
 			}
 
-			int cost = GetCurrentCost(screen, selected);
-			float wallet = GetCurrentWallet(screen);
+			var target = GetTarget(screen);
+			int cost = GetCurrentCost(target, selected);
+			float wallet = GetCurrentWallet(target);
 			if (wallet < cost) {
 				PlaySound("Negative");
 				string tooltip = (string)STRINGS.UI.PRINTERCEPTORSCREEN.PRINT_TOOLTIP_DISABLED;
@@ -119,11 +120,9 @@ namespace OniAccess.Handlers.Screens {
 			}
 
 			try {
-				AccessTools.Method(typeof(PrinterceptorScreen), "SelectEntity",
-					new System.Type[] { typeof(Tag) })
-					.Invoke(screen, new object[] { selected });
+				Traverse.Create(screen).Property("selectedEntityTag").SetValue(selected);
 			} catch (System.Exception ex) {
-				Util.Log.Error($"PrinterceptorDetailsTab.ActivatePrint(SelectEntity): {ex.Message}");
+				Util.Log.Error($"PrinterceptorDetailsTab.ActivatePrint(setTag): {ex.Message}");
 				return;
 			}
 
@@ -152,32 +151,23 @@ namespace OniAccess.Handlers.Screens {
 			Tag selected = _parent.SelectedTag;
 			if (!selected.IsValid) return;
 
-			GameObject prefab;
-			try {
-				prefab = Assets.GetPrefab(selected);
-			} catch (System.Exception ex) {
-				Util.Log.Error($"PrinterceptorDetailsTab.RebuildWidgets(prefab): {ex.Message}");
-				return;
-			}
+			GameObject prefab = Assets.GetPrefab(selected);
 			if (prefab == null) return;
 
 			string name = prefab.GetProperName();
 			if (!string.IsNullOrEmpty(name))
 				_widgets.Add(new LabelWidget { Label = name, GameObject = screen.gameObject });
 
-			try {
-				var info = prefab.GetComponent<InfoDescription>();
-				if (info != null && !string.IsNullOrEmpty(info.description))
-					_widgets.Add(new LabelWidget {
-						Label = info.description,
-						GameObject = screen.gameObject
-					});
-			} catch (System.Exception ex) {
-				Util.Log.Warn($"PrinterceptorDetailsTab.RebuildWidgets(desc): {ex.Message}");
-			}
+			var info = prefab.GetComponent<InfoDescription>();
+			if (info != null && !string.IsNullOrEmpty(info.description))
+				_widgets.Add(new LabelWidget {
+					Label = info.description,
+					GameObject = screen.gameObject
+				});
 
-			int cost = GetCurrentCost(screen, selected);
-			float wallet = GetCurrentWallet(screen);
+			var target = GetTarget(screen);
+			int cost = GetCurrentCost(target, selected);
+			float wallet = GetCurrentWallet(target);
 
 			_widgets.Add(new LabelWidget {
 				Label = string.Format(
@@ -217,31 +207,28 @@ namespace OniAccess.Handlers.Screens {
 			_widgets.Add(bw);
 		}
 
-		private static int GetCurrentCost(PrinterceptorScreen screen, Tag selected) {
+		private static HijackedHeadquarters.Instance GetTarget(PrinterceptorScreen screen) {
 			try {
-				int printCount = 0;
-				var target = Traverse.Create(screen).Field("target").GetValue<HijackedHeadquarters.Instance>();
-				if (target != null && target.printCounts != null
-					&& target.printCounts.TryGetValue(selected, out int pc))
-					printCount = pc;
-				return HijackedHeadquartersConfig.GetDataBankCost(selected, printCount);
+				return Traverse.Create(screen).Field("target").GetValue<HijackedHeadquarters.Instance>();
 			} catch (System.Exception ex) {
-				Util.Log.Error($"PrinterceptorDetailsTab.GetCurrentCost: {ex.Message}");
-				return HijackedHeadquartersConfig.DEFAULT_DATABANK_PRINT_COST;
+				Util.Log.Error($"PrinterceptorDetailsTab.GetTarget: {ex.Message}");
+				return null;
 			}
 		}
 
-		private static float GetCurrentWallet(PrinterceptorScreen screen) {
-			try {
-				var target = Traverse.Create(screen).Field("target").GetValue<HijackedHeadquarters.Instance>();
-				if (target == null) return 0f;
-				var storage = target.GetComponent<Storage>();
-				if (storage == null) return 0f;
-				return storage.GetAmountAvailable(DatabankHelper.ID);
-			} catch (System.Exception ex) {
-				Util.Log.Error($"PrinterceptorDetailsTab.GetCurrentWallet: {ex.Message}");
-				return 0f;
-			}
+		private static int GetCurrentCost(HijackedHeadquarters.Instance target, Tag selected) {
+			int printCount = 0;
+			if (target != null && target.printCounts != null
+				&& target.printCounts.TryGetValue(selected, out int pc))
+				printCount = pc;
+			return HijackedHeadquartersConfig.GetDataBankCost(selected, printCount);
+		}
+
+		private static float GetCurrentWallet(HijackedHeadquarters.Instance target) {
+			if (target == null) return 0f;
+			var storage = target.GetComponent<Storage>();
+			if (storage == null) return 0f;
+			return storage.GetAmountAvailable(DatabankHelper.ID);
 		}
 	}
 }
