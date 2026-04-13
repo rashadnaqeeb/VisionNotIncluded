@@ -261,6 +261,18 @@ namespace OniAccess.Patches {
 	}
 
 	/// <summary>
+	/// PrinterceptorScreen extends KModalScreen and declares Show directly.
+	/// OnActivate calls Show(false) during prefab init, so patch Show (not OnShow)
+	/// to skip that init path. HijackedHeadquarters.ActivatePrintInterface
+	/// calls Show() (true) to reveal the catalog.
+	/// </summary>
+	[HarmonyPatch(typeof(PrinterceptorScreen), nameof(PrinterceptorScreen.Show))]
+	internal static class PrinterceptorScreen_Show_Patch {
+		private static void Postfix(KScreen __instance, bool show) =>
+			ShowDispatch.Handle(__instance, show);
+	}
+
+	/// <summary>
 	/// MinionSelectScreen.OnSpawn() does not call base.OnSpawn(), so
 	/// KScreen.Activate() is never invoked. Patch OnSpawn directly.
 	/// </summary>

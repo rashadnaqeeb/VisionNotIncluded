@@ -182,6 +182,11 @@ namespace OniAccess.Handlers {
 			Register<ImmigrantScreen>(screen => new ImmigrantScreenHandler(screen));
 			_showPatchedTypes.Add(typeof(ImmigrantScreen));
 
+			// PrinterceptorScreen (Hijacked Headquarters "Choose Blueprint" catalog)
+			// KModalScreen subclass; OnActivate calls Show(false) during prefab init.
+			Register<PrinterceptorScreen>(screen => new PrinterceptorScreenHandler(screen));
+			_showPatchedTypes.Add(typeof(PrinterceptorScreen));
+
 			// LoadScreen (KModalScreen -- save/load with two-level colony/save navigation)
 			Register<LoadScreen>(screen => new SaveLoadHandler(screen));
 

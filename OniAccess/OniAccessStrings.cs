@@ -73,6 +73,7 @@ namespace STRINGS {
 			public static LocString ENTITY_PICKER = "object selection";
 			public static LocString DETAILS_SCREEN = "Entity details";
 			public static LocString PRINTING_POD = "Printing pod";
+			public static LocString PRINTERCEPTOR = "Choose blueprint";
 			public static LocString ERROR_SCREEN = "Error";
 			public static LocString DIAGNOSTICS = "Diagnostics";
 			public static LocString WORLD_SELECTOR = "World list";
@@ -1751,6 +1752,12 @@ namespace STRINGS {
 			// {0} = formatted temperature value (e.g. "40 °C")
 			// Example: "produces Water, 5 kg/s, minimum 40 °C"
 			public static LocString MINIMUM_TEMPERATURE = "minimum {0}";
+		}
+
+		// Printerceptor (Hijacked Headquarters "Choose Blueprint") screen
+		public class PRINTERCEPTOR {
+			public static LocString CATALOG_TAB = "Catalog";
+			public static LocString DETAILS_TAB = "Details";
 		}
 
 		// Measurement ruler tool on tile cursor

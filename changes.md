@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.3.6
 
+- Add Hijacked Headquarters "Choose Blueprint" catalog screen: browse printable critters and plants as a searchable tree, then flip to a details tab to hear description, cost, and trigger a Print.
 - Trapped duplicants are now announced immediately when they become trapped, even if you're viewing a different world. A follow-up message confirms when they're no longer trapped.
 
 ## 1.3.6
