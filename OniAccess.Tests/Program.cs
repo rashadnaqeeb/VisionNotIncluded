@@ -92,6 +92,7 @@ namespace OniAccess.Tests {
 			results.Add(MatchTierMultiTokenAbbreviation());
 			results.Add(MatchTierMultiTokenOrderRequired());
 			results.Add(MatchTierMultiTokenStaysInSegment());
+			results.Add(SearchSortsByNameLengthNotFullLabel());
 			results.Add(MatchTierAccentInsensitive());
 			results.Add(MatchTierAccentedQuery());
 			results.Add(MatchTierLigatureOe());
@@ -1083,6 +1084,30 @@ namespace OniAccess.Tests {
 			int tier = TypeAheadSearch.MatchTier("gas pipe", "pi ga", out int pos);
 			bool ok = tier == -1;
 			return Assert("MatchTierMultiTokenOrderRequired", ok, $"tier={tier} pos={pos}");
+		}
+
+		private static (string, bool, string) SearchSortsByNameLengthNotFullLabel() {
+			// Build menu labels concatenate "Name, size, cost, description..." — sorting by the
+			// full label length would put an item with a long name but short description before
+			// one with a short name and long description. Sort must key on the name (up to the
+			// first comma) so "Gas Pipe" ranks above "Gas Pipe Element Sensor" for "ga pi".
+			var items = new[] {
+				"Gas Pipe Element Sensor, 1x1, short desc",                     // long name,  short label
+				"Gas Pipe, 1x1, lots of extra padding description text here",   // short name, long label
+			};
+			string nameByIndex(int i) => i >= 0 && i < items.Length ? items[i] : null;
+
+			var search = new TypeAheadSearch();
+			search.AddChar('g');
+			search.AddChar('a');
+			search.AddChar(' ');
+			search.AddChar('p');
+			search.AddChar('i');
+			search.Search(items.Length, nameByIndex);
+
+			bool ok = search.ResultCount == 2 && search.SelectedOriginalIndex == 1;
+			return Assert("SearchSortsByNameLengthNotFullLabel", ok,
+				$"ResultCount={search.ResultCount}, SelectedOriginalIndex={search.SelectedOriginalIndex}");
 		}
 
 		private static (string, bool, string) MatchTierMultiTokenStaysInSegment() {

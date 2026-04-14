@@ -29,6 +29,7 @@ namespace OniAccess.Handlers {
 		private List<int>[] _tierIndices;
 		private List<string>[] _tierNames;
 		private List<int>[] _tierPositions;
+		private List<int>[] _tierSortLengths;
 		private List<int> _workIndices = new List<int>();
 		private List<string> _workNames = new List<string>();
 
@@ -55,10 +56,12 @@ namespace OniAccess.Handlers {
 			_tierIndices = new List<int>[TierCount];
 			_tierNames = new List<string>[TierCount];
 			_tierPositions = new List<int>[TierCount];
+			_tierSortLengths = new List<int>[TierCount];
 			for (int t = 0; t < TierCount; t++) {
 				_tierIndices[t] = new List<int>();
 				_tierNames[t] = new List<string>();
 				_tierPositions[t] = new List<int>();
+				_tierSortLengths[t] = new List<int>();
 			}
 		}
 
@@ -246,6 +249,7 @@ namespace OniAccess.Handlers {
 				_tierIndices[t].Clear();
 				_tierNames[t].Clear();
 				_tierPositions[t].Clear();
+				_tierSortLengths[t].Clear();
 			}
 			string trimmed = bufferStr.TrimEnd();
 			if (trimmed.Length == 0) {
@@ -266,13 +270,17 @@ namespace OniAccess.Handlers {
 					_tierIndices[tier].Add(i);
 					_tierNames[tier].Add(name);
 					_tierPositions[tier].Add(pos);
+					// Sort by length of the name only (up to the first comma), so descriptions
+					// and appended metadata don't muddy the ordering
+					int comma = name.IndexOf(',');
+					_tierSortLengths[tier].Add(comma >= 0 ? comma : name.Length);
 				}
 			}
 
 			// Sort each tier by name length, position as tiebreaker
 			for (int t = 0; t < TierCount; t++) {
 				if (_tierIndices[t].Count > 1)
-					SortByLength(_tierIndices[t], _tierNames[t], _tierPositions[t]);
+					SortByLength(_tierIndices[t], _tierNames[t], _tierPositions[t], _tierSortLengths[t]);
 			}
 
 			// Merge tiers: if GroupOf is set, output group 0 first, then group 1, etc.
@@ -391,24 +399,26 @@ namespace OniAccess.Handlers {
 		}
 
 		/// <summary>
-		/// Insertion-sort three parallel lists by name length ascending, with position as tiebreaker (stable, in-place).
+		/// Insertion-sort parallel lists by the provided sort length ascending, with position as tiebreaker (stable, in-place).
 		/// </summary>
-		private static void SortByLength(List<int> indices, List<string> names, List<int> positions) {
+		private static void SortByLength(List<int> indices, List<string> names, List<int> positions, List<int> sortLengths) {
 			for (int i = 1; i < positions.Count; i++) {
 				int pos = positions[i];
 				int idx = indices[i];
 				string name = names[i];
-				int len = name.Length;
+				int len = sortLengths[i];
 				int j = i - 1;
-				while (j >= 0 && (names[j].Length > len || (names[j].Length == len && positions[j] > pos))) {
+				while (j >= 0 && (sortLengths[j] > len || (sortLengths[j] == len && positions[j] > pos))) {
 					positions[j + 1] = positions[j];
 					indices[j + 1] = indices[j];
 					names[j + 1] = names[j];
+					sortLengths[j + 1] = sortLengths[j];
 					j--;
 				}
 				positions[j + 1] = pos;
 				indices[j + 1] = idx;
 				names[j + 1] = name;
+				sortLengths[j + 1] = len;
 			}
 		}
 
