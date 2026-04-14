@@ -269,10 +269,10 @@ namespace OniAccess.Handlers {
 				}
 			}
 
-			// Sort each tier by match position
+			// Sort each tier by name length, position as tiebreaker
 			for (int t = 0; t < TierCount; t++) {
 				if (_tierIndices[t].Count > 1)
-					SortByPosition(_tierIndices[t], _tierNames[t], _tierPositions[t], t);
+					SortByLength(_tierIndices[t], _tierNames[t], _tierPositions[t]);
 			}
 
 			// Merge tiers: if GroupOf is set, output group 0 first, then group 1, etc.
@@ -391,15 +391,16 @@ namespace OniAccess.Handlers {
 		}
 
 		/// <summary>
-		/// Insertion-sort three parallel lists by the positions list (stable, in-place).
+		/// Insertion-sort three parallel lists by name length ascending, with position as tiebreaker (stable, in-place).
 		/// </summary>
-		private static void SortByPosition(List<int> indices, List<string> names, List<int> positions, int tier) {
+		private static void SortByLength(List<int> indices, List<string> names, List<int> positions) {
 			for (int i = 1; i < positions.Count; i++) {
 				int pos = positions[i];
 				int idx = indices[i];
 				string name = names[i];
+				int len = name.Length;
 				int j = i - 1;
-				while (j >= 0 && (positions[j] > pos || (tier <= 1 && positions[j] == pos && names[j].Length > name.Length))) {
+				while (j >= 0 && (names[j].Length > len || (names[j].Length == len && positions[j] > pos))) {
 					positions[j + 1] = positions[j];
 					indices[j + 1] = indices[j];
 					names[j + 1] = names[j];

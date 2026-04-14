@@ -87,6 +87,7 @@ namespace OniAccess.Tests {
 			results.Add(SearchSpaceMultiWord());
 			results.Add(SearchTrailingSpaceIgnored());
 			results.Add(SearchNameLengthTiebreaker());
+			results.Add(SearchLengthBeatsPosition());
 			results.Add(MatchTierAccentInsensitive());
 			results.Add(MatchTierAccentedQuery());
 			results.Add(MatchTierLigatureOe());
@@ -1044,6 +1045,29 @@ namespace OniAccess.Tests {
 				ok = search.SelectedOriginalIndex == 0;
 			}
 			return Assert("SearchNameLengthTiebreaker", ok,
+				$"ResultCount={search.ResultCount}, First={search.SelectedOriginalIndex}");
+		}
+
+		private static (string, bool, string) SearchLengthBeatsPosition() {
+			// Within a tier, shorter names rank first even when a longer name has an
+			// earlier match position. "wood" hits Oakwood Shelf at pos 3 and Pinewood
+			// at pos 4 — both tier 4 — but Pinewood (len 8) outranks Oakwood Shelf (len 13).
+			var items = new[] { "Oakwood Shelf", "Pinewood" };
+			string nameByIndex(int i) => i >= 0 && i < items.Length ? items[i] : null;
+
+			var search = new TypeAheadSearch();
+			search.AddChar('w');
+			search.AddChar('o');
+			search.AddChar('o');
+			search.AddChar('d');
+			search.Search(items.Length, nameByIndex);
+
+			bool ok = search.ResultCount == 2 && search.SelectedOriginalIndex == 1;
+			if (ok) {
+				search.NavigateResults(1);
+				ok = search.SelectedOriginalIndex == 0;
+			}
+			return Assert("SearchLengthBeatsPosition", ok,
 				$"ResultCount={search.ResultCount}, First={search.SelectedOriginalIndex}");
 		}
 
