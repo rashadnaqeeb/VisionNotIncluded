@@ -1087,9 +1087,10 @@ namespace OniAccess.Tests {
 
 		private static (string, bool, string) MatchTierMultiTokenStaysInSegment() {
 			// The build menu labels buildings as "Name, size, cost, effect..." — a multi-token
-			// abbreviation must stay within the name segment and not bleed into the description,
-			// or "ga pi" would spuriously match "Gas Vent, ..., vents piped gas..." via "gas" + "piped".
-			int tier = TypeAheadSearch.MatchTier("gas vent, 1x1, vents piped gas into the room", "ga pi", out int pos);
+			// abbreviation must match only within the first segment (the name). Otherwise
+			// "ga pi" matches "Gas Vent" because the effect description happens to contain
+			// both a "gas" word and a "pipes" word.
+			int tier = TypeAheadSearch.MatchTier("gas vent, 1x1, vents gas from pipes into a room", "ga pi", out int pos);
 			bool ok = tier == -1;
 			return Assert("MatchTierMultiTokenStaysInSegment", ok, $"tier={tier} pos={pos}");
 		}

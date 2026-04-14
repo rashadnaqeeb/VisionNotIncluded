@@ -476,9 +476,9 @@ namespace OniAccess.Handlers {
 		/// <summary>
 		/// Returns the position of the first matched word if every space-delimited token in
 		/// <paramref name="lowerPrefix"/> is a prefix of a distinct word in <paramref name="lowerName"/>,
-		/// consumed in order and all within a single comma-delimited segment. Returns -1 otherwise.
-		/// Scoping to one segment keeps the match focused on the name proper, not appended metadata
-		/// like sizes, costs, or effect descriptions.
+		/// consumed in order and all within the first comma-delimited segment. Returns -1 otherwise.
+		/// Scoping to the first segment keeps the match on the name proper and excludes appended
+		/// metadata like sizes, costs, or effect descriptions.
 		/// </summary>
 		private static int MatchWordPrefixTokens(string lowerName, string lowerPrefix) {
 			// Collect non-empty tokens
@@ -493,16 +493,9 @@ namespace OniAccess.Handlers {
 			int i = 0;
 			while (i < lowerName.Length) {
 				char c = lowerName[i];
-				if (c == ',') {
-					// End of segment: if tokens remain unmatched, restart in the next segment.
-					tokenIdx = 0;
-					firstPos = -1;
-					i++;
-					continue;
-				}
+				if (c == ',') return -1; // Stop at the first comma — name is before it
 				if (c == ' ') { i++; continue; }
 
-				// At a word start within the current segment
 				if (tokenIdx < tokenCount) {
 					string token = rawTokens[tokenIdx];
 					bool fits = i + token.Length <= lowerName.Length
