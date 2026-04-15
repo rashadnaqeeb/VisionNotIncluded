@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.3.6
+## Unreleased changes since 1.3.7
+
+## 1.3.7
 
 - Activating a notification or a Vitals row now moves the cursor to the focused target, so reading the cursor announces the POI instead of your previous location.
 - Type-ahead search now accepts space-delimited abbreviations: typing "ga pi" matches "Gas Pipe", "o n i" matches "Oxygen Not Included", etc. Each token must prefix a distinct word, in order. Existing matches are unchanged and always outrank abbreviation matches.
