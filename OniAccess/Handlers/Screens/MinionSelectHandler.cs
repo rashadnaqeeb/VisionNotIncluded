@@ -543,13 +543,16 @@ namespace OniAccess.Handlers.Screens {
 			if (widget.Tag is string renameTag && renameTag == "dupe_rename") {
 				try {
 					int slot = _currentSlot;
-					TextEdit.Begin(() => {
-						var c = _containers[slot] as CharacterContainer;
-						var tb = Traverse.Create(c)
-							.Field("characterNameTitle").GetValue<object>();
-						return Traverse.Create(tb)
-							.Field("inputField").GetValue<KInputTextField>();
-					});
+					var container = _containers[slot] as CharacterContainer;
+					var titleBar = Traverse.Create(container)
+						.Field("characterNameTitle").GetValue<object>();
+					var titleText = Traverse.Create(titleBar)
+						.Field("titleText").GetValue<LocText>();
+					string currentName = titleText != null ? titleText.text : null;
+					TextEdit.Begin(
+						() => Traverse.Create(titleBar)
+							.Field("inputField").GetValue<KInputTextField>(),
+						initialText: currentName);
 				} catch (System.Exception ex) {
 					Util.Log.Error($"MinionSelectHandler.ActivateCurrentItem(dupe_rename): {ex.Message}");
 				}

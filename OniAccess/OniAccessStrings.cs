@@ -286,14 +286,10 @@ namespace STRINGS {
 			public static LocString CANCELLED = "Cancelled";
 			public static LocString COPIED = "Copied";
 			public static LocString PASTED = "Pasted";
-			// Spoken before a deleted character or selection, e.g. "deleted, a"
-			public static LocString DELETED_FMT = "deleted, {0}";
 			// Spoken when the caret is at the end of the text or the field is empty
 			public static LocString BLANK = "blank";
-			// Spoken when selection grows, e.g. "selected, hello"
-			public static LocString SELECTED_FMT = "selected, {0}";
-			// Spoken when selection shrinks, e.g. "unselected, hello"
-			public static LocString UNSELECTED_FMT = "unselected, {0}";
+			// Spoken when the character at the caret is a literal space
+			public static LocString SPACE = "space";
 		}
 
 		// Standalone state labels appended to item names.

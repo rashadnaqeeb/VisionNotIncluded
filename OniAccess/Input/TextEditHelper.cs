@@ -20,10 +20,13 @@ namespace OniAccess.Input {
 			ResetBaseline(field);
 		}
 
-		public void Begin(System.Func<KInputTextField> accessor, System.Action onEnd = null) {
+		public void Begin(System.Func<KInputTextField> accessor, string initialText = null, System.Action onEnd = null) {
 			var field = accessor();
 			if (field == null) return;
-			_cachedValue = field.text;
+			// Bypassing the game's SetEditingState leaves field.text stale from the previous
+			// edit session, so callers that know the current value (e.g. schedule.name) must
+			// pass it here. Otherwise pressing Enter submits the wrong value to onEndEdit.
+			_cachedValue = initialText ?? field.text;
 			_fieldAccessor = accessor;
 			_onEnd = onEnd;
 			IsEditing = true;
@@ -202,7 +205,7 @@ namespace OniAccess.Input {
 			} else if (newCaret >= text.Length) {
 				toSpeak = (string)STRINGS.ONIACCESS.TEXT_EDIT.BLANK;
 			} else {
-				toSpeak = text[newCaret].ToString();
+				toSpeak = FormatChar(text[newCaret]);
 			}
 			Speech.SpeechPipeline.SpeakInterrupt(toSpeak);
 		}
@@ -210,38 +213,36 @@ namespace OniAccess.Input {
 		private static void AnnounceCharToRight(int newCaret, string text) {
 			string toSpeak = newCaret >= text.Length
 				? (string)STRINGS.ONIACCESS.TEXT_EDIT.BLANK
-				: text[newCaret].ToString();
+				: FormatChar(text[newCaret]);
 			Speech.SpeechPipeline.SpeakInterrupt(toSpeak);
 		}
 
 		private static void AnnounceDeletion(string removed) {
-			Speech.SpeechPipeline.SpeakInterrupt(
-				string.Format((string)STRINGS.ONIACCESS.TEXT_EDIT.DELETED_FMT, removed));
+			Speech.SpeechPipeline.SpeakInterrupt(FormatSubstring(removed));
 		}
 
 		private static void AnnounceSelectionChange(int oldAnchor, int oldCaret, int newAnchor, int newCaret, string text) {
+			string substr;
 			if (oldAnchor == newAnchor) {
-				int oldSize = System.Math.Abs(oldCaret - oldAnchor);
-				int newSize = System.Math.Abs(newCaret - newAnchor);
 				int start = System.Math.Min(oldCaret, newCaret);
 				int len = System.Math.Abs(newCaret - oldCaret);
 				if (len == 0) return;
-				string substr = text.Substring(start, len);
-				if (newSize > oldSize) {
-					Speech.SpeechPipeline.SpeakInterrupt(
-						string.Format((string)STRINGS.ONIACCESS.TEXT_EDIT.SELECTED_FMT, substr));
-				} else if (newSize < oldSize) {
-					Speech.SpeechPipeline.SpeakInterrupt(
-						string.Format((string)STRINGS.ONIACCESS.TEXT_EDIT.UNSELECTED_FMT, substr));
-				}
+				substr = text.Substring(start, len);
 			} else {
 				int start = System.Math.Min(newAnchor, newCaret);
 				int len = System.Math.Abs(newCaret - newAnchor);
 				if (len == 0) return;
-				string substr = text.Substring(start, len);
-				Speech.SpeechPipeline.SpeakInterrupt(
-					string.Format((string)STRINGS.ONIACCESS.TEXT_EDIT.SELECTED_FMT, substr));
+				substr = text.Substring(start, len);
 			}
+			Speech.SpeechPipeline.SpeakInterrupt(FormatSubstring(substr));
+		}
+
+		private static string FormatChar(char c) {
+			return c == ' ' ? (string)STRINGS.ONIACCESS.TEXT_EDIT.SPACE : c.ToString();
+		}
+
+		private static string FormatSubstring(string s) {
+			return s.Length == 1 ? FormatChar(s[0]) : s;
 		}
 
 		private static string GetWordToRight(string text, int caret) {

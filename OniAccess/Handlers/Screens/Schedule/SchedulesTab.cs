@@ -267,6 +267,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 			int si = gr.ScheduleIndex;
 			_renameHelper.Begin(
 				() => ScheduleHelper.GetEntryInputField(screen, si),
+				initialText: gr.Schedule.name,
 				onEnd: () => { _inOptions = false; SpeakCurrentCell(); });
 		}
 
