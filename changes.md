@@ -2,6 +2,9 @@
 
 ## Unreleased changes since 1.3.7
 
+- Text edit fields now speak as you navigate: arrow keys announce the character to the right of the caret, Ctrl+arrows announce the next word, Home/End jump and announce, Up/Down re-read the full contents, and Backspace/Delete announce what was removed.
+- Text edit fields now support selection: Shift+arrows, Ctrl+Shift+arrows, Shift+Home/End, and Ctrl+A announce what was selected or unselected. Ctrl+C copies the current selection (or the full text when nothing is selected).
+
 ## 1.3.7
 
 - Activating a notification or a Vitals row now moves the cursor to the focused target, so reading the cursor announces the POI instead of your previous location.
