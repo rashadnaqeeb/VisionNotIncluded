@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using OniAccess.Handlers.Screens;
+using OniAccess.Input;
 using OniAccess.Speech;
 using OniAccess.Widgets;
 
@@ -141,6 +142,53 @@ namespace OniAccess.Handlers.Sandbox {
 			}
 
 			// Sliders: no Enter action
+		}
+
+		// SliderWidget.Adjust writes slider.value directly, which does not
+		// invoke the game's onValueChanged delegate (that delegate is only
+		// wired to KSlider.onDrag/onMove/onReleaseHandle). For sandbox
+		// sliders the delegate is what calls settings.SetFloatSetting(...),
+		// so without firing it the brush reads stale defaults (1000 kg, etc.).
+		// Route through SliderValue.SetValue to update slider + input field
+		// and fire the persistence callback.
+		protected override void AdjustCurrentItem(int direction, int stepLevel) {
+			if (CurrentIndex < 0 || CurrentIndex >= _widgets.Count) {
+				base.AdjustCurrentItem(direction, stepLevel);
+				return;
+			}
+			var widget = _widgets[CurrentIndex];
+			if (!(widget is SliderWidget) || !(widget.Tag is SandboxToolParameterMenu.SliderValue sld)) {
+				base.AdjustCurrentItem(direction, stepLevel);
+				return;
+			}
+			var slider = widget.Component as KSlider;
+			if (slider == null) {
+				base.AdjustCurrentItem(direction, stepLevel);
+				return;
+			}
+
+			float step = slider.wholeNumbers
+				? InputUtil.StepForLevel(stepLevel)
+				: (slider.maxValue - slider.minValue) * InputUtil.FractionForLevel(stepLevel);
+
+			float oldValue = slider.value;
+			float target = UnityEngine.Mathf.Clamp(
+				oldValue + step * direction, slider.minValue, slider.maxValue);
+			float pow = UnityEngine.Mathf.Pow(10f, sld.roundToDecimalPlaces);
+			target = UnityEngine.Mathf.Round(target * pow) / pow;
+
+			bool changed = target != oldValue;
+			if (changed)
+				sld.SetValue(target);
+
+			string sound;
+			if (slider.value <= slider.minValue && direction < 0) sound = "Slider_Boundary_Low";
+			else if (slider.value >= slider.maxValue && direction > 0) sound = "Slider_Boundary_High";
+			else sound = "Slider_Move";
+			PlaySound(sound);
+
+			if (changed)
+				SpeechPipeline.SpeakInterrupt($"{widget.Label}, {FormatSliderRaw(sld)}");
 		}
 
 		protected override string FormatSliderValue(KSlider slider) {

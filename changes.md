@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.3.8
 
+- Fix sandbox parameter sliders (mass, temperature, etc.) so the value you set is actually applied. Adjustments now persist to the sandbox settings, so the brush paints with your chosen values instead of the defaults.
 - The OS mouse pointer now follows the focused widget across menus and side screens, so a sighted observer can see where the blind player is focused. Widgets inside scroll containers are brought into view before the pointer is moved.
 
 ## 1.3.8
