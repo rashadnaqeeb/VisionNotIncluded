@@ -2256,6 +2256,61 @@ msgctxt "STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE"
 msgid "unavailable"
 msgstr "no disponible"
 
+#. STRINGS.ONIACCESS.FAST_TRAVEL.CREATE_NEW
+msgctxt "STRINGS.ONIACCESS.FAST_TRAVEL.CREATE_NEW"
+msgid "Create new"
+msgstr "Crear nuevo"
+
+#. STRINGS.ONIACCESS.FAST_TRAVEL.CREATE_PROMPT
+msgctxt "STRINGS.ONIACCESS.FAST_TRAVEL.CREATE_PROMPT"
+msgid "Name for new fast travel point"
+msgstr "Nombre del nuevo punto de viaje rápido"
+
+#. STRINGS.ONIACCESS.FAST_TRAVEL.CREATED
+msgctxt "STRINGS.ONIACCESS.FAST_TRAVEL.CREATED"
+msgid "Created {0}"
+msgstr "{0} creado"
+
+#. STRINGS.ONIACCESS.FAST_TRAVEL.DELETE
+msgctxt "STRINGS.ONIACCESS.FAST_TRAVEL.DELETE"
+msgid "Delete"
+msgstr "Eliminar"
+
+#. STRINGS.ONIACCESS.FAST_TRAVEL.DELETED
+msgctxt "STRINGS.ONIACCESS.FAST_TRAVEL.DELETED"
+msgid "Deleted {0}"
+msgstr "{0} eliminado"
+
+#. STRINGS.ONIACCESS.FAST_TRAVEL.EMPTY
+msgctxt "STRINGS.ONIACCESS.FAST_TRAVEL.EMPTY"
+msgid "no fast travel points"
+msgstr "sin puntos de viaje rápido"
+
+#. STRINGS.ONIACCESS.FAST_TRAVEL.ENTRY
+msgctxt "STRINGS.ONIACCESS.FAST_TRAVEL.ENTRY"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.FAST_TRAVEL.HELP_OPEN
+msgctxt "STRINGS.ONIACCESS.FAST_TRAVEL.HELP_OPEN"
+msgid "Open fast travel menu"
+msgstr "Abrir menú de viaje rápido"
+
+#. STRINGS.ONIACCESS.FAST_TRAVEL.RENAME
+msgctxt "STRINGS.ONIACCESS.FAST_TRAVEL.RENAME"
+msgid "Rename"
+msgstr "Renombrar"
+
+#. STRINGS.ONIACCESS.FAST_TRAVEL.RENAME_PROMPT
+msgctxt "STRINGS.ONIACCESS.FAST_TRAVEL.RENAME_PROMPT"
+msgid "Rename fast travel point"
+msgstr "Renombrar punto de viaje rápido"
+
+#. STRINGS.ONIACCESS.FAST_TRAVEL.RENAMED
+msgctxt "STRINGS.ONIACCESS.FAST_TRAVEL.RENAMED"
+msgid "Renamed to {0}"
+msgstr "Renombrado a {0}"
+
 #. STRINGS.ONIACCESS.GAME_STATE.CYCLE
 msgctxt "STRINGS.ONIACCESS.GAME_STATE.CYCLE"
 msgid "Cycle {0}"
@@ -2718,6 +2773,11 @@ msgstr "Error"
 msgctxt "STRINGS.ONIACCESS.HANDLERS.EVENT_INFO"
 msgid "Event"
 msgstr "Evento"
+
+#. STRINGS.ONIACCESS.HANDLERS.FAST_TRAVEL
+msgctxt "STRINGS.ONIACCESS.HANDLERS.FAST_TRAVEL"
+msgid "Fast travel"
+msgstr "Viaje rápido"
 
 #. STRINGS.ONIACCESS.HANDLERS.FEEDBACK
 msgctxt "STRINGS.ONIACCESS.HANDLERS.FEEDBACK"
