@@ -190,6 +190,7 @@ New notifications are batched over a short window and collapsed by title (e.g., 
 - **Ctrl+1-0** -- save the current position as a bookmark (uses the game's native bookmark system)
 - **Shift+1-0** -- jump to a saved bookmark
 - **Alt+1-0** -- report direction and distance to a bookmark without moving
+- **Shift+V** -- open the fast travel menu, a named-bookmark list scoped to the current colony and asteroid. Enter on an entry jumps the cursor; right-arrow into an entry to rename or delete it; the last row creates a new bookmark at the cursor
 - **H** -- teleport the cursor to the Printing Pod
 
 ## Details screen
