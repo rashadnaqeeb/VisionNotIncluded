@@ -57,6 +57,14 @@ namespace OniAccess.Handlers.Tiles.FastTravel {
 			Save();
 		}
 
+		public static void Relocate(string id, int newCell) {
+			EnsureLoaded();
+			var point = _data.Points.FirstOrDefault(p => p.Id == id);
+			if (point == null) return;
+			point.Cell = newCell;
+			Save();
+		}
+
 		public static void Remove(string id) {
 			EnsureLoaded();
 			_data.Points.RemoveAll(p => p.Id == id);

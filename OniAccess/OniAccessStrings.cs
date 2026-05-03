@@ -1781,6 +1781,7 @@ namespace STRINGS {
 			public static LocString CREATE_NEW = "Create new";
 			// Submenu actions on a bookmark
 			public static LocString RENAME = "Rename";
+			public static LocString RELOCATE = "Relocate";
 			public static LocString DELETE = "Delete";
 			// Format for a level-0 bookmark row. {0} = name, {1} = grid coordinates
 			public static LocString ENTRY = "{0}, {1}";
@@ -1792,6 +1793,8 @@ namespace STRINGS {
 			public static LocString CREATED = "Created {0}";
 			// Confirmation after rename. {0} = new name
 			public static LocString RENAMED = "Renamed to {0}";
+			// Confirmation after moving a point's location to the cursor. {0} = name
+			public static LocString RELOCATED = "Relocated {0}";
 			// Confirmation after delete. {0} = name
 			public static LocString DELETED = "Deleted {0}";
 			// Help screen entry for Shift+V

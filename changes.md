@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.4.0
 
+- Add a Relocate action to the fast travel menu (Shift+V), between Rename and Delete, that moves an existing point to the cursor's current location.
+
 ## 1.4.0
 
 - Add a fast travel menu (Shift+V) for naming and jumping to cursor positions on the active world. Each entry stores a name and grid coordinates; right-arrow into an entry to rename or delete it. Bookmarks are scoped to the colony and the asteroid, and live in a YAML file alongside the save so the .sav itself stays unchanged.

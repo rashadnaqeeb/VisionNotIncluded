@@ -11,7 +11,7 @@ namespace OniAccess.Handlers.Tiles.FastTravel {
 	/// a "Create new" row at the end. Enter on a bookmark jumps the cursor and
 	/// closes the menu. Right drills into per-bookmark actions.
 	///
-	/// Level 1: Rename, Delete. Enter activates the action.
+	/// Level 1: Rename, Relocate, Delete. Enter activates the action.
 	///
 	/// Persistence: FastTravelStorage owns the YAML file in the colony folder.
 	/// CRUD writes immediately; the snapshot held here is rebuilt on every
@@ -19,7 +19,8 @@ namespace OniAccess.Handlers.Tiles.FastTravel {
 	/// </summary>
 	public class FastTravelMenuHandler: NestedMenuHandler {
 		private const int LeafRename = 0;
-		private const int LeafDelete = 1;
+		private const int LeafRelocate = 1;
+		private const int LeafDelete = 2;
 
 		private List<FastTravelPoint> _points = new List<FastTravelPoint>();
 
@@ -111,7 +112,7 @@ namespace OniAccess.Handlers.Tiles.FastTravel {
 			if (level == 0) return _points.Count + 1;
 			if (level == 1) {
 				if (indices[0] < 0 || indices[0] >= _points.Count) return 0;
-				return 2;
+				return 3;
 			}
 			return 0;
 		}
@@ -128,6 +129,7 @@ namespace OniAccess.Handlers.Tiles.FastTravel {
 			if (level == 1) {
 				switch (indices[1]) {
 					case LeafRename: return (string)STRINGS.ONIACCESS.FAST_TRAVEL.RENAME;
+					case LeafRelocate: return (string)STRINGS.ONIACCESS.FAST_TRAVEL.RELOCATE;
 					case LeafDelete: return (string)STRINGS.ONIACCESS.FAST_TRAVEL.DELETE;
 				}
 			}
@@ -163,6 +165,9 @@ namespace OniAccess.Handlers.Tiles.FastTravel {
 				switch (indices[1]) {
 					case LeafRename:
 						OpenRenamePrompt(target);
+						return;
+					case LeafRelocate:
+						RelocatePoint(target);
 						return;
 					case LeafDelete:
 						DeletePoint(target);
@@ -207,6 +212,13 @@ namespace OniAccess.Handlers.Tiles.FastTravel {
 				_pendingFocusId = targetId;
 				_pendingFocusLevel = 1;
 			}));
+		}
+
+		private void RelocatePoint(FastTravelPoint target) {
+			int newCell = TileCursor.Instance.Cell;
+			FastTravelStorage.Relocate(target.Id, newCell);
+			SpeechPipeline.SpeakInterrupt(string.Format(STRINGS.ONIACCESS.FAST_TRAVEL.RELOCATED, target.Name));
+			RefreshPoints();
 		}
 
 		private void DeletePoint(FastTravelPoint target) {
