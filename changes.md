@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.4.2
+## Unreleased changes since 1.4.3
+
+## 1.4.3
 
 - Fix the game crashing when opening the material picker for a multi-ingredient building (e.g. Gas Filter) before each ingredient slot had a default material chosen.
 
