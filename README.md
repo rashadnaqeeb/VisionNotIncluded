@@ -45,11 +45,11 @@ Landing on a tile speaks an area scan summary instead of the single-tile glance.
 - **Rooms**: room types intersecting the area
 - **Crops**: plant count by type with average growth percentage
 
-All scans report unexplored percentage first if any tiles in the area haven't been revealed. Coordinate reading (K) always reports the center cell.
+All scans report unexplored percentage first if any tiles in the area haven't been revealed. Coordinate reading (Shift+K) always reports the center cell.
 
 ### Coordinates
 
-**K** reads the cursor's X,Y position relative to the Printing Pod. **Shift+K** cycles coordinate mode between Off, Append, and Prepend. In Append or Prepend mode, coordinates are included in every tile announcement automatically. The setting persists across sessions.
+**Shift+K** reads the cursor's X,Y position relative to the Printing Pod. The coordinate display mode (Off, Append, or Prepend) is set in Settings (F12) — in Append or Prepend mode, coordinates are included in every tile announcement automatically. The setting persists across sessions.
 
 If your Printing Pod was somehow destroyed, 0, 0 becomes the center of the map.
 
@@ -396,14 +396,14 @@ These are base game hotkeys that open management screens from the colony view. T
 
 ### Tool hotkeys
 
-The game assigns letter keys to activate tools directly from the colony view. Since the mod activates tools through its own action menu, these hotkeys are extra but still work. **I** and **K** are overwritten by the mod (tooltip and coordinates). All of these can be remapped from the game's Input Bindings options menu -- the number row is a good alternative if you want them back.
+The game assigns letter keys to activate tools directly from the colony view. Since the mod activates tools through its own action menu, these hotkeys are extra but still work. **I** is overwritten by the mod (tooltip). All of these can be remapped from the game's Input Bindings options menu -- the number row is a good alternative if you want them back.
 
 - **G** -- Dig
 - **C** -- Cancel construction
 - **X** -- Deconstruct
 - **P** -- Prioritize
 - **M** -- Mop
-- **K** -- Sweep (overwritten by mod -- coordinates)
+- **K** -- Sweep
 - **I** -- Disinfect (overwritten by mod -- tooltip)
 - **T** -- Attack
 - **N** -- Capture / Wrangle
