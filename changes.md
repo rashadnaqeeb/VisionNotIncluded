@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.4.3
 
+- Type-ahead search now accepts IME-composed input, so players using a Chinese, Japanese, or Korean IME can type CJK characters to filter lists.
 - Fix a crash that could happen after using copy-building (PlanScreen's Copy hotkey) when the game's copy didn't actually enter build mode. The mod was previously pushing a build handler in this case, then crashing on the first rectangle selection because no build tool was active.
 
 ## 1.4.3

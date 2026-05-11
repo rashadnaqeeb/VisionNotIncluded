@@ -45,6 +45,7 @@ namespace OniAccess.Handlers.Build {
 			RebuildList();
 			CurrentIndex = 0;
 			_search.Clear();
+			UnityEngine.Input.imeCompositionMode = UnityEngine.IMECompositionMode.On;
 
 			// Position cursor on the currently selected material
 			PositionOnSelected();

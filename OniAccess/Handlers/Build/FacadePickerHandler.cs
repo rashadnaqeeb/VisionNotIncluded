@@ -44,6 +44,7 @@ namespace OniAccess.Handlers.Build {
 			RebuildList();
 			CurrentIndex = 0;
 			_search.Clear();
+			UnityEngine.Input.imeCompositionMode = UnityEngine.IMECompositionMode.On;
 
 			PositionOnSelected();
 

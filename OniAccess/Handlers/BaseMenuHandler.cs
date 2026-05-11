@@ -262,6 +262,10 @@ namespace OniAccess.Handlers {
 			CurrentIndex = 0;
 			_search.Clear();
 			SuppressSearchThisFrame();
+			// Force IME composition on so users with a CJK IME (Chinese, Japanese, Korean)
+			// can compose characters into type-ahead. No effect when no IME is selected
+			// at the OS level — Latin keystrokes still arrive via Input.inputString.
+			UnityEngine.Input.imeCompositionMode = UnityEngine.IMECompositionMode.On;
 		}
 
 		/// <summary>
@@ -271,6 +275,7 @@ namespace OniAccess.Handlers {
 			base.OnDeactivate();
 			CurrentIndex = 0;
 			_search.Clear();
+			UnityEngine.Input.imeCompositionMode = UnityEngine.IMECompositionMode.Auto;
 		}
 
 		// ========================================
@@ -283,6 +288,12 @@ namespace OniAccess.Handlers {
 		/// </summary>
 		public override bool Tick() {
 			if (base.Tick()) return true;
+
+			// During IME composition, every key belongs to the IME (composing pinyin,
+			// navigating candidates, etc.). Consume the frame so list navigation doesn't
+			// fire alongside candidate selection.
+			if (UnityEngine.Input.compositionString.Length > 0)
+				return true;
 
 			bool ctrlHeld = InputUtil.CtrlHeld();
 			bool altHeld = InputUtil.AltHeld();
