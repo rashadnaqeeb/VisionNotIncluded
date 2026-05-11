@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.4.3
 
+- Fix a crash that could happen after using copy-building (PlanScreen's Copy hotkey) when the game's copy didn't actually enter build mode. The mod was previously pushing a build handler in this case, then crashing on the first rectangle selection because no build tool was active.
+
 ## 1.4.3
 
 - Fix the game crashing when opening the material picker for a multi-ingredient building (e.g. Gas Filter) before each ingredient slot had a default material chosen.
