@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.4.4
+## Unreleased changes since 1.4.5
+
+## 1.4.5
 
 - The Select Module side screen (rocket platform module construction) now reads the reasons a module is not buildable, matching the tooltip the game shows sighted players. Reasons are also announced when pressing Build while the button is disabled.
 
