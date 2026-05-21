@@ -6,7 +6,7 @@
     <AssemblyName>OniAccess</AssemblyName>
     <RootNamespace>OniAccess</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>1.4.6</Version>
+    <Version>1.4.7</Version>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
   </PropertyGroup>
 
