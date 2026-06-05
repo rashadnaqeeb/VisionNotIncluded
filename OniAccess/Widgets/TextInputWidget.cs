@@ -4,6 +4,9 @@ namespace OniAccess.Widgets {
 	/// Resolves the underlying input field for text editing.
 	/// </summary>
 	public class TextInputWidget: Widget {
+		public override string RoleKey => "textinput";
+		public override bool IsActivatable() => true;
+
 		public override string GetSpeechText() {
 			var field = GetTextField();
 			if (field != null && !string.IsNullOrEmpty(field.text))

@@ -3,6 +3,9 @@ namespace OniAccess.Widgets {
 	/// A clickable button widget (KButton or MultiToggle used as button).
 	/// </summary>
 	public class ButtonWidget: Widget {
+		public override string RoleKey => "button";
+		public override bool IsActivatable() => true;
+
 		public override bool IsInteractable {
 			get {
 				if (_isInteractableOverride.HasValue) return _isInteractableOverride.Value;

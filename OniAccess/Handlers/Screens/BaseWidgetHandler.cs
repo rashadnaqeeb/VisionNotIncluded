@@ -286,8 +286,7 @@ namespace OniAccess.Handlers.Screens {
 		protected virtual string GetWidgetSpeechText(Widget widget) => WidgetOps.GetSpeechText(widget);
 
 		protected string BuildWidgetText(Widget widget) {
-			string text = GetWidgetSpeechText(widget);
-			return WidgetOps.AppendTooltip(text, GetTooltipText(widget));
+			return WidgetSpeech.Compose(widget, NavContext.None, GetTooltipText(widget));
 		}
 
 		/// <summary>

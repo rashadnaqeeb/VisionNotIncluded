@@ -7,6 +7,8 @@ namespace OniAccess.Widgets {
 	/// Speech reads the live priority value each time.
 	/// </summary>
 	public class PriorityWidget: Widget {
+		public override string RoleKey => "priority";
+
 		private static readonly PrioritySetting[] Steps = BuildSteps();
 
 		private static PrioritySetting[] BuildSteps() {

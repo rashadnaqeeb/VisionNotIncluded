@@ -6,7 +6,7 @@ namespace OniAccess.Widgets {
 	/// type-specific behavior (speech, validity, activation, adjustment)
 	/// so dispatch happens via virtual calls instead of switch statements.
 	/// </summary>
-	public class Widget {
+	public class Widget: NavItem {
 		public string Key { get; set; }
 		public string Label { get; set; }
 		public UnityEngine.Component Component { get; set; }
@@ -33,6 +33,29 @@ namespace OniAccess.Widgets {
 				if (!string.IsNullOrEmpty(result)) return result;
 			}
 			return Label;
+		}
+
+		// ========================================
+		// NavItem
+		// ========================================
+
+		/// <summary>
+		/// Control role key consumed by future decoration (verbose UI mode).
+		/// Null on the base type and on read-only labels.
+		/// </summary>
+		public virtual string RoleKey => null;
+
+		public bool IsNavigable() => IsValid();
+
+		/// <summary>Whether Enter performs an action. False for read-only and adjust-only widgets.</summary>
+		public virtual bool IsActivatable() => false;
+
+		/// <summary>Own label and value, cleaned and live-read. Tooltip is appended by the composer.</summary>
+		public string Announce() => WidgetOps.GetSpeechText(this);
+
+		public IReadOnlyList<NavItem> GetChildren() {
+			if (Children == null) return System.Array.Empty<NavItem>();
+			return Children;
 		}
 
 		/// <summary>

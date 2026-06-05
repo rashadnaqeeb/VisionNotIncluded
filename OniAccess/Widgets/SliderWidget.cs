@@ -4,6 +4,8 @@ namespace OniAccess.Widgets {
 	/// interactability, adjusts value with step math and boundary clamping.
 	/// </summary>
 	public class SliderWidget: Widget {
+		public override string RoleKey => "slider";
+
 		public override string GetSpeechText() {
 			if (SpeechFunc != null) {
 				string result = SpeechFunc()?.Trim();

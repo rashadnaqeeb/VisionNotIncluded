@@ -4,6 +4,9 @@ namespace OniAccess.Widgets {
 	/// Speaks on/off state, validates interactability, clicks on activation.
 	/// </summary>
 	public class ToggleWidget: Widget {
+		public override string RoleKey => "toggle";
+		public override bool IsActivatable() => true;
+
 		public override bool IsInteractable {
 			get {
 				if (_isInteractableOverride.HasValue) return _isInteractableOverride.Value;
