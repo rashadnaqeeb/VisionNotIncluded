@@ -45,6 +45,15 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			Instance = null;
 		}
 
+		/// <summary>
+		/// Drop the cached snapshot so the next navigation key rebuilds it.
+		/// Called after the user edits custom categories, so the change takes
+		/// effect without stale categories lingering in the cycle.
+		/// </summary>
+		public void InvalidateSnapshot() {
+			_snapshot = null;
+		}
+
 		internal void SetAutoMove(bool value) {
 			_autoMove = value;
 		}
@@ -82,7 +91,8 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			}
 
 			allEntries.RemoveAll(e => e.Subcategory == ScannerTaxonomy.Subcategories.Duplicants);
-			_snapshot = new ScannerSnapshot(allEntries, cursorCell);
+			_snapshot = new ScannerSnapshot(
+				allEntries, cursorCell, CustomCategoryStore.GetAll());
 
 			// Preserve category position if possible
 			_categoryIndex = 0;
@@ -151,7 +161,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			_instanceIndex = 0;
 
 			var cat = _snapshot.GetCategory(_categoryIndex);
-			string catName = GetCategoryName(cat.Name);
+			string catName = SpokenCategoryName(cat);
 			SpeechPipeline.SpeakInterrupt(catName);
 
 			// Queue first item announcement
@@ -510,12 +520,19 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		// LocString name lookups
 		// -------------------------------------------------------------------
 
-		private static string GetCategoryName(string taxonomyName) {
+		// Custom categories carry a user-given DisplayName with no taxonomy
+		// key; speak it directly. Built-ins fall through to the label lookup.
+		private static string SpokenCategoryName(ScannerCategory cat) {
+			return !string.IsNullOrEmpty(cat.DisplayName)
+				? cat.DisplayName : GetCategoryName(cat.Name);
+		}
+
+		internal static string GetCategoryName(string taxonomyName) {
 			return _categoryNames.TryGetValue(taxonomyName, out LocString loc)
 				? (string)loc : taxonomyName;
 		}
 
-		private static string GetSubcategoryName(string taxonomyName) {
+		internal static string GetSubcategoryName(string taxonomyName) {
 			return _subcategoryNames.TryGetValue(taxonomyName, out LocString loc)
 				? (string)loc : taxonomyName;
 		}

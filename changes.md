@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.4.7
 
+- Added custom scanner categories: bundle the taxonomy filters you use most into your own named categories that appear first when cycling scanner categories. Create and edit them from "Custom scanner categories" in the scanner settings; they are saved globally and follow you to every colony.
+
 ## 1.4.7
 
 - Updated Prism speech library to v0.16.1

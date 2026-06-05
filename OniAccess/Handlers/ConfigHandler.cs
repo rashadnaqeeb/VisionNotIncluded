@@ -41,7 +41,8 @@ namespace OniAccess.Handlers {
 		protected override string GetItemLabel(int level, int[] indices) {
 			if (level == 0) return _sections[indices[0]].Title;
 			var item = _sections[indices[0]].Items[indices[1]];
-			return item.Label + ", " + item.GetDisplayValue();
+			string value = item.GetDisplayValue();
+			return string.IsNullOrEmpty(value) ? item.Label : item.Label + ", " + value;
 		}
 
 		protected override string GetParentLabel(int level, int[] indices) {
@@ -50,6 +51,12 @@ namespace OniAccess.Handlers {
 
 		protected override void ActivateLeafItem(int[] indices) {
 			var item = _sections[indices[0]].Items[indices[1]];
+			if (item is ActionConfigItem) {
+				// The action opens its own handler, which owns its audio; a
+				// post-activation speak here would clobber the new screen's title.
+				item.Cycle(1);
+				return;
+			}
 			item.Cycle(1);
 			PlaySound("HUD_Click");
 			SpeakCurrentItem();
@@ -237,6 +244,10 @@ namespace OniAccess.Handlers {
 							() => ConfigManager.Config.ScannerDirectionVolume,
 							value => ConfigManager.Config.ScannerDirectionVolume = value,
 							0f, 2f
+						),
+						new ActionConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.CUSTOM_SCANNER_CATEGORIES,
+							() => HandlerStack.Push(new CustomCategoryManagerHandler())
 						),
 					}
 				},

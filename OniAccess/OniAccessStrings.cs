@@ -111,6 +111,7 @@ namespace STRINGS {
 			public static LocString SCANNER_DIRECTION_EARCONS = "Scanner direction earcons";
 			public static LocString SCANNER_DIRECTION_VOLUME = "Scanner direction volume";
 			public static LocString FLOW_DIRECTION_READOUT = "Flow direction readout";
+			public static LocString CUSTOM_SCANNER_CATEGORIES = "Custom scanner categories";
 		}
 
 		// Supply closet (Klei rewards) screen messages
@@ -1803,6 +1804,27 @@ namespace STRINGS {
 			public static LocString DELETED = "Deleted {0}";
 			// Help screen entry for Shift+V
 			public static LocString HELP_OPEN = "Open fast travel menu";
+		}
+
+		// User-defined custom scanner categories (manager and editor menus)
+		public class CUSTOM_CATEGORY {
+			// Manager menu title
+			public static LocString TITLE = "Custom scanner categories";
+			// Bottom-of-list row that creates a new category
+			public static LocString CREATE_NEW = "Create new";
+			// Default name a new category gets until renamed. {0} = number
+			public static LocString DEFAULT_NAME = "Custom category {0}";
+			// Per-category actions (editor rows)
+			public static LocString RENAME = "Rename";
+			public static LocString DELETE = "Delete";
+			// Prompt title spoken when renaming
+			public static LocString RENAME_PROMPT = "Rename custom category";
+			// Confirmations. {0} = name
+			public static LocString RENAMED = "Renamed to {0}";
+			public static LocString DELETED = "Deleted {0}";
+			// Help entries
+			public static LocString HELP_EDIT = "Edit category";
+			public static LocString HELP_TOGGLE = "Toggle filter";
 		}
 
 		// Tile cursor bookmarks for quick navigation

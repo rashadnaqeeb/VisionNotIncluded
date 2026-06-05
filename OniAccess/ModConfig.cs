@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using OniAccess.Handlers.Tiles;
+using OniAccess.Handlers.Tiles.Scanner;
 
 namespace OniAccess {
 	public class ModConfig {
@@ -25,5 +27,8 @@ namespace OniAccess {
 		public float FollowMovementVolume { get; set; } = 0.11f;
 		public float FootstepVolume { get; set; } = 1.5f;
 		public float ScannerDirectionVolume { get; set; } = 0.15f;
+
+		public List<CustomScannerCategory> CustomScannerCategories { get; set; }
+			= new List<CustomScannerCategory>();
 	}
 }

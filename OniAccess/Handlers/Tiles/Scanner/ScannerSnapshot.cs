@@ -13,6 +13,9 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 
 	public class ScannerCategory {
 		public string Name;
+		// Set only for synthetic custom categories: the user's display name,
+		// spoken in preference to the taxonomy lookup. Null for built-ins.
+		public string DisplayName;
 		public List<ScannerSubcategory> Subcategories;
 	}
 
@@ -27,9 +30,10 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		public readonly List<ScannerCategory> Categories;
 		public readonly int OriginCell;
 
-		public ScannerSnapshot(List<ScanEntry> entries, int cursorCell) {
+		public ScannerSnapshot(List<ScanEntry> entries, int cursorCell,
+				IReadOnlyList<CustomScannerCategory> customDefs = null) {
 			OriginCell = cursorCell;
-			Categories = Build(entries, cursorCell);
+			Categories = Build(entries, cursorCell, customDefs);
 		}
 
 		public int CategoryCount => Categories.Count;
@@ -58,7 +62,8 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		}
 
 		private static List<ScannerCategory> Build(
-				List<ScanEntry> entries, int cursorCell) {
+				List<ScanEntry> entries, int cursorCell,
+				IReadOnlyList<CustomScannerCategory> customDefs) {
 			// Group entries: category -> subcategory -> itemName -> instances
 			var grouped = new Dictionary<string,
 				Dictionary<string, Dictionary<string, List<ScanEntry>>>>();
@@ -130,7 +135,104 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				ScannerTaxonomy.CategorySortIndex(a.Name)
 					.CompareTo(ScannerTaxonomy.CategorySortIndex(b.Name)));
 
-			return categories;
+			// Custom categories sort ahead of the built-ins, in creation order.
+			var customCats = BuildCustomCategories(entries, cursorCell, customDefs);
+			if (customCats.Count == 0)
+				return categories;
+			var combined = new List<ScannerCategory>(customCats.Count + categories.Count);
+			combined.AddRange(customCats);
+			combined.AddRange(categories);
+			return combined;
+		}
+
+		/// <summary>
+		/// Synthesize the user's custom categories from the same entry list.
+		/// Each selector becomes a named subcategory: an "all" selector
+		/// gathers every entry in its source category, a named selector only
+		/// its own subcategory. Items get their own ScannerItem objects
+		/// (distinct from the real category they mirror), but within a custom
+		/// category the selector sub and the implicit "all" share item
+		/// references so prune-by-identity works exactly as it does in a real
+		/// category. A custom category that matches nothing is skipped, like
+		/// any empty built-in category never appears.
+		/// </summary>
+		private static List<ScannerCategory> BuildCustomCategories(
+				List<ScanEntry> entries, int cursorCell,
+				IReadOnlyList<CustomScannerCategory> customDefs) {
+			var result = new List<ScannerCategory>();
+			if (customDefs == null) return result;
+
+			foreach (var def in customDefs) {
+				if (def.Selectors == null || def.Selectors.Count == 0) continue;
+
+				var namedSubs = new List<ScannerSubcategory>();
+				foreach (var sel in OrderedSelectors(def.Selectors)) {
+					bool isAll = sel.Subcategory == ScannerTaxonomy.Subcategories.All;
+
+					var byName = new Dictionary<string, List<ScanEntry>>();
+					foreach (var entry in entries) {
+						if (entry.Category != sel.Category) continue;
+						if (!isAll && entry.Subcategory != sel.Subcategory) continue;
+						if (!byName.TryGetValue(entry.ItemName, out var instances))
+							byName[entry.ItemName] = instances = new List<ScanEntry>();
+						instances.Add(entry);
+					}
+					if (byName.Count == 0) continue;
+
+					var items = new List<ScannerItem>();
+					foreach (var kvp in byName) {
+						kvp.Value.Sort((a, b) =>
+							GridUtil.CellDistance(cursorCell, a.Cell)
+								.CompareTo(GridUtil.CellDistance(cursorCell, b.Cell)));
+						items.Add(new ScannerItem { ItemName = kvp.Key, Instances = kvp.Value });
+					}
+					items.Sort((a, b) => CompareItems(a, b, cursorCell));
+
+					// An "all" selector speaks its source category's name; a
+					// named selector speaks the subcategory's name. Both keys
+					// resolve through the navigator's existing label lookup.
+					string subName = isAll ? sel.Category : sel.Subcategory;
+					namedSubs.Add(new ScannerSubcategory { Name = subName, Items = items });
+				}
+
+				if (namedSubs.Count == 0) continue;
+
+				var allItems = new List<ScannerItem>();
+				foreach (var sub in namedSubs)
+					allItems.AddRange(sub.Items);
+				allItems.Sort((a, b) => CompareItems(a, b, cursorCell));
+
+				var subs = new List<ScannerSubcategory>(namedSubs.Count + 1) {
+					new ScannerSubcategory {
+						Name = ScannerTaxonomy.Subcategories.All,
+						Items = allItems,
+					}
+				};
+				subs.AddRange(namedSubs);
+
+				result.Add(new ScannerCategory {
+					Name = def.Id,
+					DisplayName = def.Name,
+					Subcategories = subs,
+				});
+			}
+
+			return result;
+		}
+
+		/// <summary>Selectors in taxonomy order so the custom category's
+		/// subcategory cycle reads in the same order as the source taxonomy,
+		/// regardless of the order the user toggled them.</summary>
+		private static List<CustomSelector> OrderedSelectors(List<CustomSelector> selectors) {
+			var copy = new List<CustomSelector>(selectors);
+			copy.Sort((a, b) => {
+				int c = ScannerTaxonomy.CategorySortIndex(a.Category)
+					.CompareTo(ScannerTaxonomy.CategorySortIndex(b.Category));
+				if (c != 0) return c;
+				return ScannerTaxonomy.SubcategorySortIndex(a.Category, a.Subcategory)
+					.CompareTo(ScannerTaxonomy.SubcategorySortIndex(b.Category, b.Subcategory));
+			});
+			return copy;
 		}
 
 		private static int CompareItems(ScannerItem a, ScannerItem b, int cursorCell) {

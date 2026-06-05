@@ -183,5 +183,18 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				return idx;
 			return int.MaxValue;
 		}
+
+		/// <summary>
+		/// The named subcategories of a category in taxonomy order, excluding
+		/// the synthetic "all". Returns an empty array for an unknown category.
+		/// </summary>
+		public static string[] NamedSubcategories(string category) {
+			if (!SubcategoryOrder.TryGetValue(category, out var subs))
+				return new string[0];
+			var list = new List<string>(subs.Length);
+			foreach (var s in subs)
+				if (s != Subcategories.All) list.Add(s);
+			return list.ToArray();
+		}
 	}
 }

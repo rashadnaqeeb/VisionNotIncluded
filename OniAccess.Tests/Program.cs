@@ -202,6 +202,19 @@ namespace OniAccess.Tests {
 			results.Add(PruneEmptySubcategory());
 			results.Add(FullCascadePrunesCategory());
 
+			// --- Custom scanner categories ---
+			results.Add(CustomCategorySortsToFront());
+			results.Add(CustomAllSelectorGathersAcrossSubs());
+			results.Add(CustomNamedSelectorFiltersToSub());
+			results.Add(CustomItemsDistinctFromReal());
+			results.Add(CustomAllSharesRefWithinCustom());
+			results.Add(CustomEmptyCategorySkipped());
+			results.Add(CustomPruneDoesNotAffectReal());
+			results.Add(StoreSetAllSupersedesSubs());
+			results.Add(StoreToggleSubWhileAllExpands());
+			results.Add(StoreToggleSubIndividual());
+			results.Add(StoreSetAllOffClears());
+
 			// --- WrapSkipEmpty ---
 			results.Add(WrapSkipEmptyForwardWrap());
 			results.Add(WrapSkipEmptyBackwardWrap());
@@ -2028,6 +2041,190 @@ namespace OniAccess.Tests {
 			bool ok = snapshot.CategoryCount == 0;
 			return Assert("FullCascadePrunesCategory", ok,
 				$"cats={snapshot.CategoryCount}");
+		}
+
+		// ========================================
+		// Custom scanner category synthesis tests
+		// ========================================
+
+		private static ScanEntry CustomEntry(string cat, string sub, string name, int cell) {
+			return new ScanEntry { Cell = cell, Category = cat, Subcategory = sub, ItemName = name };
+		}
+
+		private static ScannerCategory FindCat(ScannerSnapshot s, string name) {
+			foreach (var c in s.Categories)
+				if (c.Name == name) return c;
+			return null;
+		}
+
+		private static ScannerSubcategory FindSub(ScannerCategory c, string name) {
+			if (c == null) return null;
+			foreach (var sub in c.Subcategories)
+				if (sub.Name == name) return sub;
+			return null;
+		}
+
+		private static List<CustomScannerCategory> OneDef(string id, string name,
+				params CustomSelector[] selectors) {
+			return new List<CustomScannerCategory> {
+				new CustomScannerCategory {
+					Id = id, Name = name, Selectors = new List<CustomSelector>(selectors),
+				}
+			};
+		}
+
+		private static CustomSelector Sel(string cat, string sub) =>
+			new CustomSelector { Category = cat, Subcategory = sub };
+
+		private static (string, bool, string) CustomCategorySortsToFront() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Solids", "Ores", "Iron", 0),
+			};
+			var defs = OneDef("c1", "MyOres", Sel("Solids", "all"));
+			var snap = new ScannerSnapshot(entries, 0, defs);
+			bool ok = snap.CategoryCount >= 1
+				&& snap.GetCategory(0).Name == "c1"
+				&& snap.GetCategory(0).DisplayName == "MyOres";
+			return Assert("CustomCategorySortsToFront", ok,
+				$"first={snap.GetCategory(0).Name}/{snap.GetCategory(0).DisplayName}");
+		}
+
+		private static (string, bool, string) CustomAllSelectorGathersAcrossSubs() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Solids", "Ores", "Iron", 0),
+				CustomEntry("Solids", "Stone", "Granite", 1),
+			};
+			var snap = new ScannerSnapshot(entries, 0, OneDef("c1", "All Solids", Sel("Solids", "all")));
+			var sub = FindSub(FindCat(snap, "c1"), "Solids");
+			bool ok = sub != null && sub.Items.Count == 2;
+			return Assert("CustomAllSelectorGathersAcrossSubs", ok,
+				$"items={(sub == null ? -1 : sub.Items.Count)}");
+		}
+
+		private static (string, bool, string) CustomNamedSelectorFiltersToSub() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Solids", "Ores", "Iron", 0),
+				CustomEntry("Solids", "Stone", "Granite", 1),
+			};
+			var snap = new ScannerSnapshot(entries, 0, OneDef("c1", "Just Ores", Sel("Solids", "Ores")));
+			var custom = FindCat(snap, "c1");
+			var sub = FindSub(custom, "Ores");
+			var allSub = FindSub(custom, "all");
+			bool ok = sub != null && sub.Items.Count == 1 && sub.Items[0].ItemName == "Iron"
+				&& allSub != null && allSub.Items.Count == 1;
+			return Assert("CustomNamedSelectorFiltersToSub", ok,
+				$"sub={(sub == null ? -1 : sub.Items.Count)}, all={(allSub == null ? -1 : allSub.Items.Count)}");
+		}
+
+		private static (string, bool, string) CustomItemsDistinctFromReal() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Solids", "Ores", "Iron", 0),
+			};
+			var snap = new ScannerSnapshot(entries, 0, OneDef("c1", "Mine", Sel("Solids", "all")));
+			var realItem = FindSub(FindCat(snap, "Solids"), "Ores")?.Items[0];
+			var customItem = FindSub(FindCat(snap, "c1"), "Solids")?.Items[0];
+			bool ok = realItem != null && customItem != null
+				&& !ReferenceEquals(realItem, customItem);
+			return Assert("CustomItemsDistinctFromReal", ok,
+				$"real={(realItem != null)}, custom={(customItem != null)}");
+		}
+
+		private static (string, bool, string) CustomAllSharesRefWithinCustom() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Solids", "Ores", "Iron", 0),
+			};
+			var snap = new ScannerSnapshot(entries, 0, OneDef("c1", "Mine", Sel("Solids", "all")));
+			var custom = FindCat(snap, "c1");
+			var selItem = FindSub(custom, "Solids")?.Items[0];
+			var allItem = FindSub(custom, "all")?.Items[0];
+			bool ok = selItem != null && ReferenceEquals(selItem, allItem);
+			return Assert("CustomAllSharesRefWithinCustom", ok,
+				$"sel={(selItem != null)}, same={ReferenceEquals(selItem, allItem)}");
+		}
+
+		private static (string, bool, string) CustomEmptyCategorySkipped() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Solids", "Ores", "Iron", 0),
+			};
+			var defs = new List<CustomScannerCategory> {
+				new CustomScannerCategory { Id = "c1", Name = "NoMatch",
+					Selectors = new List<CustomSelector> { Sel("Liquids", "all") } },
+				new CustomScannerCategory { Id = "c2", Name = "NoSelectors",
+					Selectors = new List<CustomSelector>() },
+			};
+			var snap = new ScannerSnapshot(entries, 0, defs);
+			bool c1Present = FindCat(snap, "c1") != null;
+			bool c2Present = FindCat(snap, "c2") != null;
+			bool ok = !c1Present && !c2Present && FindCat(snap, "Solids") != null;
+			return Assert("CustomEmptyCategorySkipped", ok,
+				$"c1={c1Present}, c2={c2Present}");
+		}
+
+		private static (string, bool, string) CustomPruneDoesNotAffectReal() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Solids", "Ores", "Iron", 0),
+			};
+			var snap = new ScannerSnapshot(entries, 0, OneDef("c1", "Mine", Sel("Solids", "all")));
+			var customItem = FindSub(FindCat(snap, "c1"), "Solids").Items[0];
+			snap.RemoveInstance(customItem, customItem.Instances[0]);
+			// Real category's Ores item must survive the custom prune.
+			var realSub = FindSub(FindCat(snap, "Solids"), "Ores");
+			bool ok = realSub != null && realSub.Items.Count == 1
+				&& FindSub(FindCat(snap, "c1"), "Solids") == null;
+			return Assert("CustomPruneDoesNotAffectReal", ok,
+				$"realOres={(realSub == null ? -1 : realSub.Items.Count)}");
+		}
+
+		// ========================================
+		// Custom scanner category selector-logic tests
+		// ========================================
+
+		private static (string, bool, string) StoreSetAllSupersedesSubs() {
+			var c = new CustomScannerCategory { Id = "x", Name = "n" };
+			CustomCategoryStore.ApplyAll(c, "Solids", true);
+			bool ok = CustomCategoryStore.IsAllSelected(c, "Solids")
+				&& CustomCategoryStore.IsSubSelected(c, "Solids", "Ores")
+				&& CustomCategoryStore.IsSubSelected(c, "Solids", "Stone")
+				&& c.Selectors.Count == 1;
+			return Assert("StoreSetAllSupersedesSubs", ok, $"selectors={c.Selectors.Count}");
+		}
+
+		private static (string, bool, string) StoreToggleSubWhileAllExpands() {
+			var c = new CustomScannerCategory { Id = "x", Name = "n" };
+			CustomCategoryStore.ApplyAll(c, "Solids", true);
+			CustomCategoryStore.ApplySub(c, "Solids", "Ores", false);
+			bool ok = !CustomCategoryStore.IsAllSelected(c, "Solids")
+				&& !CustomCategoryStore.IsSubSelected(c, "Solids", "Ores")
+				&& CustomCategoryStore.IsSubSelected(c, "Solids", "Stone");
+			return Assert("StoreToggleSubWhileAllExpands", ok, $"selectors={c.Selectors.Count}");
+		}
+
+		private static (string, bool, string) StoreToggleSubIndividual() {
+			var c = new CustomScannerCategory { Id = "x", Name = "n" };
+			CustomCategoryStore.ApplySub(c, "Solids", "Ores", true);
+			bool on = !CustomCategoryStore.IsAllSelected(c, "Solids")
+				&& CustomCategoryStore.IsSubSelected(c, "Solids", "Ores")
+				&& !CustomCategoryStore.IsSubSelected(c, "Solids", "Stone")
+				&& c.Selectors.Count == 1;
+			CustomCategoryStore.ApplySub(c, "Solids", "Ores", false);
+			bool off = !CustomCategoryStore.IsSubSelected(c, "Solids", "Ores")
+				&& c.Selectors.Count == 0;
+			return Assert("StoreToggleSubIndividual", on && off, $"on={on}, off={off}");
+		}
+
+		private static (string, bool, string) StoreSetAllOffClears() {
+			var c = new CustomScannerCategory { Id = "x", Name = "n" };
+			CustomCategoryStore.ApplyAll(c, "Solids", true);
+			CustomCategoryStore.ApplyAll(c, "Solids", false);
+			bool ok = !CustomCategoryStore.IsAllSelected(c, "Solids") && c.Selectors.Count == 0;
+			return Assert("StoreSetAllOffClears", ok, $"selectors={c.Selectors.Count}");
 		}
 
 		// ========================================

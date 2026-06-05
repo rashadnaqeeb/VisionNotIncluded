@@ -67,6 +67,30 @@ namespace OniAccess.Config {
 		}
 	}
 
+	/// <summary>
+	/// A config row that runs an action on Enter instead of cycling a value
+	/// (e.g. opening a sub-menu). The optional value provider supplies the
+	/// spoken suffix; when null the row speaks only its label.
+	/// </summary>
+	public class ActionConfigItem: ConfigItem {
+		private readonly System.Action _action;
+		private readonly Func<string> _valueProvider;
+
+		public ActionConfigItem(string label, System.Action action, Func<string> valueProvider = null)
+			: base(label) {
+			_action = action;
+			_valueProvider = valueProvider;
+		}
+
+		public override string GetDisplayValue() {
+			return _valueProvider != null ? _valueProvider() : "";
+		}
+
+		public override void Cycle(int direction) {
+			_action();
+		}
+	}
+
 	public class EnumConfigItem<T>: ConfigItem where T : struct {
 		private readonly Func<T> _getter;
 		private readonly Action<T> _setter;
