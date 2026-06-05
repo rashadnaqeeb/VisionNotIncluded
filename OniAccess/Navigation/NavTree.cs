@@ -24,6 +24,29 @@ namespace OniAccess.Navigation {
 	}
 
 	/// <summary>
+	/// How far up the tree a horizontal move (Up/Down, Ctrl+Up/Down, and type-ahead)
+	/// is allowed to wander. Drill, back, and Home/End are unaffected.
+	/// </summary>
+	public enum CrossingScope {
+		/// <summary>
+		/// Cross every ancestor boundary. At any depth the move ranges over the whole
+		/// tree, so the action menu's Down walks all buildings across all subcategories
+		/// and categories. The default.
+		/// </summary>
+		FullTree,
+
+		/// <summary>
+		/// Stay within the current grandparent: at depth d the move ranges only over
+		/// descendants of the ancestor at depth d-2, crossing the immediate parent
+		/// boundary but not the one above it. At depth 0 or 1 the grandparent is above
+		/// the root, so it is identical to <see cref="FullTree"/>. This keeps the
+		/// details screen's storage-content navigation (level 2) inside the current
+		/// section, while its section and item levels (0 and 1) stay global.
+		/// </summary>
+		WithinGrandparent,
+	}
+
+	/// <summary>
 	/// The unified list-and-drill navigation engine: a cursor that walks a tree of
 	/// <see cref="NavItem"/> computed on demand. It replaces the index-callback model
 	/// (GetItemCount/GetItemLabel per level plus a parallel flat-search projection and
@@ -60,6 +83,9 @@ namespace OniAccess.Navigation {
 
 		/// <summary>Search frontier selection. Defaults to all leaves.</summary>
 		public SearchScope SearchScope { get; set; } = SearchScope.Leaves;
+
+		/// <summary>How far horizontal moves and search may cross. Defaults to the whole tree.</summary>
+		public CrossingScope Crossing { get; set; } = CrossingScope.FullTree;
 
 		/// <summary>
 		/// Optional extra predicate excluding nodes from search (e.g. a synthetic
@@ -113,6 +139,13 @@ namespace OniAccess.Navigation {
 			return parent.GetChildren();
 		}
 
+		/// <summary>The cursor's current sibling list (children of its parent, or the roots at depth 0).</summary>
+		public IReadOnlyList<NavItem> SiblingsAtCurrent() => SiblingsAt(Depth);
+
+		/// <summary>The cursor's immediate parent node, or null at the root level.</summary>
+		public NavItem CurrentParent() =>
+			Depth >= 1 ? ResolveNode(_path, _path.Count - 1) : null;
+
 		private static int FirstNavigable(IReadOnlyList<NavItem> items) {
 			for (int i = 0; i < items.Count; i++)
 				if (items[i].IsNavigable()) return i;
@@ -135,6 +168,29 @@ namespace OniAccess.Navigation {
 			var prefix = new List<int>();
 			CollectFrontier(prefix, RootItems(), 0, depth, list);
 			return list;
+		}
+
+		/// <summary>
+		/// The frontier at <paramref name="depth"/>, narrowed to the cursor's crossing
+		/// scope. Under <see cref="CrossingScope.WithinGrandparent"/> only entries that
+		/// share the cursor's ancestor at depth d-2 survive, so a horizontal move cannot
+		/// leave the current grandparent's subtree.
+		/// </summary>
+		private List<int[]> ConfinedFrontier(int depth) {
+			var f = Frontier(depth);
+			int len = ConfinementLen();
+			if (len == 0) return f;
+			f.RemoveAll(p => p.Length < len || !SamePrefix(p, _path, len));
+			return f;
+		}
+
+		/// <summary>
+		/// How many leading path indices a horizontal move must keep fixed. Zero means
+		/// the whole tree is in scope.
+		/// </summary>
+		private int ConfinementLen() {
+			if (Crossing == CrossingScope.FullTree) return 0;
+			return Math.Max(0, Depth - 1);
 		}
 
 		private void CollectFrontier(List<int> prefix, IReadOnlyList<NavItem> items,
@@ -239,7 +295,7 @@ namespace OniAccess.Navigation {
 		public NavMove Prev() => Step(forward: false);
 
 		private NavMove Step(bool forward) {
-			var f = Frontier(Depth);
+			var f = ConfinedFrontier(Depth);
 			if (f.Count == 0) return NavMove.None;
 
 			int cur = IndexOfPath(f, _path);
@@ -303,7 +359,7 @@ namespace OniAccess.Navigation {
 
 		private NavMove JumpGroup(bool forward) {
 			int depth = Depth;
-			var f = Frontier(depth);
+			var f = ConfinedFrontier(depth);
 			if (f.Count == 0) return NavMove.None;
 
 			// Group starts: indices where the depth-(d-1) parent prefix changes.
@@ -399,6 +455,9 @@ namespace OniAccess.Navigation {
 				list = new List<int[]>();
 				CollectLeaves(new List<int>(), RootItems(), list);
 			}
+			int len = ConfinementLen();
+			if (len > 0)
+				list.RemoveAll(p => p.Length < len || !SamePrefix(p, _path, len));
 			if (SearchFilter != null) {
 				list.RemoveAll(p => {
 					var node = ResolveNode(p, p.Length);

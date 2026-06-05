@@ -347,6 +347,79 @@ namespace OniAccess.Tests {
 			return Check("SearchFilterExcludesNodes", ok, $"count={count}");
 		}
 
+		public static (string, bool, string) SearchActivatableLeavesExcludesEmptyBranch() {
+			// The action menu defines its search as "activatable leaves only" via
+			// SearchScope.Leaves + SearchFilter(IsActivatable), so tools and buildings
+			// are searched but categories and empty subcategories are not. This locks
+			// that mechanism on MenuNode, the type the action menu actually uses.
+			var tool0 = new MenuNode(() => "tool0", activate: () => true);
+			var tool1 = new MenuNode(() => "tool1", activate: () => true);
+			var b0 = new MenuNode(() => "B0", activate: () => true);
+			var sub0 = new MenuNode(() => "Sub0",
+				children: () => new List<NavItem> { b0 });
+			var emptySub = new MenuNode(() => "EmptySub",
+				children: () => new List<NavItem>());
+			var tools = new MenuNode(() => "Tools",
+				children: () => new List<NavItem> { tool0, tool1 });
+			var build = new MenuNode(() => "Build",
+				children: () => new List<NavItem> { sub0, emptySub });
+			var roots = new List<NavItem> { tools, build };
+
+			var t = new NavTree(() => roots);
+			t.SearchScope = SearchScope.Leaves;
+			t.SearchFilter = n => n.IsActivatable();
+			int filtered = t.SearchCount(); // tool0, tool1, B0
+			t.SearchFilter = null;
+			int all = t.SearchCount();      // + EmptySub, a childless non-activatable leaf
+			bool ok = filtered == 3 && all == 4;
+			return Check("SearchActivatableLeavesExcludesEmptyBranch", ok,
+				$"filtered={filtered}, all={all}");
+		}
+
+		// ========================================
+		// CROSSING SCOPE (confinement)
+		// ========================================
+
+		public static (string, bool, string) ConfineNextStaysInBranch() {
+			var t = Tree();
+			t.Crossing = CrossingScope.WithinGrandparent;
+			t.SetPath(new[] { 1, 1, 0 }); // B2, last building under Build
+			var m = t.Next();             // confined to Build → wraps to B0, never reaches Power
+			bool ok = m.Moved && m.Wrapped && m.Item.Announce() == "B0";
+			return Check("ConfineNextStaysInBranch", ok,
+				$"item={m.Item?.Announce()}, wrapped={m.Wrapped}");
+		}
+
+		public static (string, bool, string) ConfineDepthOneStaysGlobal() {
+			var t = Tree();
+			t.Crossing = CrossingScope.WithinGrandparent;
+			t.SetPath(new[] { 1, 1 }); // Sub1 under Build, depth 1
+			var m = t.Next();          // depth 1 grandparent is above root → global → PSub
+			bool ok = m.Moved && m.Item.Announce() == "PSub";
+			return Check("ConfineDepthOneStaysGlobal", ok, $"item={m.Item?.Announce()}");
+		}
+
+		public static (string, bool, string) ConfineJumpStaysInBranch() {
+			var t = Tree();
+			t.Crossing = CrossingScope.WithinGrandparent;
+			t.SetPath(new[] { 1, 1, 0 }); // B2 (Build/Sub1, last group in Build)
+			var m = t.JumpNext();         // confined to Build → wraps to Build/Sub0's B0
+			bool ok = m.Moved && m.Wrapped && m.Item.Announce() == "B0";
+			return Check("ConfineJumpStaysInBranch", ok,
+				$"item={m.Item?.Announce()}, wrapped={m.Wrapped}");
+		}
+
+		public static (string, bool, string) ConfineSearchScopedToBranch() {
+			var t = Tree();
+			t.Crossing = CrossingScope.WithinGrandparent;
+			t.SearchScope = SearchScope.CurrentLevel;
+			t.SetPath(new[] { 1, 0, 0 }); // depth 2 under Build
+			int count = t.SearchCount();
+			// Build's buildings only (B0, B1, B2) — Power's P0 excluded.
+			bool ok = count == 3;
+			return Check("ConfineSearchScopedToBranch", ok, $"count={count}");
+		}
+
 		// ========================================
 		// CLAMP
 		// ========================================
@@ -410,6 +483,11 @@ namespace OniAccess.Tests {
 			yield return SearchLeafMoveChangesDepth();
 			yield return SearchCurrentLevelUsesDepth();
 			yield return SearchFilterExcludesNodes();
+			yield return SearchActivatableLeavesExcludesEmptyBranch();
+			yield return ConfineNextStaysInBranch();
+			yield return ConfineDepthOneStaysGlobal();
+			yield return ConfineJumpStaysInBranch();
+			yield return ConfineSearchScopedToBranch();
 			yield return SetPathClampsOutOfRange();
 			yield return ClampSurvivesTreeShrink();
 		}

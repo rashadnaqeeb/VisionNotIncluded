@@ -3,26 +3,25 @@ using HarmonyLib;
 using UnityEngine;
 
 using OniAccess.Handlers.Screens.Details;
+using OniAccess.Navigation;
 using OniAccess.Speech;
 using OniAccess.Util;
 using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens {
 	/// <summary>
-	/// Handler for the DetailsScreen (entity inspection panel).
-	/// Two-level nested navigation: section headers (level 0) and items within
-	/// each section (level 1). Manages tab cycling across informational and
-	/// side screen tabs, delegating section population to IDetailTab readers.
+	/// Handler for the DetailsScreen (entity inspection panel), driven by the NavTree
+	/// engine. The item tree is section headers (level 0), items within each section
+	/// (level 1), and an item's children (level 2). Sections are the handler's stable
+	/// model: tab readers populate them, SectionMerger keeps their order steady frame to
+	/// frame, and the engine's path cursor survives the merge via ClampToTree. Tab
+	/// cycling across informational and side screen tabs is managed here.
 	///
 	/// Lifecycle: Show-patch on DetailsScreen.OnShow(bool).
 	/// The DetailsScreen is a persistent singleton that shows/hides rather than
 	/// activating/deactivating, so KScreen.Activate patches skip it.
 	/// </summary>
-	public class DetailsScreenHandler: NestedMenuHandler {
-		protected override int StartLevel =>
-			_tabIndex >= 0 && _tabIndex < _activeTabs.Count
-				? _activeTabs[_tabIndex].StartLevel : 0;
-
+	public class DetailsScreenHandler: NavTreeHandler {
 		private readonly IDetailTab[] _tabs;
 		private readonly List<IDetailTab> _activeTabs = new List<IDetailTab>();
 		private readonly List<int> _sectionStarts = new List<int>();
@@ -37,6 +36,16 @@ namespace OniAccess.Handlers.Screens {
 		private bool _pendingPreserveRebuild;
 		private bool _pendingTabSpeech;
 		private bool _pendingActivationSpeech;
+
+		protected override SearchScope SearchScope => SearchScope.CurrentLevel;
+
+		// Keep level-2 (storage contents) navigation and search inside the current
+		// section, as the old index-model handler did. Sections and items stay global.
+		protected override CrossingScope Crossing => CrossingScope.WithinGrandparent;
+
+		protected override int StartDepth =>
+			_tabIndex >= 0 && _tabIndex < _activeTabs.Count
+				? _activeTabs[_tabIndex].StartLevel : 0;
 
 		public override string DisplayName {
 			get {
@@ -69,7 +78,7 @@ namespace OniAccess.Handlers.Screens {
 		public DetailsScreenHandler(KScreen screen) : base(screen) {
 			_tabs = BuildTabs();
 			var list = new List<HelpEntry>();
-			list.AddRange(NestedNavHelpEntries);
+			list.AddRange(DrillNavHelpEntries);
 			list.Add(new HelpEntry("\\", STRINGS.ONIACCESS.HELP.COPY_SETTINGS));
 			list.Add(new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL));
 			list.Add(new HelpEntry("Ctrl+Tab/Ctrl+Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_SECTION));
@@ -77,61 +86,55 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		// ========================================
-		// NESTED MENU ABSTRACTS
+		// TREE CONSTRUCTION
 		// ========================================
 
-		protected override int MaxLevel => 2;
-		protected override int SearchLevel => Level;
-
-		protected override int GetItemCount(int level, int[] indices) {
-			if (level == 0) return _sections.Count;
-			if (indices[0] < 0 || indices[0] >= _sections.Count) return 0;
-			var items = _sections[indices[0]].Items;
-			if (level == 1) return items.Count;
-			if (indices[1] < 0 || indices[1] >= items.Count) return 0;
-			return items[indices[1]].Children?.Count ?? 0;
-		}
-
-		protected override string GetItemLabel(int level, int[] indices) {
-			if (level == 0) {
-				if (indices[0] < 0 || indices[0] >= _sections.Count) return null;
-				return _sections[indices[0]].Header;
+		protected override IReadOnlyList<NavItem> BuildRoots() {
+			var roots = new List<NavItem>(_sections.Count);
+			for (int s = 0; s < _sections.Count; s++) {
+				var section = _sections[s];
+				roots.Add(new MenuNode(
+					() => section.Header,
+					children: () => SectionItems(section)));
 			}
-			if (indices[0] < 0 || indices[0] >= _sections.Count) return null;
-			var items = _sections[indices[0]].Items;
-			if (level == 1) {
-				if (indices[1] < 0 || indices[1] >= items.Count) return null;
-				return WidgetOps.GetSpeechText(items[indices[1]]);
-			}
-			if (indices[1] < 0 || indices[1] >= items.Count) return null;
-			var children = items[indices[1]].Children;
-			if (children == null || indices[2] < 0 || indices[2] >= children.Count) return null;
-			return WidgetOps.GetSpeechText(children[indices[2]]);
+			return roots;
 		}
 
-		protected override string GetParentLabel(int level, int[] indices) {
-			if (level < 1) return null;
-			if (indices[0] < 0 || indices[0] >= _sections.Count) return null;
-			if (level == 1) return _sections[indices[0]].Header;
-			var items = _sections[indices[0]].Items;
-			if (indices[1] < 0 || indices[1] >= items.Count) return null;
-			return WidgetOps.GetSpeechText(items[indices[1]]);
+		private static IReadOnlyList<NavItem> SectionItems(DetailSection section) {
+			var items = new List<NavItem>(section.Items.Count);
+			for (int i = 0; i < section.Items.Count; i++)
+				items.Add(section.Items[i]);
+			return items;
 		}
+
+		protected override string GetTooltip(NavItem item) =>
+			item is Widget w ? WidgetOps.GetTooltipText(w) : null;
+
+		protected override string FormatWithContext(string body, IReadOnlyList<NavItem> ancestors) {
+			if (ancestors.Count == 0) return body;
+			return string.Format(STRINGS.ONIACCESS.DETAILS.PARENT_ITEM, JoinAncestors(ancestors), body);
+		}
+
+		// ========================================
+		// ACTIVATION
+		// ========================================
 
 		protected override void ActivateCurrentItem() {
 			if (ItemCount == 0) return;
 			RefreshSections();
-			var w = GetCurrentWidget();
-			if (w is ToggleWidget && Level > 0) {
-				var indices = new int[] { GetIndex(0), GetIndex(1), GetIndex(2) };
-				ActivateLeafItem(indices);
+			var w = Nav.Current() as Widget;
+			if (w is ToggleWidget && Nav.Depth > 0) {
+				ActivateLeafWidget(w);
 				return;
 			}
-			base.ActivateCurrentItem();
+			if (Nav.CanDrill() && ShouldDrillOnActivate()) {
+				Drill();
+				return;
+			}
+			ActivateLeafWidget(Nav.Current() as Widget);
 		}
 
-		protected override void ActivateLeafItem(int[] indices) {
-			var w = GetWidgetAt(indices[0], indices[1], indices[2]);
+		private void ActivateLeafWidget(Widget w) {
 			if (w == null) return;
 
 			if (!w.IsInteractable) {
@@ -173,89 +176,6 @@ namespace OniAccess.Handlers.Screens {
 				CycleRadioGroup(w, 1);
 		}
 
-		protected override int GetSearchItemCount(int[] indices) {
-			if (Level == 0) return _sections.Count;
-			if (Level == 1) {
-				int total = 0;
-				for (int s = 0; s < _sections.Count; s++)
-					total += _sections[s].Items.Count;
-				return total;
-			}
-			// Level 2: flat count of all children in current section
-			int sIdx = indices[0];
-			if (sIdx < 0 || sIdx >= _sections.Count) return 0;
-			var sectionItems = _sections[sIdx].Items;
-			int childTotal = 0;
-			for (int i = 0; i < sectionItems.Count; i++)
-				childTotal += sectionItems[i].Children?.Count ?? 0;
-			return childTotal;
-		}
-
-		protected override string GetSearchItemLabel(int flatIndex) {
-			if (Level == 0) {
-				if (flatIndex < 0 || flatIndex >= _sections.Count) return null;
-				return _sections[flatIndex].Header;
-			}
-			if (Level == 1) {
-				int remaining = flatIndex;
-				for (int s = 0; s < _sections.Count; s++) {
-					int count = _sections[s].Items.Count;
-					if (remaining < count)
-						return WidgetOps.GetSpeechText(_sections[s].Items[remaining]);
-					remaining -= count;
-				}
-				return null;
-			}
-			// Level 2: search within current section's children
-			int sIdx = GetIndex(0);
-			if (sIdx < 0 || sIdx >= _sections.Count) return null;
-			var items = _sections[sIdx].Items;
-			int rem = flatIndex;
-			for (int i = 0; i < items.Count; i++) {
-				var children = items[i].Children;
-				int cc = children?.Count ?? 0;
-				if (rem < cc)
-					return WidgetOps.GetSpeechText(children[rem]);
-				rem -= cc;
-			}
-			return null;
-		}
-
-		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
-			if (Level == 0) {
-				outIndices[0] = flatIndex;
-				return;
-			}
-			if (Level == 1) {
-				int remaining = flatIndex;
-				for (int s = 0; s < _sections.Count; s++) {
-					int count = _sections[s].Items.Count;
-					if (remaining < count) {
-						outIndices[0] = s;
-						outIndices[1] = remaining;
-						return;
-					}
-					remaining -= count;
-				}
-				return;
-			}
-			// Level 2
-			int sIdx = outIndices[0];
-			if (sIdx < 0 || sIdx >= _sections.Count) return;
-			var items = _sections[sIdx].Items;
-			int rem = flatIndex;
-			for (int i = 0; i < items.Count; i++) {
-				var children = items[i].Children;
-				int cc = children?.Count ?? 0;
-				if (rem < cc) {
-					outIndices[1] = i;
-					outIndices[2] = rem;
-					return;
-				}
-				rem -= cc;
-			}
-		}
-
 		// ========================================
 		// UP/DOWN: REBUILD BEFORE NAVIGATING
 		// ========================================
@@ -270,14 +190,24 @@ namespace OniAccess.Handlers.Screens {
 			base.NavigatePrev();
 		}
 
+		protected override void Drill() {
+			RefreshSections();
+			base.Drill();
+		}
+
+		protected override void Back() {
+			RefreshSections();
+			base.Back();
+		}
+
 		// ========================================
 		// LEFT/RIGHT: SLIDER ADJUSTMENT AT LEAF LEVEL
 		// ========================================
 
 		protected override void HandleLeftRight(int direction, int stepLevel) {
-			if (Level > 0) {
+			if (Nav.Depth > 0) {
 				RefreshSections();
-				var w = GetCurrentWidget();
+				var w = Nav.Current() as Widget;
 				if (w is SliderWidget) {
 					AdjustSlider(w, direction, stepLevel);
 					return;
@@ -314,7 +244,7 @@ namespace OniAccess.Handlers.Screens {
 
 			if (changed) {
 				RefreshSections();
-				var fresh = GetCurrentWidget();
+				var fresh = Nav.Current() as Widget;
 				if (fresh != null)
 					SpeechPipeline.SpeakInterrupt(
 						WidgetSpeech.ComposeLabel(WidgetOps.GetSpeechText(fresh)));
@@ -332,7 +262,7 @@ namespace OniAccess.Handlers.Screens {
 						$"AdjustPriority sound failed: {ex.Message}");
 				}
 				RefreshSections();
-				var fresh = GetCurrentWidget();
+				var fresh = Nav.Current() as Widget;
 				if (fresh != null)
 					SpeechPipeline.SpeakInterrupt(
 						WidgetSpeech.ComposeLabel(WidgetOps.GetSpeechText(fresh)));
@@ -424,33 +354,7 @@ namespace OniAccess.Handlers.Screens {
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			RefreshSections();
-			if (Level == 0) {
-				base.SpeakCurrentItem(parentContext);
-				return;
-			}
-
-			var w = GetCurrentWidget();
-			if (w == null) return;
-
-			string text = WidgetSpeech.Compose(w, NavContext.None, WidgetOps.GetTooltipText(w));
-			if (!string.IsNullOrEmpty(parentContext))
-				text = string.Format(STRINGS.ONIACCESS.DETAILS.PARENT_ITEM, parentContext, text);
-			if (!string.IsNullOrEmpty(text))
-				SpeechPipeline.SpeakInterrupt(text);
-		}
-
-		private Widget GetCurrentWidget() {
-			return GetWidgetAt(GetIndex(0), GetIndex(1), GetIndex(2));
-		}
-
-		private Widget GetWidgetAt(int sIdx, int iIdx, int cIdx) {
-			if (sIdx < 0 || sIdx >= _sections.Count) return null;
-			var items = _sections[sIdx].Items;
-			if (iIdx < 0 || iIdx >= items.Count) return null;
-			if (Level <= 1) return items[iIdx];
-			var children = items[iIdx].Children;
-			if (children == null || cIdx < 0 || cIdx >= children.Count) return null;
-			return children[cIdx];
+			AnnounceCurrent();
 		}
 
 		// ========================================
@@ -500,15 +404,11 @@ namespace OniAccess.Handlers.Screens {
 				_pendingSilentRebuild = true;
 			}
 			_suppressDisplayName = true;
-			int savedLevel = Level;
-			int saved0 = GetIndex(0), saved1 = GetIndex(1), saved2 = GetIndex(2);
+			var savedPath = new int[Nav.Path.Count];
+			for (int i = 0; i < savedPath.Length; i++) savedPath[i] = Nav.Path[i];
 			base.OnActivate();
-			if (_pendingPreserveRebuild) {
-				Level = savedLevel;
-				SetIndex(0, saved0);
-				SetIndex(1, saved1);
-				SetIndex(2, saved2);
-			}
+			if (_pendingPreserveRebuild)
+				Nav.SetPath(savedPath);
 			_suppressDisplayName = false;
 		}
 
@@ -571,7 +471,7 @@ namespace OniAccess.Handlers.Screens {
 				RebuildSections();
 				if (_sections.Count > 0) {
 					_pendingPreserveRebuild = false;
-					ClampIndices();
+					Nav.ClampToTree();
 					SpeakCurrentItem();
 					return false;
 				}
@@ -709,12 +609,13 @@ namespace OniAccess.Handlers.Screens {
 		/// Merges fresh widget data into the existing sections, preserving
 		/// navigation order. Matched items stay at their position with
 		/// updated content; new items are inserted, gone items removed.
+		/// The cursor is then clamped against the merged tree.
 		/// </summary>
 		private void RefreshSections() {
 			var fresh = new List<DetailSection>();
 			var ds = DetailsScreen.Instance;
-			if (ds == null || ds.target == null) { ClampIndices(); return; }
-			if (_tabIndex < 0 || _tabIndex >= _activeTabs.Count) { ClampIndices(); return; }
+			if (ds == null || ds.target == null) { Nav.ClampToTree(); return; }
+			if (_tabIndex < 0 || _tabIndex >= _activeTabs.Count) { Nav.ClampToTree(); return; }
 
 			try {
 				_activeTabs[_tabIndex].Populate(ds.target, fresh);
@@ -722,12 +623,12 @@ namespace OniAccess.Handlers.Screens {
 				Util.Log.Error(
 					$"DetailsScreenHandler: tab '{_activeTabs[_tabIndex].DisplayName}' " +
 					$"Populate failed: {ex}");
-				ClampIndices();
+				Nav.ClampToTree();
 				return;
 			}
 
 			SectionMerger.Merge(_sections, fresh);
-			ClampIndices();
+			Nav.ClampToTree();
 		}
 
 		// ========================================
@@ -810,26 +711,9 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		private void ResetNavigation() {
-			ResetState();
-		}
-
-		private void ClampIndices() {
-			int sCount = _sections.Count;
-			if (sCount == 0) return;
-			int s = GetIndex(0);
-			if (s >= sCount) SetIndex(0, sCount - 1);
-			var items = _sections[GetIndex(0)].Items;
-			int i = GetIndex(1);
-			if (i >= items.Count && items.Count > 0) SetIndex(1, items.Count - 1);
-			if (Level >= 2) {
-				var children = (GetIndex(1) < items.Count)
-					? items[GetIndex(1)].Children : null;
-				int cc = children?.Count ?? 0;
-				if (cc == 0)
-					Level = 1;
-				else if (GetIndex(2) >= cc)
-					SetIndex(2, cc - 1);
-			}
+			Nav.Reset(StartDepth);
+			_search.Clear();
+			SuppressSearchThisFrame();
 		}
 
 		private void SpeakFirstSection() {
@@ -854,7 +738,7 @@ namespace OniAccess.Handlers.Screens {
 				&& string.Equals(header, _activeTabs[_tabIndex].DisplayName,
 					System.StringComparison.OrdinalIgnoreCase);
 
-			if (Level > 0) {
+			if (Nav.Depth > 0) {
 				var items = _sections[0].Items;
 				if (items.Count == 0) return;
 				string item = WidgetOps.GetSpeechText(items[0]);
