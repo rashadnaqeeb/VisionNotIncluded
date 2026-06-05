@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.4.7
+## Unreleased changes since 1.5.0
+
+## 1.5.0
 
 - Fix Codex Categories type-ahead landing on the first section of an article instead of the section you searched for.
 
