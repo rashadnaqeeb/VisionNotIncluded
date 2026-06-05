@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens.Schedule {
 	/// <summary>
@@ -35,7 +36,8 @@ namespace OniAccess.Handlers.Screens.Schedule {
 				SpeechPipeline.SpeakInterrupt(TabName);
 			var dupes = GetDupeList();
 			if (dupes.Count > 0)
-				SpeechPipeline.SpeakQueued(ScheduleHelper.BuildDupeLabel(dupes[0]));
+				SpeechPipeline.SpeakQueued(
+					WidgetSpeech.ComposeLabel(ScheduleHelper.BuildDupeLabel(dupes[0])));
 		}
 
 		public void OnTabDeactivated() {
@@ -68,7 +70,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 			string label = ScheduleHelper.BuildDupeLabel(dupes[CurrentIndex]);
 			if (!string.IsNullOrEmpty(parentContext))
 				label = parentContext + ", " + label;
-			SpeechPipeline.SpeakInterrupt(label);
+			SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(label));
 		}
 
 		protected override void AdjustCurrentItem(int direction, int stepLevel) {

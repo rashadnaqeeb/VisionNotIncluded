@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 using OniAccess.Speech;
 using OniAccess.Util;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Resources {
 	/// <summary>
@@ -48,14 +49,14 @@ namespace OniAccess.Handlers.Resources {
 			string label = BuildInstanceLabel(instances[CurrentIndex]);
 			if (!string.IsNullOrEmpty(parentContext))
 				label = parentContext + ", " + label;
-			SpeechPipeline.SpeakInterrupt(label);
+			SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(label));
 		}
 
 		public override void OnActivate() {
 			base.OnActivate();
 			var instances = ResourceHelper.GetInstances(_resourceTag);
 			if (instances.Count > 0)
-				SpeechPipeline.SpeakQueued(BuildInstanceLabel(instances[0]));
+				SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(BuildInstanceLabel(instances[0])));
 		}
 
 		protected override void ActivateCurrentItem() {

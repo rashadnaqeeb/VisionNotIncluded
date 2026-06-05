@@ -142,7 +142,7 @@ namespace OniAccess.Handlers.Screens.Outfits {
 			if (CurrentIndex < 0 || CurrentIndex >= _items.Count) return;
 			string text = _items[CurrentIndex].text;
 			if (!string.IsNullOrEmpty(text))
-				SpeechPipeline.SpeakInterrupt(text);
+				SpeechPipeline.SpeakInterrupt(Widgets.WidgetSpeech.ComposeLabel(text));
 		}
 
 		protected override void ActivateCurrentItem() {
@@ -276,7 +276,7 @@ namespace OniAccess.Handlers.Screens.Outfits {
 			if (CurrentIndex < 0 || CurrentIndex >= _items.Count) return;
 			string text = _items[CurrentIndex].text;
 			if (!string.IsNullOrEmpty(text))
-				SpeechPipeline.SpeakQueued(text);
+				SpeechPipeline.SpeakQueued(Widgets.WidgetSpeech.ComposeLabel(text));
 		}
 
 		private enum DetailAction { None, Edit, ChangeOutfit }

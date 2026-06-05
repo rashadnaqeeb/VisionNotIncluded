@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens.ClusterMap {
 	/// <summary>
@@ -29,7 +30,7 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			if (CurrentIndex >= 0 && CurrentIndex < _entities.Count)
-				SpeechPipeline.SpeakInterrupt(_entities[CurrentIndex].Name);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(_entities[CurrentIndex].Name));
 		}
 
 		public override void OnActivate() {
@@ -39,7 +40,7 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 			SpeechPipeline.SpeakQueued(
 				(string)STRINGS.ONIACCESS.CLUSTER_MAP.SELECT_OBJECT);
 			if (_entities.Count > 0)
-				SpeechPipeline.SpeakQueued(_entities[0].Name);
+				SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(_entities[0].Name));
 		}
 
 		public override void OnDeactivate() {

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Build {
 	/// <summary>
@@ -37,7 +38,7 @@ namespace OniAccess.Handlers.Build {
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			if (_materials != null && CurrentIndex >= 0 && CurrentIndex < _materials.Count)
-				SpeechPipeline.SpeakInterrupt(_materials[CurrentIndex].Label);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(_materials[CurrentIndex].Label));
 		}
 
 		public override void OnActivate() {
@@ -51,7 +52,7 @@ namespace OniAccess.Handlers.Build {
 			PositionOnSelected();
 
 			if (_materials.Count > 0)
-				SpeechPipeline.SpeakInterrupt(_materials[CurrentIndex].Label);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(_materials[CurrentIndex].Label));
 		}
 
 		public override void OnDeactivate() {
@@ -66,7 +67,7 @@ namespace OniAccess.Handlers.Build {
 			var entry = _materials[CurrentIndex];
 			if (!entry.Sufficient) {
 				PlaySound("Negative");
-				SpeechPipeline.SpeakInterrupt(_materials[CurrentIndex].Label);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(_materials[CurrentIndex].Label));
 				return;
 			}
 			SelectMaterial(entry.Tag);

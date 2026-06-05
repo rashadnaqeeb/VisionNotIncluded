@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens.Research {
 	/// <summary>
@@ -34,7 +35,7 @@ namespace OniAccess.Handlers.Screens.Research {
 			if (ItemCount > 0) {
 				string label = GetItemLabel(CurrentIndex);
 				if (!string.IsNullOrEmpty(label))
-					SpeechPipeline.SpeakQueued(label);
+					SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(label));
 			}
 		}
 
@@ -151,7 +152,7 @@ namespace OniAccess.Handlers.Screens.Research {
 			string label = ResearchHelper.BuildTechLabel(techs[idx]);
 			if (!string.IsNullOrEmpty(parentContext))
 				label = parentContext + ", " + label;
-			SpeechPipeline.SpeakInterrupt(label);
+			SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(label));
 		}
 	}
 }

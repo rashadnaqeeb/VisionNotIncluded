@@ -4,6 +4,7 @@ using Database;
 using HarmonyLib;
 
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens.Inventory {
 	/// <summary>
@@ -127,7 +128,7 @@ namespace OniAccess.Handlers.Screens.Inventory {
 			if (CurrentIndex < 0 || CurrentIndex >= _items.Count) return;
 			string text = _items[CurrentIndex].text;
 			if (string.IsNullOrEmpty(text)) return;
-			SpeechPipeline.SpeakInterrupt(text);
+			SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(text));
 		}
 
 		protected override void ActivateCurrentItem() {
@@ -174,7 +175,7 @@ namespace OniAccess.Handlers.Screens.Inventory {
 			if (CurrentIndex < 0 || CurrentIndex >= _items.Count) return;
 			string text = _items[CurrentIndex].text;
 			if (!string.IsNullOrEmpty(text))
-				SpeechPipeline.SpeakQueued(text);
+				SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(text));
 		}
 
 		private enum DetailAction { None, Buy, Sell }

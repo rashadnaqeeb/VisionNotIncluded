@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using OniAccess.Speech;
 using OniAccess.Util;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Tiles {
 	/// <summary>
@@ -41,8 +42,8 @@ namespace OniAccess.Handlers.Tiles {
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			if (CurrentIndex >= 0 && CurrentIndex < _selectables.Count)
-				SpeechPipeline.SpeakInterrupt(
-					TextFilter.FilterForSpeech(GetDisplayText(CurrentIndex)));
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(
+					TextFilter.FilterForSpeech(GetDisplayText(CurrentIndex))));
 		}
 
 		public override void OnActivate() {
@@ -52,8 +53,8 @@ namespace OniAccess.Handlers.Tiles {
 			SpeechPipeline.SpeakQueued(
 				(string)STRINGS.ONIACCESS.TILE_CURSOR.SELECT_OBJECT);
 			if (_selectables.Count > 0)
-				SpeechPipeline.SpeakQueued(
-					TextFilter.FilterForSpeech(GetDisplayText(0)));
+				SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(
+					TextFilter.FilterForSpeech(GetDisplayText(0))));
 		}
 
 		public override void OnDeactivate() {

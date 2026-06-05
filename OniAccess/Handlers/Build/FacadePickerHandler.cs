@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Database;
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Build {
 	/// <summary>
@@ -36,7 +37,7 @@ namespace OniAccess.Handlers.Build {
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			if (_facades != null && CurrentIndex >= 0 && CurrentIndex < _facades.Count)
-				SpeechPipeline.SpeakInterrupt(_facades[CurrentIndex].Label);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(_facades[CurrentIndex].Label));
 		}
 
 		public override void OnActivate() {
@@ -49,7 +50,7 @@ namespace OniAccess.Handlers.Build {
 			PositionOnSelected();
 
 			if (_facades.Count > 0)
-				SpeechPipeline.SpeakInterrupt(_facades[CurrentIndex].Label);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(_facades[CurrentIndex].Label));
 		}
 
 		public override void OnDeactivate() {

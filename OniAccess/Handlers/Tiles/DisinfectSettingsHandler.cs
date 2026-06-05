@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using HarmonyLib;
 using OniAccess.Input;
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Tiles {
 	/// <summary>
@@ -37,7 +38,7 @@ namespace OniAccess.Handlers.Tiles {
 			}
 			PlaySound("HUD_Click_Open");
 			base.OnActivate();
-			SpeechPipeline.SpeakQueued(BuildItemSpeech(0));
+			SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(BuildItemSpeech(0)));
 		}
 
 		public override void OnDeactivate() {
@@ -58,7 +59,7 @@ namespace OniAccess.Handlers.Tiles {
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			if (CurrentIndex < 0 || CurrentIndex >= ItemTotal) return;
-			SpeechPipeline.SpeakInterrupt(BuildItemSpeech(CurrentIndex));
+			SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(BuildItemSpeech(CurrentIndex)));
 		}
 
 		protected override bool IsItemValid(int index) {
@@ -71,7 +72,7 @@ namespace OniAccess.Handlers.Tiles {
 			switch ((Item)CurrentIndex) {
 				case Item.Toggle:
 					_toggle.Click();
-					SpeechPipeline.SpeakInterrupt(BuildItemSpeech(CurrentIndex));
+					SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(BuildItemSpeech(CurrentIndex)));
 					return;
 				case Item.Slider:
 					return;
@@ -104,7 +105,7 @@ namespace OniAccess.Handlers.Tiles {
 			_inputField.SetDisplayValue(germs.ToString());
 
 			PlaySound("Slider_Move");
-			SpeechPipeline.SpeakInterrupt(BuildItemSpeech(CurrentIndex));
+			SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(BuildItemSpeech(CurrentIndex)));
 		}
 
 		public override bool Tick() {
@@ -129,7 +130,7 @@ namespace OniAccess.Handlers.Tiles {
 
 		private void SpeakCurrentItemQueued() {
 			if (CurrentIndex >= 0 && CurrentIndex < ItemTotal)
-				SpeechPipeline.SpeakQueued(BuildItemSpeech(CurrentIndex));
+				SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(BuildItemSpeech(CurrentIndex)));
 		}
 
 		private string BuildItemSpeech(int index) {

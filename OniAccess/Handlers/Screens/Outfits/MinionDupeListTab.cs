@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens.Outfits {
 	/// <summary>
@@ -33,7 +34,7 @@ namespace OniAccess.Handlers.Screens.Outfits {
 			if (ItemCount > 0) {
 				string label = GetItemLabel(CurrentIndex);
 				if (!string.IsNullOrEmpty(label))
-					SpeechPipeline.SpeakQueued(label);
+					SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(label));
 			}
 		}
 
@@ -61,7 +62,7 @@ namespace OniAccess.Handlers.Screens.Outfits {
 			if (ItemCount > 0) {
 				string label = GetItemLabel(CurrentIndex);
 				if (!string.IsNullOrEmpty(label))
-					SpeechPipeline.SpeakQueued(label);
+					SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(label));
 			}
 		}
 
@@ -83,7 +84,7 @@ namespace OniAccess.Handlers.Screens.Outfits {
 			if (CurrentIndex < 0 || CurrentIndex >= ItemCount) return;
 			string text = GetItemLabel(CurrentIndex);
 			if (!string.IsNullOrEmpty(text))
-				SpeechPipeline.SpeakInterrupt(text);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(text));
 		}
 
 		protected override void ActivateCurrentItem() {

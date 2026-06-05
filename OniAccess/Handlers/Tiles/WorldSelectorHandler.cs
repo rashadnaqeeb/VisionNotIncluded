@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 
+using OniAccess.Widgets;
+
 namespace OniAccess.Handlers.Tiles {
 	/// <summary>
 	/// Navigable list of all discovered worlds (Spaced Out DLC).
@@ -31,7 +33,7 @@ namespace OniAccess.Handlers.Tiles {
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			if (CurrentIndex < 0 || CurrentIndex >= _items.Count) return;
-			Speech.SpeechPipeline.SpeakInterrupt(BuildSpeech(CurrentIndex));
+			Speech.SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(BuildSpeech(CurrentIndex)));
 		}
 
 		public override void OnActivate() {
@@ -39,7 +41,7 @@ namespace OniAccess.Handlers.Tiles {
 			PlaySound("HUD_Click_Open");
 			base.OnActivate();
 			if (_items.Count > 0)
-				Speech.SpeechPipeline.SpeakQueued(BuildSpeech(0));
+				Speech.SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(BuildSpeech(0)));
 		}
 
 		protected override void ActivateCurrentItem() {

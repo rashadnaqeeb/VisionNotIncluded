@@ -3,6 +3,7 @@ using System.Reflection;
 
 using OniAccess.Handlers.Screens;
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens {
 	public class OwnablesSecondHandler: BaseMenuHandler {
@@ -93,7 +94,7 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		public override void SpeakCurrentItem(string parentContext = null) {
-			SpeechPipeline.SpeakInterrupt(GetItemLabel(CurrentIndex));
+			SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(GetItemLabel(CurrentIndex)));
 		}
 
 		// ========================================

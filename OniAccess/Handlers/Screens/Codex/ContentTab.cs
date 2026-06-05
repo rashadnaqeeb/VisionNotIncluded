@@ -4,6 +4,7 @@ using HarmonyLib;
 
 using OniAccess.Input;
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens.Codex {
 	/// <summary>
@@ -116,7 +117,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			if (string.IsNullOrEmpty(text)) return;
 			if (!string.IsNullOrEmpty(parentContext))
 				text = parentContext + ", " + text;
-			SpeechPipeline.SpeakInterrupt(text);
+			SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(text));
 		}
 
 		// ========================================
@@ -495,7 +496,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			if (CurrentIndex < 0 || CurrentIndex >= _items.Count) return;
 			string text = _items[CurrentIndex].text;
 			if (!string.IsNullOrEmpty(text))
-				SpeechPipeline.SpeakQueued(text);
+				SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(text));
 		}
 
 		// ========================================
