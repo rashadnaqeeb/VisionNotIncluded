@@ -27,6 +27,8 @@ namespace OniAccess.Handlers {
 			Nav = new NavTree(BuildRoots);
 			Nav.SearchScope = SearchScope;
 			Nav.Crossing = Crossing;
+			if (GroupSearchByRoot)
+				_search.GroupOf = Nav.SearchGroup;
 		}
 
 		/// <summary>
@@ -43,6 +45,12 @@ namespace OniAccess.Handlers {
 		/// default; the details screen confines level-2 moves to the current section.
 		/// </summary>
 		protected virtual CrossingScope Crossing => CrossingScope.FullTree;
+
+		/// <summary>
+		/// When true, type-ahead keeps results from the same top-level group together
+		/// rather than interleaving them by match quality (clothing items by slot).
+		/// </summary>
+		protected virtual bool GroupSearchByRoot => false;
 
 		/// <summary>Standard help entries for a drillable list (search, navigate, jump, drill, back).</summary>
 		protected static readonly List<HelpEntry> DrillNavHelpEntries = new List<HelpEntry> {

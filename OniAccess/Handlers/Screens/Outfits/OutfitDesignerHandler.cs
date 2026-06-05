@@ -3,28 +3,33 @@ using System.Collections.Generic;
 using Database;
 using HarmonyLib;
 
+using OniAccess.Navigation;
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens.Outfits {
 	/// <summary>
 	/// Handler for OutfitDesignerScreen (create/edit outfits in the Supply Closet).
-	/// Two-level NestedMenuHandler:
+	/// Two-level tree:
 	///   Level 0 = slot categories (Helmet, Body, Gloves, etc.) + Save/Copy buttons
 	///   Level 1 = items available for the selected slot
 	///
-	/// Enter at level 1 selects the item into the slot. A "None" entry at
-	/// index 0 clears the slot. Save/Copy at level 0 are leaf actions.
+	/// Enter at level 1 selects the item into the slot. A "None" entry at index 0
+	/// clears the slot. Save/Copy at level 0 are leaf actions. Type-ahead searches
+	/// the clothing items by name, grouped by slot; the None and command rows are
+	/// excluded.
 	///
 	/// OutfitDesignerScreen extends KMonoBehaviour (not KScreen), so this
 	/// handler bypasses ContextDetector. Harmony patches on OnCmpEnable/
 	/// OnCmpDisable push and pop it directly on the HandlerStack.
 	/// </summary>
-	public class OutfitDesignerHandler: NestedMenuHandler {
+	public class OutfitDesignerHandler: NavTreeHandler {
 		private readonly OutfitDesignerScreen _designerScreen;
 
 		public OutfitDesignerHandler(OutfitDesignerScreen screen) : base(screen: null) {
 			_designerScreen = screen;
-			_search.GroupOf = GetSearchGroup;
+			// Search the clothing items (by name), not the None or command rows.
+			Nav.SearchFilter = n => n.RoleKey != "button";
 		}
 
 		internal OutfitDesignerScreen DesignerScreen => _designerScreen;
@@ -34,16 +39,10 @@ namespace OniAccess.Handlers.Screens.Outfits {
 
 		public override bool CapturesAllInput => true;
 
-		private static readonly List<HelpEntry> _helpEntries = new List<HelpEntry> {
-			new HelpEntry("A-Z", STRINGS.ONIACCESS.HELP.TYPE_SEARCH),
-			new HelpEntry("Up/Down", STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS),
-			new HelpEntry("Ctrl+Up/Down", STRINGS.ONIACCESS.HELP.JUMP_GROUP),
-			new HelpEntry("Home/End", STRINGS.ONIACCESS.HELP.JUMP_FIRST_LAST),
-			new HelpEntry("Enter/Right", STRINGS.ONIACCESS.HELP.OPEN_GROUP),
-			new HelpEntry("Left", STRINGS.ONIACCESS.HELP.GO_BACK),
-		};
+		// Keep clothing-item search results grouped by slot.
+		protected override bool GroupSearchByRoot => true;
 
-		public override IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
+		public override IReadOnlyList<HelpEntry> HelpEntries => DrillNavHelpEntries;
 
 		// ========================================
 		// LIFECYCLE
@@ -51,171 +50,88 @@ namespace OniAccess.Handlers.Screens.Outfits {
 
 		public override void OnActivate() {
 			base.OnActivate();
-
-			SpeechPipeline.SpeakInterrupt(
-				(string)STRINGS.ONIACCESS.HANDLERS.OUTFIT_DESIGNER);
-
-			if (ItemCount > 0) {
-				string label = GetItemLabel(0, new int[8]);
-				if (!string.IsNullOrEmpty(label))
-					SpeechPipeline.SpeakQueued(label);
-			}
+			AnnounceCurrent(interrupt: false);
 		}
 
 		// ========================================
-		// NestedMenuHandler abstracts
+		// TREE CONSTRUCTION
 		// ========================================
 
-		protected override int MaxLevel => 1;
-		protected override int SearchLevel => 1;
-
-		protected override int GetItemCount(int level, int[] indices) {
+		protected override IReadOnlyList<NavItem> BuildRoots() {
 			var categories = GetCategories();
-			if (level == 0)
-				return categories.Length + GetActionCount();
-
-			int catIndex = indices[0];
-			if (catIndex >= categories.Length) return 0;
-			return GetItemsForSlot(catIndex).Count + 1; // +1 for "None" at index 0
+			var roots = new List<NavItem>(categories.Length + 2);
+			for (int s = 0; s < categories.Length; s++) {
+				int slot = s;
+				roots.Add(new MenuNode(
+					() => SlotLabel(slot),
+					children: () => BuildSlotItems(slot),
+					contextLabel: () => PermitCategories.GetDisplayName(categories[slot])));
+			}
+			int actions = GetActionCount();
+			for (int a = 0; a < actions; a++) {
+				int action = a;
+				roots.Add(new MenuNode(
+					() => GetActionLabel(action),
+					activate: () => { ActivateAction(action); return true; },
+					roleKey: "button"));
+			}
+			return roots;
 		}
 
-		protected override string GetItemLabel(int level, int[] indices) {
+		private IReadOnlyList<NavItem> BuildSlotItems(int slotIndex) {
 			var categories = GetCategories();
-			if (level == 0) {
-				int idx = indices[0];
-				if (idx < categories.Length) {
-					string slotName = PermitCategories.GetDisplayName(categories[idx]);
-					var currentItem = _designerScreen.outfitState
-						.GetItemForCategory(categories[idx]);
-					if (currentItem.HasValue)
-						return slotName + ": " + currentItem.Unwrap().Name;
-					return slotName + ": " + KleiItemsUI.GetNoneClothingItemStrings(categories[idx]).name;
-				}
-				return GetActionLabel(idx - categories.Length);
+			if (slotIndex < 0 || slotIndex >= categories.Length)
+				return System.Array.Empty<NavItem>();
+			var category = categories[slotIndex];
+
+			var list = new List<NavItem>();
+			// "None" clears the slot — a command, not a searchable item.
+			list.Add(new MenuNode(
+				() => KleiItemsUI.GetNoneClothingItemStrings(category).name,
+				activate: () => { ClearSlot(category); return true; },
+				roleKey: "button"));
+
+			foreach (var item in GetItemsForSlot(slotIndex)) {
+				var it = item;
+				list.Add(new MenuNode(
+					() => ItemLabel(category, it),
+					activate: () => { SelectItem(category, it); return true; },
+					searchText: () => it.Name));
 			}
+			return list;
+		}
 
-			int slotIndex = indices[0];
-			if (slotIndex >= categories.Length) return null;
+		private string SlotLabel(int slotIndex) {
+			var categories = GetCategories();
+			var category = categories[slotIndex];
+			string slotName = PermitCategories.GetDisplayName(category);
+			var currentItem = _designerScreen.outfitState.GetItemForCategory(category);
+			if (currentItem.HasValue)
+				return slotName + ": " + currentItem.Unwrap().Name;
+			return slotName + ": " + KleiItemsUI.GetNoneClothingItemStrings(category).name;
+		}
 
-			int itemIndex = indices[1];
-			if (itemIndex == 0) {
-				var noneStrings = KleiItemsUI.GetNoneClothingItemStrings(categories[slotIndex]);
-				return noneStrings.name;
-			}
-
-			var items = GetItemsForSlot(slotIndex);
-			int realIndex = itemIndex - 1;
-			if (realIndex < 0 || realIndex >= items.Count) return null;
-
-			var item = items[realIndex];
+		private string ItemLabel(PermitCategory category, ClothingItemResource item) {
 			string label = OutfitHelper.GetItemLabel(item);
-
-			// Mark the currently selected item
-			var current = _designerScreen.outfitState.GetItemForCategory(categories[slotIndex]);
+			var current = _designerScreen.outfitState.GetItemForCategory(category);
 			if (current.HasValue && current.Unwrap().Id == item.Id)
 				label += ", " + (string)STRINGS.ONIACCESS.OUTFIT_DESIGNER.SELECTED;
-
 			return label;
 		}
 
-		protected override string GetParentLabel(int level, int[] indices) {
-			if (level <= 0) return null;
-			var categories = GetCategories();
-			int idx = indices[0];
-			if (idx < categories.Length)
-				return PermitCategories.GetDisplayName(categories[idx]);
-			return null;
+		private void ClearSlot(PermitCategory category) {
+			_designerScreen.outfitState.SetItemForCategory(category, Option.None);
+			_designerScreen.SelectCategory(category);
+			_designerScreen.SelectPermit(null);
+			PlaySound("HUD_Click");
+			AnnounceCurrent();
 		}
 
-		protected override bool ShouldDrillOnActivate() {
-			if (Level == 0) {
-				int idx = GetIndex(0);
-				return idx < GetCategories().Length;
-			}
-			return false;
-		}
-
-		protected override void ActivateLeafItem(int[] indices) {
-			var categories = GetCategories();
-			if (Level == 0) {
-				int actionIdx = indices[0] - categories.Length;
-				ActivateAction(actionIdx);
-				return;
-			}
-
-			int slotIndex = indices[0];
-			if (slotIndex >= categories.Length) return;
-
-			var category = categories[slotIndex];
-			int itemIndex = indices[1];
-
-			if (itemIndex == 0) {
-				_designerScreen.outfitState.SetItemForCategory(category, Option.None);
-				_designerScreen.SelectCategory(category);
-				_designerScreen.SelectPermit(null);
-				PlaySound("HUD_Click");
-				SpeakCurrentItem();
-				return;
-			}
-
-			var items = GetItemsForSlot(slotIndex);
-			int realIndex = itemIndex - 1;
-			if (realIndex < 0 || realIndex >= items.Count) return;
-
-			var item = items[realIndex];
+		private void SelectItem(PermitCategory category, ClothingItemResource item) {
 			_designerScreen.SelectCategory(category);
 			_designerScreen.SelectPermit(item);
 			PlaySound("HUD_Click");
-			SpeakCurrentItem();
-		}
-
-		// ========================================
-		// SEARCH
-		// ========================================
-
-		protected override int GetSearchItemCount(int[] indices) {
-			var categories = GetCategories();
-			int count = 0;
-			for (int i = 0; i < categories.Length; i++)
-				count += GetItemsForSlot(i).Count;
-			return count;
-		}
-
-		protected override string GetSearchItemLabel(int flatIndex) {
-			var categories = GetCategories();
-			int remaining = flatIndex;
-			for (int i = 0; i < categories.Length; i++) {
-				var items = GetItemsForSlot(i);
-				if (remaining < items.Count)
-					return items[remaining].Name;
-				remaining -= items.Count;
-			}
-			return null;
-		}
-
-		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
-			var categories = GetCategories();
-			int remaining = flatIndex;
-			for (int i = 0; i < categories.Length; i++) {
-				var items = GetItemsForSlot(i);
-				if (remaining < items.Count) {
-					outIndices[0] = i;
-					outIndices[1] = remaining + 1; // +1 because index 0 is "None"
-					return;
-				}
-				remaining -= items.Count;
-			}
-		}
-
-		private int GetSearchGroup(int flatIndex) {
-			var categories = GetCategories();
-			int remaining = flatIndex;
-			for (int i = 0; i < categories.Length; i++) {
-				var items = GetItemsForSlot(i);
-				if (remaining < items.Count) return i;
-				remaining -= items.Count;
-			}
-			return 0;
+			AnnounceCurrent();
 		}
 
 		// ========================================

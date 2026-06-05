@@ -456,6 +456,16 @@ namespace OniAccess.Navigation {
 			return node?.SearchText;
 		}
 
+		/// <summary>
+		/// The top-level group of search frontier entry i (its root ancestor index), so
+		/// type-ahead can keep same-group results together (clothing items by slot).
+		/// </summary>
+		public int SearchGroup(int i) {
+			if (_searchFrontier == null || i < 0 || i >= _searchFrontier.Count) return 0;
+			var p = _searchFrontier[i];
+			return p.Length > 0 ? p[0] : 0;
+		}
+
 		/// <summary>Move the cursor onto frontier entry i. The adapter speaks the landed item.</summary>
 		public NavMove SearchMoveTo(int i) {
 			if (_searchFrontier == null || i < 0 || i >= _searchFrontier.Count) return NavMove.None;
