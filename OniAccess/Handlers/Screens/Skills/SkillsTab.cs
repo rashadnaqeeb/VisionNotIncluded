@@ -33,7 +33,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 		internal SkillsTab(SkillsScreenHandler parent) : base(screen: null) {
 			_parent = parent;
 			// Search the learnable skills only.
-			Nav.SearchFilter = n => n.RoleKey == "skill";
+			Nav.SearchFilter = n => n.RoleKey == NavRoles.Skill;
 		}
 
 		public string TabName => (string)STRINGS.ONIACCESS.SKILLS.SKILLS_TAB;
@@ -131,7 +131,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 				list.Add(new MenuNode(
 					() => SkillsHelper.BuildSkillLabel(skill, _parent.SelectedDupe),
 					activate: () => { TryLearnSkill(skill); return true; },
-					roleKey: "skill",
+					roleKey: NavRoles.Skill,
 					searchText: () => skill.Name));
 			}
 			return list;

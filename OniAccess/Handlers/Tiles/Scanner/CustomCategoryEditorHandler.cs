@@ -41,7 +41,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		public CustomCategoryEditorHandler(string id, CustomCategoryManagerHandler manager) : base(null) {
 			_id = id;
 			_manager = manager;
-			Nav.SearchFilter = n => n.RoleKey != "button";
+			Nav.SearchFilter = n => n.RoleKey != NavRoles.Button;
 			var help = new List<HelpEntry>();
 			help.AddRange(DrillNavHelpEntries);
 			help.Add(new HelpEntry("Enter", STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_TOGGLE));
@@ -64,11 +64,11 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			roots.Add(new MenuNode(
 				() => (string)STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAME,
 				activate: () => { OpenRenamePrompt(); return true; },
-				roleKey: "button"));
+				roleKey: NavRoles.Button));
 			roots.Add(new MenuNode(
 				() => (string)STRINGS.ONIACCESS.CUSTOM_CATEGORY.DELETE,
 				activate: () => { DeleteCategory(); return true; },
-				roleKey: "button"));
+				roleKey: NavRoles.Button));
 			return roots;
 		}
 

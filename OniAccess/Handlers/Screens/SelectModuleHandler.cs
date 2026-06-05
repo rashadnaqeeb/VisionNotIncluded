@@ -54,7 +54,7 @@ namespace OniAccess.Handlers.Screens {
 		public SelectModuleHandler(SelectModuleSideScreen screen) : base(screen) {
 			HelpEntries = new List<HelpEntry>(DrillNavHelpEntries).AsReadOnly();
 			// Type-ahead searches the modules only.
-			Nav.SearchFilter = n => n.RoleKey == "module";
+			Nav.SearchFilter = n => n.RoleKey == NavRoles.Module;
 		}
 
 		// ========================================
@@ -203,7 +203,7 @@ namespace OniAccess.Handlers.Screens {
 				list.Add(new MenuNode(
 					() => GetModuleLabel(idx),
 					activate: () => { SelectModuleAtIndex(idx); return true; },
-					roleKey: "module",
+					roleKey: NavRoles.Module,
 					searchText: () => def.Name));
 			}
 			return list;

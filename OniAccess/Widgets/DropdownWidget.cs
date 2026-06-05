@@ -4,7 +4,7 @@ namespace OniAccess.Widgets {
 	/// Cycling logic stays in handlers (too handler-specific).
 	/// </summary>
 	public class DropdownWidget: Widget {
-		public override string RoleKey => "dropdown";
+		public override string RoleKey => NavRoles.Dropdown;
 		public override bool IsAdjustable => true;
 	}
 }

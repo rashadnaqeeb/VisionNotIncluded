@@ -29,7 +29,7 @@ namespace OniAccess.Handlers.Tiles.FastTravel {
 		protected override SearchScope SearchScope => SearchScope.Roots;
 
 		public FastTravelMenuHandler() : base(null) {
-			Nav.SearchFilter = n => n.RoleKey != "button";
+			Nav.SearchFilter = n => n.RoleKey != NavRoles.Button;
 			var help = new List<HelpEntry>();
 			help.AddRange(DrillNavHelpEntries);
 			help.Add(new HelpEntry("Enter", STRINGS.ONIACCESS.HELP.SELECT_ITEM));
@@ -56,7 +56,7 @@ namespace OniAccess.Handlers.Tiles.FastTravel {
 			roots.Add(new MenuNode(
 				() => (string)STRINGS.ONIACCESS.FAST_TRAVEL.CREATE_NEW,
 				activate: () => { OpenCreatePrompt(); return true; },
-				roleKey: "button"));
+				roleKey: NavRoles.Button));
 			return roots;
 		}
 

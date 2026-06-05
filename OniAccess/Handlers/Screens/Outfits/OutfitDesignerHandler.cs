@@ -29,7 +29,7 @@ namespace OniAccess.Handlers.Screens.Outfits {
 		public OutfitDesignerHandler(OutfitDesignerScreen screen) : base(screen: null) {
 			_designerScreen = screen;
 			// Search the clothing items (by name), not the None or command rows.
-			Nav.SearchFilter = n => n.RoleKey != "button";
+			Nav.SearchFilter = n => n.RoleKey != NavRoles.Button;
 		}
 
 		internal OutfitDesignerScreen DesignerScreen => _designerScreen;
@@ -73,7 +73,7 @@ namespace OniAccess.Handlers.Screens.Outfits {
 				roots.Add(new MenuNode(
 					() => GetActionLabel(action),
 					activate: () => { ActivateAction(action); return true; },
-					roleKey: "button"));
+					roleKey: NavRoles.Button));
 			}
 			return roots;
 		}
@@ -89,7 +89,7 @@ namespace OniAccess.Handlers.Screens.Outfits {
 			list.Add(new MenuNode(
 				() => KleiItemsUI.GetNoneClothingItemStrings(category).name,
 				activate: () => { ClearSlot(category); return true; },
-				roleKey: "button"));
+				roleKey: NavRoles.Button));
 
 			foreach (var item in GetItemsForSlot(slotIndex)) {
 				var it = item;

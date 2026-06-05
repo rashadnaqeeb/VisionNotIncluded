@@ -20,7 +20,7 @@ namespace OniAccess.Handlers.Resources {
 	internal sealed class ResourceBrowserHandler: NavTreeHandler {
 		internal ResourceBrowserHandler(KScreen screen) : base(screen) {
 			// Search the real resources, not the synthetic pinned duplicates.
-			Nav.SearchFilter = n => n.RoleKey != "pinned";
+			Nav.SearchFilter = n => n.RoleKey != NavRoles.Pinned;
 		}
 
 		private static readonly ConsumedKey[] _consumedKeys = {
@@ -95,7 +95,7 @@ namespace OniAccess.Handlers.Resources {
 				list.Add(new MenuNode(
 					() => ResourceHelper.BuildResourceLabel(r, measure),
 					activate: () => { OpenInstance(r, measure); return true; },
-					roleKey: "pinned",
+					roleKey: NavRoles.Pinned,
 					searchText: () => r.ProperNameStripLink()));
 			}
 			return list;

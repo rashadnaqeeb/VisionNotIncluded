@@ -25,6 +25,12 @@ namespace OniAccess.Handlers.Screens.Codex {
 	/// </summary>
 	internal class CategoriesTab: NavTreeHandler, IScreenTab {
 		private readonly CodexScreenHandler _parent;
+
+		// Snapshot of the flat search frontier for the current type-ahead pass. Rebuilt
+		// every SearchCount() call (once per keystroke) and read by SearchEntryText,
+		// GetSearchGroup, and MoveSearchCursor during that pass, mirroring NavTree's own
+		// _searchFrontier lifecycle. Never held across passes: the codex can gain entries
+		// live, so a stale frontier would land search on the wrong sub-entry.
 		private List<FlatEntry> _flatEntries;
 
 		internal CategoriesTab(CodexScreenHandler parent) : base(screen: null) {
@@ -150,20 +156,21 @@ namespace OniAccess.Handlers.Screens.Codex {
 		// SEARCH (custom frontier: leaf entries, sub-entries, and top categories)
 		// ========================================
 
-		protected override int SearchCount() => GetAllSearchableEntries().Count;
+		protected override int SearchCount() {
+			_flatEntries = BuildSearchableEntries();
+			return _flatEntries.Count;
+		}
 
 		protected override string SearchEntryText(int index) {
-			var all = GetAllSearchableEntries();
-			if (index < 0 || index >= all.Count) return null;
-			var item = all[index];
+			if (_flatEntries == null || index < 0 || index >= _flatEntries.Count) return null;
+			var item = _flatEntries[index];
 			if (item.subEntryName != null) return item.subEntryName;
 			return CodexHelper.GetEntryName(item.entry);
 		}
 
 		protected override void MoveSearchCursor(int index) {
-			var all = GetAllSearchableEntries();
-			if (index < 0 || index >= all.Count) return;
-			var item = all[index];
+			if (_flatEntries == null || index < 0 || index >= _flatEntries.Count) return;
+			var item = _flatEntries[index];
 			int targetLevel = item.isCategory ? 0 : item.targetLevel;
 			Nav.SetPath(PathFor(item, targetLevel));
 			_search.Clear();
@@ -171,8 +178,8 @@ namespace OniAccess.Handlers.Screens.Codex {
 		}
 
 		private int GetSearchGroup(int flatIndex) {
-			var all = GetAllSearchableEntries();
-			return (flatIndex >= 0 && flatIndex < all.Count && all[flatIndex].isCategory) ? 1 : 0;
+			return (_flatEntries != null && flatIndex >= 0 && flatIndex < _flatEntries.Count
+				&& _flatEntries[flatIndex].isCategory) ? 1 : 0;
 		}
 
 		// ========================================
@@ -184,7 +191,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 		/// Returns false if the entry isn't found in the category tree.
 		/// </summary>
 		private bool NavigateToEntry(string entryId) {
-			var all = GetAllSearchableEntries();
+			var all = BuildSearchableEntries();
 			for (int i = 0; i < all.Count; i++) {
 				if (all[i].isCategory) continue;
 				if (all[i].subEntryName != null) continue;
@@ -229,8 +236,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			internal string subEntryName;
 		}
 
-		private List<FlatEntry> GetAllSearchableEntries() {
-			if (_flatEntries != null) return _flatEntries;
+		private List<FlatEntry> BuildSearchableEntries() {
 			var result = new List<FlatEntry>();
 			var topCats = CodexHelper.GetTopCategories();
 			for (int c = 0; c < topCats.Count; c++) {
@@ -269,7 +275,6 @@ namespace OniAccess.Handlers.Screens.Codex {
 					isCategory = true
 				});
 			}
-			_flatEntries = result;
 			return result;
 		}
 

@@ -30,7 +30,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		protected override SearchScope SearchScope => SearchScope.Roots;
 
 		public CustomCategoryManagerHandler() : base(null) {
-			Nav.SearchFilter = n => n.RoleKey != "button";
+			Nav.SearchFilter = n => n.RoleKey != NavRoles.Button;
 			var help = new List<HelpEntry>();
 			help.AddRange(DrillNavHelpEntries);
 			help.Add(new HelpEntry("Enter", STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_EDIT));
@@ -61,7 +61,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			roots.Add(new MenuNode(
 				() => (string)STRINGS.ONIACCESS.CUSTOM_CATEGORY.CREATE_NEW,
 				activate: () => { CreateAndEdit(); return true; },
-				roleKey: "button"));
+				roleKey: NavRoles.Button));
 			return roots;
 		}
 
