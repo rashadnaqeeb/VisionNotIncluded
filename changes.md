@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.4.7
 
+- Duplicants now report the practical suit they are wearing (atmo, jet, lead, or oxygen mask) when you cycle to them or arrow over them, and while following a dupe with the camera you hear when they put one on or take it off.
+
 - Added custom scanner categories: bundle the taxonomy filters you use most into your own named categories that appear first when cycling scanner categories. Create and edit them from "Custom scanner categories" in the scanner settings; they are saved globally and follow you to every colony.
 
 ## 1.4.7

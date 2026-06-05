@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using OniAccess.Util;
 
 namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
@@ -18,8 +19,10 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var go = Grid.Objects[cell, (int)ObjectLayer.Minion];
 			if (go == null) return;
 			var selectable = go.GetComponent<KSelectable>();
-			if (selectable != null)
-				tokens.Add(selectable.GetName());
+			if (selectable == null) return;
+			string name = selectable.GetName();
+			string suit = WornSuit.GetName(go.GetComponent<MinionIdentity>());
+			tokens.Add(suit != null ? $"{name}, {suit}" : name);
 		}
 
 		private static void ReadCritters(int cell, List<string> tokens) {

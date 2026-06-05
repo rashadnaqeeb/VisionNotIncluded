@@ -19,6 +19,8 @@ namespace OniAccess.Handlers.Tiles {
 		private Action<StatusItemGroup.Entry, StatusItemCategory> _onStatusAdded;
 		private Action<StatusItemGroup.Entry, bool> _onStatusRemoved;
 		private Action<object> _onChoreChanged;
+		private Action<object> _onEquipped;
+		private Action<object> _onUnequipped;
 
 		/// <summary>
 		/// Returns the dupe at the current cycle index, or null if no dupes
@@ -125,6 +127,8 @@ namespace OniAccess.Handlers.Tiles {
 					}
 				}
 				_followedDupe.gameObject.Unsubscribe(-1988963660, _onChoreChanged);
+				_followedDupe.gameObject.Unsubscribe((int)GameHashes.EquippedItemEquipper, _onEquipped);
+				_followedDupe.gameObject.Unsubscribe((int)GameHashes.UnequippedItemEquipper, _onUnequipped);
 			} catch (Exception ex) {
 				Log.Warn($"DupeNavigator.StopFollow: {ex}");
 			}
@@ -132,6 +136,8 @@ namespace OniAccess.Handlers.Tiles {
 			_onStatusAdded = null;
 			_onStatusRemoved = null;
 			_onChoreChanged = null;
+			_onEquipped = null;
+			_onUnequipped = null;
 		}
 
 		private void SwitchFollowTarget() {
@@ -150,12 +156,16 @@ namespace OniAccess.Handlers.Tiles {
 			_onStatusAdded = OnStatusAdded;
 			_onStatusRemoved = OnStatusRemoved;
 			_onChoreChanged = OnChoreChanged;
+			_onEquipped = OnEquipped;
+			_onUnequipped = OnUnequipped;
 			var group = mi.GetComponent<KSelectable>().GetStatusItemGroup();
 			group.OnAddStatusItem = (Action<StatusItemGroup.Entry, StatusItemCategory>)
 				Delegate.Combine(group.OnAddStatusItem, _onStatusAdded);
 			group.OnRemoveStatusItem = (Action<StatusItemGroup.Entry, bool>)
 				Delegate.Combine(group.OnRemoveStatusItem, _onStatusRemoved);
 			mi.gameObject.Subscribe(-1988963660, _onChoreChanged);
+			mi.gameObject.Subscribe((int)GameHashes.EquippedItemEquipper, _onEquipped);
+			mi.gameObject.Subscribe((int)GameHashes.UnequippedItemEquipper, _onUnequipped);
 			CameraController.Instance.SetFollowTarget(mi.transform);
 		}
 
@@ -178,6 +188,30 @@ namespace OniAccess.Handlers.Tiles {
 					entry.GetName()));
 			} catch (Exception ex) {
 				Log.Warn($"DupeNavigator.OnStatusRemoved: {ex}");
+			}
+		}
+
+		private void OnEquipped(object data) {
+			try {
+				var prefabID = data as KPrefabID;
+				if (!WornSuit.IsSuit(prefabID))
+					return;
+				SpeechPipeline.SpeakQueued(prefabID.GetComponent<Equippable>().def.Name);
+			} catch (Exception ex) {
+				Log.Warn($"DupeNavigator.OnEquipped: {ex}");
+			}
+		}
+
+		private void OnUnequipped(object data) {
+			try {
+				var prefabID = data as KPrefabID;
+				if (!WornSuit.IsSuit(prefabID))
+					return;
+				SpeechPipeline.SpeakQueued(string.Format(
+					(string)STRINGS.ONIACCESS.DUPES.FOLLOW.STATUS_ENDED,
+					prefabID.GetComponent<Equippable>().def.Name));
+			} catch (Exception ex) {
+				Log.Warn($"DupeNavigator.OnUnequipped: {ex}");
 			}
 		}
 
@@ -349,6 +383,7 @@ namespace OniAccess.Handlers.Tiles {
 					(string)STRINGS.DUPLICANTS.STATUSITEMS.BIONICCRITICALBATTERY.NAME),
 				new StatusCheck(dupeItems.BionicOfflineIncapacitated,
 					(string)STRINGS.DUPLICANTS.STATUSITEMS.BIONICOFFLINEINCAPACITATED.NAME),
+				new StatusCheck(WornSuit.GetName),
 			};
 			return _statusChecks;
 		}
@@ -358,8 +393,9 @@ namespace OniAccess.Handlers.Tiles {
 			var selectable = mi.GetComponent<KSelectable>();
 			try {
 				foreach (var check in GetStatusChecks()) {
-					if (check.Test(mi, selectable))
-						results.Add(check.Label);
+					string label = check.Resolve(mi, selectable);
+					if (!string.IsNullOrEmpty(label))
+						results.Add(label);
 				}
 			} catch (System.Exception ex) {
 				Log.Warn($"DupeNavigator.BuildStatusPart: {ex}");
@@ -370,24 +406,42 @@ namespace OniAccess.Handlers.Tiles {
 		private struct StatusCheck {
 			private readonly StatusItem _statusItem;
 			private readonly System.Func<MinionIdentity, bool> _predicate;
-			public readonly string Label;
+			private readonly System.Func<MinionIdentity, string> _resolver;
+			private readonly string _label;
 
 			public StatusCheck(StatusItem statusItem, string label) {
 				_statusItem = statusItem;
 				_predicate = null;
-				Label = label;
+				_resolver = null;
+				_label = label;
 			}
 
 			public StatusCheck(System.Func<MinionIdentity, bool> predicate, string label) {
 				_statusItem = null;
 				_predicate = predicate;
-				Label = label;
+				_resolver = null;
+				_label = label;
 			}
 
-			public bool Test(MinionIdentity mi, KSelectable selectable) {
-				if (_predicate != null)
-					return _predicate(mi);
-				return selectable.HasStatusItem(_statusItem);
+			// Resolver returns the label itself (or null when it does not apply),
+			// letting the spoken text vary per dupe (e.g. the specific suit name).
+			public StatusCheck(System.Func<MinionIdentity, string> resolver) {
+				_statusItem = null;
+				_predicate = null;
+				_resolver = resolver;
+				_label = null;
+			}
+
+			/// <summary>
+			/// Returns the label to speak if this status applies, or null if not.
+			/// </summary>
+			public string Resolve(MinionIdentity mi, KSelectable selectable) {
+				if (_resolver != null)
+					return _resolver(mi);
+				bool active = _predicate != null
+					? _predicate(mi)
+					: selectable.HasStatusItem(_statusItem);
+				return active ? _label : null;
 			}
 		}
 	}
