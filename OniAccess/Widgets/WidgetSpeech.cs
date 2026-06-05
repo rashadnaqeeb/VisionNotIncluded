@@ -14,5 +14,14 @@ namespace OniAccess.Widgets {
 			string text = item.Announce();
 			return WidgetOps.AppendTooltip(text, tooltip);
 		}
+
+		/// <summary>
+		/// Convenience for the common case: an item with no live UI control and no
+		/// tooltip, whose announcement is an already-assembled string. Equivalent
+		/// to composing a <see cref="LabelItem"/> with no context or tooltip.
+		/// </summary>
+		public static string ComposeLabel(string text) {
+			return Compose(new LabelItem(text), NavContext.None, null);
+		}
 	}
 }

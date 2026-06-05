@@ -195,7 +195,7 @@ namespace OniAccess.Handlers.Notifications {
 				string text = _links[CurrentIndex].text;
 				if (!string.IsNullOrEmpty(parentContext))
 					text = parentContext + ", " + text;
-				SpeechPipeline.SpeakInterrupt(text);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(text));
 			}
 
 			protected override void ActivateCurrentItem() {

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens.Codex {
 	/// <summary>
@@ -44,7 +45,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			string text = _links[CurrentIndex].text;
 			if (!string.IsNullOrEmpty(parentContext))
 				text = parentContext + ", " + text;
-			SpeechPipeline.SpeakInterrupt(text);
+			SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(text));
 		}
 
 		protected override void ActivateCurrentItem() {

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using OniAccess.Input;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers {
 	/// <summary>
@@ -54,14 +55,16 @@ namespace OniAccess.Handlers {
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			if (CurrentIndex >= 0 && CurrentIndex < _entries.Count)
-				Speech.SpeechPipeline.SpeakInterrupt(_entries[CurrentIndex].ToString());
+				Speech.SpeechPipeline.SpeakInterrupt(
+					WidgetSpeech.ComposeLabel(_entries[CurrentIndex].ToString()));
 		}
 
 		public override void OnActivate() {
 			PlaySound("HUD_Click_Open");
 			base.OnActivate();
 			if (_entries.Count > 0)
-				Speech.SpeechPipeline.SpeakQueued(_entries[CurrentIndex].ToString());
+				Speech.SpeechPipeline.SpeakQueued(
+					WidgetSpeech.ComposeLabel(_entries[CurrentIndex].ToString()));
 			else
 				Speech.SpeechPipeline.SpeakQueued(STRINGS.ONIACCESS.SPEECH.NO_COMMANDS);
 		}

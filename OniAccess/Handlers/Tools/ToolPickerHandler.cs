@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using HarmonyLib;
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Tools {
 	/// <summary>
@@ -32,7 +33,8 @@ namespace OniAccess.Handlers.Tools {
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			if (CurrentIndex >= 0 && CurrentIndex < ToolHandler.AllTools.Count)
-				SpeechPipeline.SpeakInterrupt(ToolHandler.AllTools[CurrentIndex].Label);
+				SpeechPipeline.SpeakInterrupt(
+					WidgetSpeech.ComposeLabel(ToolHandler.AllTools[CurrentIndex].Label));
 		}
 
 		public override void OnActivate() {
@@ -40,7 +42,8 @@ namespace OniAccess.Handlers.Tools {
 			CurrentIndex = 0;
 			_search.Clear();
 			if (ToolHandler.AllTools.Count > 0)
-				SpeechPipeline.SpeakInterrupt(ToolHandler.AllTools[0].Label);
+				SpeechPipeline.SpeakInterrupt(
+					WidgetSpeech.ComposeLabel(ToolHandler.AllTools[0].Label));
 		}
 
 		public override void OnDeactivate() {

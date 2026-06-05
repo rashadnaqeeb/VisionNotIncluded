@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Notifications {
 	/// <summary>
@@ -77,13 +78,13 @@ namespace OniAccess.Handlers.Notifications {
 			if (label == null) return;
 			if (!string.IsNullOrEmpty(parentContext))
 				label = parentContext + ", " + label;
-			SpeechPipeline.SpeakInterrupt(label);
+			SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(label));
 		}
 
 		public override void OnActivate() {
 			base.OnActivate();
 			if (ItemCount > 0)
-				SpeechPipeline.SpeakQueued(GetItemLabel(0));
+				SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(GetItemLabel(0)));
 		}
 
 		public override bool Tick() {

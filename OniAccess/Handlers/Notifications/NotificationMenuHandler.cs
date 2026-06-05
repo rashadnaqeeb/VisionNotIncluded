@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 using OniAccess.Input;
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Notifications {
 	/// <summary>
@@ -57,7 +58,7 @@ namespace OniAccess.Handlers.Notifications {
 			if (!string.IsNullOrEmpty(parentContext))
 				label = parentContext + ", " + label;
 
-			SpeechPipeline.SpeakInterrupt(label);
+			SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(label));
 		}
 
 		public override void OnActivate() {
@@ -65,7 +66,7 @@ namespace OniAccess.Handlers.Notifications {
 			base.OnActivate();
 			_tracker.OnChanged += OnTrackerChanged;
 			if (ItemCount > 0)
-				SpeechPipeline.SpeakQueued(BuildCurrentLabel());
+				SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(BuildCurrentLabel()));
 			else
 				SpeechPipeline.SpeakQueued((string)STRINGS.ONIACCESS.NOTIFICATIONS.EMPTY);
 		}
@@ -151,7 +152,7 @@ namespace OniAccess.Handlers.Notifications {
 			if (ItemCount > 0) {
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.NOTIFICATIONS.DISMISSED);
-				SpeechPipeline.SpeakQueued(BuildCurrentLabel());
+				SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(BuildCurrentLabel()));
 			} else {
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.NOTIFICATIONS.EMPTY);
