@@ -1,23 +1,27 @@
 using System.Collections.Generic;
 
 using OniAccess.Input;
+using OniAccess.Navigation;
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Resources {
 	/// <summary>
 	/// Two-level resource browser backed by AllResourcesScreen.
 	/// Level 0 = discovered resource categories, level 1 = resources within category.
 	///
-	/// If any resources are pinned, a synthetic "Pinned" category appears at
-	/// index 0 containing all pinned resources. Regular categories follow,
-	/// offset by 1. If nothing is pinned the offset is 0.
-	///
-	/// Space at level 1 toggles pin. Shift+C at any level clears all pins.
-	/// Enter at level 1 pushes ResourceInstanceHandler.
-	/// Escape at any level closes AllResourcesScreen.
+	/// If any resources are pinned, a synthetic "Pinned" category is prepended at
+	/// index 0 containing all pinned resources. Space at level 1 toggles pin;
+	/// Shift+C clears all pins; both rebuild the tree, so only the cursor needs
+	/// fixing when the pinned category appears or disappears. Type-ahead searches
+	/// the resources, excluding the pinned duplicates. Enter pushes
+	/// ResourceInstanceHandler. Escape closes AllResourcesScreen.
 	/// </summary>
-	internal sealed class ResourceBrowserHandler: NestedMenuHandler {
-		internal ResourceBrowserHandler(KScreen screen) : base(screen) { }
+	internal sealed class ResourceBrowserHandler: NavTreeHandler {
+		internal ResourceBrowserHandler(KScreen screen) : base(screen) {
+			// Search the real resources, not the synthetic pinned duplicates.
+			Nav.SearchFilter = n => n.RoleKey != "pinned";
+		}
 
 		private static readonly ConsumedKey[] _consumedKeys = {
 			new ConsumedKey(KKeyCode.Space),
@@ -41,27 +45,20 @@ namespace OniAccess.Handlers.Resources {
 				Util.Log.Warn($"ResourceBrowserHandler: failed to deactivate search field: {ex.Message}");
 			}
 
-			string first = GetItemLabel(0, new int[MaxLevel + 1]);
-			if (first != null)
-				SpeechPipeline.SpeakQueued(first);
+			AnnounceCurrent(interrupt: false);
 		}
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
-			= new List<HelpEntry>(NestedNavHelpEntries) {
+			= new List<HelpEntry>(DrillNavHelpEntries) {
 				new HelpEntry("Space", STRINGS.ONIACCESS.RESOURCES.HELP_PIN),
 				new HelpEntry("Shift+C", STRINGS.ONIACCESS.RESOURCES.HELP_CLEAR_PINS),
 			}.AsReadOnly();
-
-		protected override int MaxLevel => 1;
-		protected override int SearchLevel => 1;
 
 		// ========================================
 		// PINNED CATEGORY OFFSET
 		// ========================================
 
-		/// <summary>
-		/// 1 when pinned resources exist (synthetic category at index 0), 0 otherwise.
-		/// </summary>
+		/// <summary>1 when pinned resources exist (synthetic category at index 0), 0 otherwise.</summary>
 		private int PinnedOffset =>
 			ClusterManager.Instance.activeWorld.worldInventory.pinnedResources.Count > 0 ? 1 : 0;
 
@@ -69,135 +66,64 @@ namespace OniAccess.Handlers.Resources {
 			PinnedOffset == 1 && catIndex == 0;
 
 		// ========================================
-		// ITEM COUNTS AND LABELS
+		// TREE CONSTRUCTION
 		// ========================================
 
-		protected override int GetItemCount(int level, int[] indices) {
-			if (level == 0)
-				return ResourceHelper.GetCategories().Count + PinnedOffset;
-
-			if (IsPinnedCategory(indices[0]))
-				return ResourceHelper.GetPinnedResources().Count;
-
-			var categories = ResourceHelper.GetCategories();
-			int catIdx = indices[0] - PinnedOffset;
-			if (catIdx < 0 || catIdx >= categories.Count) return 0;
-			return ResourceHelper.GetResources(categories[catIdx].Tag).Count;
+		protected override IReadOnlyList<NavItem> BuildRoots() {
+			var roots = new List<NavItem>();
+			if (PinnedOffset == 1) {
+				roots.Add(new MenuNode(
+					() => (string)STRINGS.ONIACCESS.RESOURCES.PINNED,
+					children: BuildPinnedResources));
+			}
+			foreach (var cat in ResourceHelper.GetCategories()) {
+				var c = cat;
+				roots.Add(new MenuNode(
+					() => ResourceHelper.BuildCategoryLabel(c.Tag),
+					children: () => BuildCategoryResources(c.Tag),
+					contextLabel: () => c.Tag.ProperNameStripLink()));
+			}
+			return roots;
 		}
 
-		protected override string GetItemLabel(int level, int[] indices) {
-			if (level == 0) {
-				if (IsPinnedCategory(indices[0]))
-					return (string)STRINGS.ONIACCESS.RESOURCES.PINNED;
-
-				var categories = ResourceHelper.GetCategories();
-				int catIdx = indices[0] - PinnedOffset;
-				if (catIdx < 0 || catIdx >= categories.Count) return null;
-				return ResourceHelper.BuildCategoryLabel(categories[catIdx].Tag);
+		private IReadOnlyList<NavItem> BuildPinnedResources() {
+			var pinned = ResourceHelper.GetPinnedResources();
+			var list = new List<NavItem>(pinned.Count);
+			foreach (var res in pinned) {
+				var r = res;
+				var measure = ResourceHelper.GetMeasureForResource(r);
+				list.Add(new MenuNode(
+					() => ResourceHelper.BuildResourceLabel(r, measure),
+					activate: () => { OpenInstance(r, measure); return true; },
+					roleKey: "pinned",
+					searchText: () => r.ProperNameStripLink()));
 			}
+			return list;
+		}
 
-			if (IsPinnedCategory(indices[0])) {
-				var pinned = ResourceHelper.GetPinnedResources();
-				if (indices[1] < 0 || indices[1] >= pinned.Count) return null;
-				var measure = ResourceHelper.GetMeasureForResource(pinned[indices[1]]);
-				return ResourceHelper.BuildResourceLabel(pinned[indices[1]], measure);
-			}
-
-			var cats = ResourceHelper.GetCategories();
-			int ci = indices[0] - PinnedOffset;
-			if (ci < 0 || ci >= cats.Count) return null;
-			var categoryTag = cats[ci].Tag;
+		private IReadOnlyList<NavItem> BuildCategoryResources(Tag categoryTag) {
 			var resources = ResourceHelper.GetResources(categoryTag);
-			if (indices[1] < 0 || indices[1] >= resources.Count) return null;
-			var m = ResourceHelper.GetMeasure(categoryTag);
-			return ResourceHelper.BuildResourceLabel(resources[indices[1]], m);
+			var measure = ResourceHelper.GetMeasure(categoryTag);
+			var list = new List<NavItem>(resources.Count);
+			foreach (var res in resources) {
+				var r = res;
+				list.Add(new MenuNode(
+					() => ResourceHelper.BuildResourceLabel(r, measure),
+					activate: () => { OpenInstance(r, measure); return true; },
+					searchText: () => r.ProperNameStripLink()));
+			}
+			return list;
 		}
 
-		protected override string GetParentLabel(int level, int[] indices) {
-			if (level >= 1) {
-				if (IsPinnedCategory(indices[0]))
-					return (string)STRINGS.ONIACCESS.RESOURCES.PINNED;
-
-				var categories = ResourceHelper.GetCategories();
-				int catIdx = indices[0] - PinnedOffset;
-				if (catIdx >= 0 && catIdx < categories.Count)
-					return categories[catIdx].Tag.ProperNameStripLink();
-			}
-			return null;
-		}
-
-		// ========================================
-		// LEAF ACTIVATION: push instance handler
-		// ========================================
-
-		protected override void ActivateLeafItem(int[] indices) {
-			Tag resourceTag;
-			GameUtil.MeasureUnit measure;
-
-			if (IsPinnedCategory(indices[0])) {
-				var pinned = ResourceHelper.GetPinnedResources();
-				if (indices[1] < 0 || indices[1] >= pinned.Count) return;
-				resourceTag = pinned[indices[1]];
-				measure = ResourceHelper.GetMeasureForResource(resourceTag);
-			} else {
-				var categories = ResourceHelper.GetCategories();
-				int catIdx = indices[0] - PinnedOffset;
-				if (catIdx < 0 || catIdx >= categories.Count) return;
-				var categoryTag = categories[catIdx].Tag;
-				var resources = ResourceHelper.GetResources(categoryTag);
-				if (indices[1] < 0 || indices[1] >= resources.Count) return;
-				resourceTag = resources[indices[1]];
-				measure = ResourceHelper.GetMeasure(categoryTag);
-			}
-
+		private void OpenInstance(Tag resourceTag, GameUtil.MeasureUnit measure) {
 			if (ResourceHelper.GetInstances(resourceTag).Count == 0) {
 				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.RESOURCES.NO_INSTANCES);
 				return;
 			}
-
 			PlaySound("HUD_Click_Open");
 			HandlerStack.Push(new ResourceInstanceHandler(resourceTag, measure));
-		}
-
-		// ========================================
-		// SEARCH: flat across all resources
-		// ========================================
-
-		protected override int GetSearchItemCount(int[] indices) {
-			int count = 0;
-			var categories = ResourceHelper.GetCategories();
-			for (int i = 0; i < categories.Count; i++)
-				count += ResourceHelper.GetResources(categories[i].Tag).Count;
-			return count;
-		}
-
-		protected override string GetSearchItemLabel(int flatIndex) {
-			var categories = ResourceHelper.GetCategories();
-			int offset = 0;
-			for (int i = 0; i < categories.Count; i++) {
-				var resources = ResourceHelper.GetResources(categories[i].Tag);
-				if (flatIndex < offset + resources.Count)
-					return resources[flatIndex - offset].ProperNameStripLink();
-				offset += resources.Count;
-			}
-			return null;
-		}
-
-		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
-			var categories = ResourceHelper.GetCategories();
-			int offset = 0;
-			int po = PinnedOffset;
-			for (int i = 0; i < categories.Count; i++) {
-				var resources = ResourceHelper.GetResources(categories[i].Tag);
-				if (flatIndex < offset + resources.Count) {
-					outIndices[0] = i + po;
-					outIndices[1] = flatIndex - offset;
-					return;
-				}
-				offset += resources.Count;
-			}
 		}
 
 		// ========================================
@@ -219,21 +145,21 @@ namespace OniAccess.Handlers.Resources {
 		}
 
 		private void TogglePin() {
-			if (Level != 1) return;
+			if (Nav.Depth != 1) return;
 
-			bool inPinned = IsPinnedCategory(GetIndex(0));
+			bool inPinned = IsPinnedCategory(Nav.Path[0]);
 			Tag tag;
 			if (inPinned) {
 				var pinned = ResourceHelper.GetPinnedResources();
-				int resIdx = GetIndex(1);
+				int resIdx = Nav.Path[1];
 				if (resIdx < 0 || resIdx >= pinned.Count) return;
 				tag = pinned[resIdx];
 			} else {
 				var categories = ResourceHelper.GetCategories();
-				int catIdx = GetIndex(0) - PinnedOffset;
+				int catIdx = Nav.Path[0] - PinnedOffset;
 				if (catIdx < 0 || catIdx >= categories.Count) return;
 				var resources = ResourceHelper.GetResources(categories[catIdx].Tag);
-				int resIdx = GetIndex(1);
+				int resIdx = Nav.Path[1];
 				if (resIdx < 0 || resIdx >= resources.Count) return;
 				tag = resources[resIdx];
 			}
@@ -249,21 +175,13 @@ namespace OniAccess.Handlers.Resources {
 					var remaining = ResourceHelper.GetPinnedResources();
 					if (remaining.Count == 0) {
 						// Pinned category gone — drop to level 0
-						Level = 0;
-						SetIndex(0, 0);
-						SetIndex(1, 0);
-						string label = GetItemLabel(0, new int[MaxLevel + 1]);
-						if (label != null)
-							SpeechPipeline.SpeakQueued(label);
+						Nav.SetPath(new[] { 0 });
 					} else {
-						int idx = GetIndex(1);
-						if (idx >= remaining.Count)
-							idx = remaining.Count - 1;
-						SetIndex(1, idx);
-						string label = GetItemLabel(Level, new[] { GetIndex(0), idx });
-						if (label != null)
-							SpeechPipeline.SpeakQueued(label);
+						int idx = Nav.Path[1];
+						if (idx >= remaining.Count) idx = remaining.Count - 1;
+						Nav.SetPath(new[] { 0, idx });
 					}
+					AnnounceCurrent(interrupt: false);
 				}
 			} else {
 				int oldOffset = PinnedOffset;
@@ -272,10 +190,10 @@ namespace OniAccess.Handlers.Resources {
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.RESOURCES.PINNED);
 
-				// PinnedOffset 0→1: pinned category inserted at index 0,
-				// so current category index must shift up by 1
+				// PinnedOffset 0->1: pinned category inserted at index 0,
+				// so the cursor's category index must shift up by 1 to stay put.
 				if (oldOffset == 0 && PinnedOffset == 1)
-					SetIndex(0, GetIndex(0) + 1);
+					Nav.SetPath(new[] { Nav.Path[0] + 1, Nav.Path[1] });
 			}
 		}
 
@@ -283,27 +201,23 @@ namespace OniAccess.Handlers.Resources {
 			var pinned = ClusterManager.Instance.activeWorld.worldInventory.pinnedResources;
 			if (pinned.Count == 0) return;
 
-			bool wasInPinned = IsPinnedCategory(GetIndex(0));
+			bool wasInPinned = IsPinnedCategory(Nav.Path[0]);
 			pinned.Clear();
 			PlaySound("HUD_Click_Deselect");
 			SpeechPipeline.SpeakInterrupt(
 				(string)STRINGS.ONIACCESS.RESOURCES.ALL_UNPINNED);
 
 			if (wasInPinned) {
-				Level = 0;
-				SetIndex(0, 0);
-				SetIndex(1, 0);
-				string label = GetItemLabel(0, new int[MaxLevel + 1]);
-				if (label != null)
-					SpeechPipeline.SpeakQueued(label);
-			} else if (Level == 0) {
+				Nav.SetPath(new[] { 0 });
+				AnnounceCurrent(interrupt: false);
+			} else if (Nav.Depth == 0) {
 				// Category indices shifted down by 1, adjust
-				int idx = GetIndex(0) - 1;
+				int idx = Nav.Path[0] - 1;
 				if (idx < 0) idx = 0;
-				SetIndex(0, idx);
+				Nav.SetPath(new[] { idx });
 			} else {
 				// Level 1 in regular category: category index shifted down by 1
-				SetIndex(0, GetIndex(0) - 1);
+				Nav.SetPath(new[] { Nav.Path[0] - 1, Nav.Path[1] });
 			}
 		}
 
