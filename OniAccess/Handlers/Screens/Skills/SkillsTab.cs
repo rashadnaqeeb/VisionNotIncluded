@@ -3,14 +3,21 @@ using System.Collections.Generic;
 
 using Database;
 
+using OniAccess.Navigation;
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens.Skills {
 	/// <summary>
-	/// Tab 2: NestedMenuHandler with categories (Dupe Info, Available, Locked, Mastered, Boosters).
-	/// Level 0 = categories, level 1 = items within category, level 2 = hat list (only under hat entry).
+	/// Tab 2: tree with categories (Dupe Info, Available, Locked, Mastered, Boosters).
+	/// Level 0 = categories, level 1 = items within category, level 2 = hat list
+	/// (only under the Dupe Info hat entry).
+	///
+	/// Type-ahead searches the learnable skills (tagged "skill"); the dupe-info,
+	/// booster, and hat rows are excluded. Space jumps to the tree tab for the
+	/// current skill; +/- assign and unassign boosters.
 	/// </summary>
-	internal class SkillsTab: NestedMenuHandler, IScreenTab {
+	internal class SkillsTab: NavTreeHandler, IScreenTab {
 		private readonly SkillsScreenHandler _parent;
 
 		// Category indices
@@ -21,23 +28,22 @@ namespace OniAccess.Handlers.Screens.Skills {
 		private const int CAT_BOOSTERS = 4;
 
 		// Dupe Info item indices
-		private const int INFO_NAME_POINTS = 0;
-		private const int INFO_INTERESTS = 1;
-		private const int INFO_MORALE = 2;
-		private const int INFO_MORALE_NEED = 3;
-		private const int INFO_XP = 4;
 		private const int INFO_HAT = 5;
 
 		internal SkillsTab(SkillsScreenHandler parent) : base(screen: null) {
 			_parent = parent;
+			// Search the learnable skills only.
+			Nav.SearchFilter = n => n.RoleKey == "skill";
 		}
 
 		public string TabName => (string)STRINGS.ONIACCESS.SKILLS.SKILLS_TAB;
 
 		public override string DisplayName => TabName;
 
+		protected override int StartDepth => 1;
+
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
-			= new List<HelpEntry>(NestedNavHelpEntries) {
+			= new List<HelpEntry>(DrillNavHelpEntries) {
 				new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.SWITCH_PANEL),
 				new HelpEntry("Space", STRINGS.ONIACCESS.SKILLS.JUMP_TO_TREE_HELP),
 				new HelpEntry("Enter", STRINGS.ONIACCESS.SKILLS.LEARN_HELP),
@@ -52,11 +58,8 @@ namespace OniAccess.Handlers.Screens.Skills {
 			ResetState();
 			if (announce)
 				SpeechPipeline.SpeakInterrupt(TabName);
-			if (ItemCount > 0) {
-				string label = GetItemLabel(CurrentIndex);
-				if (!string.IsNullOrEmpty(label))
-					SpeechPipeline.SpeakQueued(label);
-			}
+			if (ItemCount > 0)
+				AnnounceCurrent(interrupt: false);
 		}
 
 		public void OnTabDeactivated() {
@@ -65,7 +68,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 
 		public bool HandleInput() {
 			// Space: jump to tree tab for current skill
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Space) && Level == 1) {
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Space) && Nav.Depth == 1) {
 				var skill = GetCurrentSkill();
 				if (skill != null) {
 					_parent.JumpToTreeTab(skill);
@@ -74,7 +77,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 			}
 
 			// Plus/Minus for booster assign/unassign
-			if (Level == 1 && GetIndex(0) == GetBoosterCategoryIndex()) {
+			if (Nav.Depth == 1 && Nav.Path[0] == GetBoosterCategoryIndex()) {
 				if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Equals) ||
 					UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.KeypadPlus)) {
 					HandleBoosterAssign();
@@ -95,101 +98,106 @@ namespace OniAccess.Handlers.Screens.Skills {
 		}
 
 		// ========================================
-		// NestedMenuHandler abstracts
+		// TREE CONSTRUCTION
 		// ========================================
 
-		protected override int MaxLevel => 2;
-		protected override int SearchLevel => 1;
-		protected override int StartLevel => 1;
-
-		protected override int GetItemCount(int level, int[] indices) {
-			if (level == 0) return GetCategoryCount();
-			if (level == 1) return GetLevel1Count(indices[0]);
-			if (level == 2) return GetLevel2Count(indices[0], indices[1]);
-			return 0;
-		}
-
-		protected override string GetItemLabel(int level, int[] indices) {
-			if (level == 0) return GetCategoryName(indices[0]);
-			if (level == 1) return GetLevel1Label(indices[0], indices[1]);
-			if (level == 2) return GetLevel2Label(indices[0], indices[1], indices[2]);
-			return null;
-		}
-
-		protected override string GetParentLabel(int level, int[] indices) {
-			if (level >= 1) return GetCategoryName(indices[0]);
-			return null;
-		}
-
-		protected override void ActivateLeafItem(int[] indices) {
-			if (indices[0] == CAT_DUPE_INFO && Level == 2) {
-				// Hat selection
-				SelectHat(indices[2]);
-				return;
+		protected override IReadOnlyList<NavItem> BuildRoots() {
+			int count = GetCategoryCount();
+			var roots = new List<NavItem>(count);
+			for (int c = 0; c < count; c++) {
+				int cat = c;
+				roots.Add(new MenuNode(
+					() => GetCategoryName(cat),
+					children: () => BuildLevel1(cat)));
 			}
-			if (Level == 1) {
-				int cat = indices[0];
-				if (cat == CAT_DUPE_INFO) {
-					if (indices[1] == INFO_HAT) {
-						// Drill down handled by NestedMenuHandler
-						return;
-					}
-					return;
-				}
-				if (cat == GetBoosterCategoryIndex()) {
-					// Booster hint
-					SpeechPipeline.SpeakInterrupt(
-						STRINGS.ONIACCESS.SKILLS.BOOSTER_HINT);
-					return;
-				}
-				// Skill entry: try to learn
-				var skill = GetSkillAtLevel1(cat, indices[1]);
-				if (skill != null)
-					TryLearnSkill(skill);
-			}
+			return roots;
 		}
 
-		protected override int GetSearchTargetLevel(int flatIndex, int[] mappedIndices) {
-			return 1;
-		}
-
-		// ========================================
-		// Search across all skill categories (excluding Dupe Info and Boosters)
-		// ========================================
-
-		protected override int GetSearchItemCount(int[] indices) {
-			return GetAllSearchableSkills().Count;
-		}
-
-		protected override string GetSearchItemLabel(int flatIndex) {
-			var skills = GetAllSearchableSkills();
-			if (flatIndex < 0 || flatIndex >= skills.Count) return null;
-			return skills[flatIndex].Name;
-		}
-
-		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
-			var skills = GetAllSearchableSkills();
-			if (flatIndex < 0 || flatIndex >= skills.Count) return;
-			var skill = skills[flatIndex];
-
-			// Determine which category this skill falls into
+		private IReadOnlyList<NavItem> BuildLevel1(int cat) {
 			var identity = _parent.SelectedDupe;
+			if (identity == null) return System.Array.Empty<NavItem>();
 			var model = SkillsHelper.GetDupeModel(identity);
-			for (int cat = CAT_AVAILABLE; cat <= CAT_MASTERED; cat++) {
-				var bucket = CategoryToBucket(cat);
-				var bucketSkills = SkillsHelper.GetSkillsInBucket(
-					bucket, identity, model);
-				for (int i = 0; i < bucketSkills.Count; i++) {
-					if (bucketSkills[i].Id == skill.Id) {
-						outIndices[0] = cat;
-						outIndices[1] = i;
-						return;
-					}
+
+			if (cat == CAT_DUPE_INFO) return BuildDupeInfoNodes(identity);
+			if (cat == GetBoosterCategoryIndex()) return BuildBoosterNodes();
+			return BuildSkillNodes(cat, identity, model);
+		}
+
+		private IReadOnlyList<NavItem> BuildSkillNodes(int cat, IAssignableIdentity identity, Tag model) {
+			var skills = SkillsHelper.GetSkillsInBucket(CategoryToBucket(cat), identity, model);
+			var list = new List<NavItem>(skills.Count);
+			foreach (var s in skills) {
+				var skill = s;
+				list.Add(new MenuNode(
+					() => SkillsHelper.BuildSkillLabel(skill, _parent.SelectedDupe),
+					activate: () => { TryLearnSkill(skill); return true; },
+					roleKey: "skill",
+					searchText: () => skill.Name));
+			}
+			return list;
+		}
+
+		private IReadOnlyList<NavItem> BuildDupeInfoNodes(IAssignableIdentity identity) {
+			var labels = SkillsHelper.BuildDupeInfoLabels(identity);
+			var list = new List<NavItem>(labels.Count);
+			for (int i = 0; i < labels.Count; i++) {
+				int idx = i;
+				if (idx == INFO_HAT && labels.Count > INFO_HAT) {
+					// Hat row drills into the hat list.
+					list.Add(new MenuNode(
+						() => RowLabel(idx),
+						children: () => BuildHatNodes()));
+				} else {
+					// Info-only row.
+					list.Add(new MenuNode(() => RowLabel(idx)));
 				}
 			}
-			// Fallback: skill not found in any bucket (timing edge case)
-			outIndices[0] = CAT_AVAILABLE;
-			outIndices[1] = 0;
+			return list;
+		}
+
+		private string RowLabel(int idx) {
+			var labels = SkillsHelper.BuildDupeInfoLabels(_parent.SelectedDupe);
+			return idx >= 0 && idx < labels.Count ? labels[idx] : null;
+		}
+
+		private IReadOnlyList<NavItem> BuildHatNodes() {
+			var resume = SkillsHelper.GetResume(_parent.SelectedDupe);
+			if (resume == null) return System.Array.Empty<NavItem>();
+			var hats = SkillsHelper.GetAvailableHats(resume);
+			var list = new List<NavItem>(hats.Count);
+			for (int i = 0; i < hats.Count; i++) {
+				int hatIdx = i;
+				list.Add(new MenuNode(
+					() => HatName(hatIdx),
+					activate: () => { SelectHat(hatIdx); return true; }));
+			}
+			return list;
+		}
+
+		private string HatName(int hatIdx) {
+			var resume = SkillsHelper.GetResume(_parent.SelectedDupe);
+			if (resume == null) return null;
+			var hats = SkillsHelper.GetAvailableHats(resume);
+			return hatIdx >= 0 && hatIdx < hats.Count ? hats[hatIdx].Name : null;
+		}
+
+		private IReadOnlyList<NavItem> BuildBoosterNodes() {
+			SkillsHelper.ResolveDupe(_parent.SelectedDupe, out var minionIdentity, out _);
+			if (minionIdentity == null) return System.Array.Empty<NavItem>();
+			var list = new List<NavItem> {
+				// Slot summary; Enter on any booster row speaks the hint.
+				new MenuNode(
+					() => SkillsHelper.BuildSlotSummary(minionIdentity),
+					activate: () => { SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.SKILLS.BOOSTER_HINT); return true; }),
+			};
+			var entries = SkillsHelper.GetBoosterEntries(minionIdentity);
+			foreach (var e in entries) {
+				var entry = e;
+				list.Add(new MenuNode(
+					() => SkillsHelper.BuildBoosterLabel(entry),
+					activate: () => { SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.SKILLS.BOOSTER_HINT); return true; }));
+			}
+			return list;
 		}
 
 		// ========================================
@@ -223,77 +231,8 @@ namespace OniAccess.Handlers.Screens.Skills {
 		}
 
 		// ========================================
-		// Level 1 items
+		// Hat selection
 		// ========================================
-
-		private int GetLevel1Count(int cat) {
-			var identity = _parent.SelectedDupe;
-			if (identity == null) return 0;
-			var model = SkillsHelper.GetDupeModel(identity);
-
-			switch (cat) {
-				case CAT_DUPE_INFO:
-					return SkillsHelper.IsStored(identity) ? 1 : 6;
-				case CAT_AVAILABLE:
-				case CAT_LOCKED:
-				case CAT_MASTERED:
-					return SkillsHelper.GetSkillsInBucket(
-						CategoryToBucket(cat), identity, model).Count;
-				case CAT_BOOSTERS:
-					return GetBoosterItemCount();
-				default:
-					return 0;
-			}
-		}
-
-		private string GetLevel1Label(int cat, int idx) {
-			var identity = _parent.SelectedDupe;
-			if (identity == null) return null;
-			var model = SkillsHelper.GetDupeModel(identity);
-
-			switch (cat) {
-				case CAT_DUPE_INFO: {
-						var labels = SkillsHelper.BuildDupeInfoLabels(identity);
-						return idx < labels.Count ? labels[idx] : null;
-					}
-				case CAT_AVAILABLE:
-				case CAT_LOCKED:
-				case CAT_MASTERED: {
-						var skills = SkillsHelper.GetSkillsInBucket(
-							CategoryToBucket(cat), identity, model);
-						if (idx < 0 || idx >= skills.Count) return null;
-						return SkillsHelper.BuildSkillLabel(skills[idx], identity);
-					}
-				case CAT_BOOSTERS:
-					return GetBoosterLabel(idx);
-				default:
-					return null;
-			}
-		}
-
-		// ========================================
-		// Level 2: Hat list
-		// ========================================
-
-		private int GetLevel2Count(int cat, int idx) {
-			if (cat == CAT_DUPE_INFO && idx == INFO_HAT) {
-				var resume = SkillsHelper.GetResume(_parent.SelectedDupe);
-				if (resume == null) return 0;
-				return SkillsHelper.GetAvailableHats(resume).Count;
-			}
-			return 0;
-		}
-
-		private string GetLevel2Label(int cat, int idx, int subIdx) {
-			if (cat == CAT_DUPE_INFO && idx == INFO_HAT) {
-				var resume = SkillsHelper.GetResume(_parent.SelectedDupe);
-				if (resume == null) return null;
-				var hats = SkillsHelper.GetAvailableHats(resume);
-				if (subIdx < 0 || subIdx >= hats.Count) return null;
-				return hats[subIdx].Name;
-			}
-			return null;
-		}
 
 		private void SelectHat(int hatIdx) {
 			var resume = SkillsHelper.GetResume(_parent.SelectedDupe);
@@ -329,10 +268,10 @@ namespace OniAccess.Handlers.Screens.Skills {
 		// ========================================
 
 		private Skill GetCurrentSkill() {
-			if (Level < 1) return null;
-			int cat = GetIndex(0);
+			if (Nav.Depth < 1) return null;
+			int cat = Nav.Path[0];
 			if (cat == CAT_DUPE_INFO || cat == GetBoosterCategoryIndex()) return null;
-			return GetSkillAtLevel1(cat, GetIndex(1));
+			return GetSkillAtLevel1(cat, Nav.Path[1]);
 		}
 
 		private Skill GetSkillAtLevel1(int cat, int idx) {
@@ -353,32 +292,11 @@ namespace OniAccess.Handlers.Screens.Skills {
 		// Boosters
 		// ========================================
 
-		private int GetBoosterItemCount() {
-			SkillsHelper.ResolveDupe(
-				_parent.SelectedDupe, out var minionIdentity, out _);
-			if (minionIdentity == null) return 0;
-			// GetBoosterEntries already logs on failure and returns empty
-			var entries = SkillsHelper.GetBoosterEntries(minionIdentity);
-			return 1 + entries.Count;
-		}
-
-		private string GetBoosterLabel(int idx) {
-			SkillsHelper.ResolveDupe(
-				_parent.SelectedDupe, out var minionIdentity, out _);
-			if (minionIdentity == null) return null;
-			if (idx == 0)
-				return SkillsHelper.BuildSlotSummary(minionIdentity);
-			var entries = SkillsHelper.GetBoosterEntries(minionIdentity);
-			int entryIdx = idx - 1;
-			if (entryIdx < 0 || entryIdx >= entries.Count) return null;
-			return SkillsHelper.BuildBoosterLabel(entries[entryIdx]);
-		}
-
 		private void HandleBoosterAssign() {
 			SkillsHelper.ResolveDupe(
 				_parent.SelectedDupe, out var minionIdentity, out _);
 			if (minionIdentity == null) { SkillsHelper.PlayRejectSound(); return; }
-			int idx = GetIndex(1) - 1; // Subtract 1 for slot summary
+			int idx = Nav.Path[1] - 1; // Subtract 1 for slot summary
 			if (idx < 0) { SkillsHelper.PlayRejectSound(); return; }
 			try {
 				var entries = SkillsHelper.GetBoosterEntries(minionIdentity);
@@ -410,7 +328,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 			SkillsHelper.ResolveDupe(
 				_parent.SelectedDupe, out var minionIdentity, out _);
 			if (minionIdentity == null) { SkillsHelper.PlayRejectSound(); return; }
-			int idx = GetIndex(1) - 1;
+			int idx = Nav.Path[1] - 1;
 			if (idx < 0) { SkillsHelper.PlayRejectSound(); return; }
 			try {
 				var entries = SkillsHelper.GetBoosterEntries(minionIdentity);
@@ -453,12 +371,6 @@ namespace OniAccess.Handlers.Screens.Skills {
 				case CAT_MASTERED: return SkillsHelper.Bucket.Mastered;
 				default: return SkillsHelper.Bucket.DupeInfo;
 			}
-		}
-
-		private List<Skill> GetAllSearchableSkills() {
-			var identity = _parent.SelectedDupe;
-			var model = SkillsHelper.GetDupeModel(identity);
-			return SkillsHelper.GetSkillsForModel(model);
 		}
 	}
 }
