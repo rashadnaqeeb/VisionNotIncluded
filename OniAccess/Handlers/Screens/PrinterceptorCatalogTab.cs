@@ -3,11 +3,13 @@ using System.Linq;
 
 using UnityEngine;
 
+using OniAccess.Navigation;
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens {
 	/// <summary>
-	/// Catalog tab for PrinterceptorScreenHandler. 2-level NestedMenuHandler:
+	/// Catalog tab for PrinterceptorScreenHandler. 2-level tree:
 	/// Level 0 = Critters / Plants. Level 1 = individual printable entries,
 	/// sorted alphabetically by the resulting creature or plant's proper name.
 	///
@@ -15,12 +17,11 @@ namespace OniAccess.Handlers.Screens {
 	/// names are static for a save; cost/affordability are re-read at speech time
 	/// by the details tab.
 	/// </summary>
-	internal class PrinterceptorCatalogTab: NestedMenuHandler, IScreenTab {
+	internal class PrinterceptorCatalogTab: NavTreeHandler, IScreenTab {
 		private readonly PrinterceptorScreenHandler _parent;
 
 		private List<CatalogEntry> _critters;
 		private List<CatalogEntry> _plants;
-		private List<FlatEntry> _flatSearch;
 		private bool _built;
 
 		private const int CATEGORY_COUNT = 2;
@@ -35,13 +36,15 @@ namespace OniAccess.Handlers.Screens {
 
 		internal PrinterceptorCatalogTab(PrinterceptorScreenHandler parent) : base(screen: null) {
 			_parent = parent;
+			// Search the entries (activatable leaves), not the two category rows.
+			Nav.SearchFilter = n => n.IsActivatable();
 		}
 
 		public string TabName => (string)STRINGS.ONIACCESS.PRINTERCEPTOR.CATALOG_TAB;
 
 		public override string DisplayName => TabName;
 
-		public override IReadOnlyList<HelpEntry> HelpEntries => NestedNavHelpEntries;
+		public override IReadOnlyList<HelpEntry> HelpEntries => DrillNavHelpEntries;
 
 		// ========================================
 		// IScreenTab
@@ -65,11 +68,8 @@ namespace OniAccess.Handlers.Screens {
 				ResetState();
 			if (announce)
 				SpeechPipeline.SpeakInterrupt(TabName);
-			if (ItemCount > 0) {
-				string label = GetItemLabel(CurrentIndex);
-				if (!string.IsNullOrEmpty(label))
-					SpeechPipeline.SpeakQueued(label);
-			}
+			if (ItemCount > 0)
+				AnnounceCurrent(interrupt: false);
 		}
 
 		/// <summary>
@@ -77,9 +77,9 @@ namespace OniAccess.Handlers.Screens {
 		/// default(Tag) if the cursor is on a category (level 0) or out of range.
 		/// </summary>
 		internal Tag CurrentLeafTag() {
-			if (Level < MaxLevel) return default;
-			int c = GetIndex(0);
-			int i = GetIndex(1);
+			if (Nav.Depth < 1) return default;
+			int c = Nav.Path[0];
+			int i = Nav.Path[1];
 			if (c < 0 || c >= CATEGORY_COUNT) return default;
 			var entries = GetCategory(c);
 			if (entries == null || i < 0 || i >= entries.Count) return default;
@@ -92,9 +92,7 @@ namespace OniAccess.Handlers.Screens {
 				if (entries == null) continue;
 				for (int i = 0; i < entries.Count; i++) {
 					if (entries[i].printableTag == tag) {
-						SetIndex(0, c);
-						SetIndex(1, i);
-						Level = 1;
+						Nav.SetPath(new[] { c, i });
 						_search.Clear();
 						SuppressSearchThisFrame();
 						return true;
@@ -117,79 +115,37 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		// ========================================
-		// NestedMenuHandler abstracts
+		// TREE CONSTRUCTION
 		// ========================================
 
-		protected override int MaxLevel => 1;
-		protected override int SearchLevel => 1;
-
-		protected override int GetItemCount(int level, int[] indices) {
-			if (level == 0) return CATEGORY_COUNT;
-			if (indices[0] < 0 || indices[0] >= CATEGORY_COUNT) return 0;
-			var entries = GetCategory(indices[0]);
-			return entries?.Count ?? 0;
+		protected override IReadOnlyList<NavItem> BuildRoots() {
+			var roots = new List<NavItem>(CATEGORY_COUNT);
+			for (int c = 0; c < CATEGORY_COUNT; c++) {
+				int cat = c;
+				roots.Add(new MenuNode(
+					() => GetCategoryName(cat),
+					children: () => BuildEntries(cat)));
+			}
+			return roots;
 		}
 
-		protected override string GetItemLabel(int level, int[] indices) {
-			if (level == 0) return GetCategoryName(indices[0]);
-			if (indices[0] < 0 || indices[0] >= CATEGORY_COUNT) return null;
-			var entries = GetCategory(indices[0]);
-			if (entries == null || indices[1] < 0 || indices[1] >= entries.Count) return null;
-			return entries[indices[1]].displayName;
+		private IReadOnlyList<NavItem> BuildEntries(int categoryIndex) {
+			var entries = GetCategory(categoryIndex);
+			if (entries == null) return System.Array.Empty<NavItem>();
+			var list = new List<NavItem>(entries.Count);
+			foreach (var entry in entries) {
+				var e = entry;
+				list.Add(new MenuNode(
+					() => e.displayName,
+					activate: () => { ActivateEntry(e); return true; }));
+			}
+			return list;
 		}
 
-		protected override string GetParentLabel(int level, int[] indices) {
-			if (level <= 0) return null;
-			return GetCategoryName(indices[0]);
-		}
-
-		protected override void ActivateLeafItem(int[] indices) {
-			if (indices[0] < 0 || indices[0] >= CATEGORY_COUNT) return;
-			var entries = GetCategory(indices[0]);
-			if (entries == null || indices[1] < 0 || indices[1] >= entries.Count) return;
-			var entry = entries[indices[1]];
+		private void ActivateEntry(CatalogEntry entry) {
 			_parent.SetSelectedEntity(entry.printableTag);
 			PlaySound("HUD_Click_Open");
 			_parent.SwitchToDetailsTab(announce: true);
-		}
-
-		// ========================================
-		// Search (flat leaf list across all categories)
-		// ========================================
-
-		protected override int GetSearchItemCount(int[] indices) {
-			return GetFlatSearch().Count;
-		}
-
-		protected override string GetSearchItemLabel(int flatIndex) {
-			var all = GetFlatSearch();
-			if (flatIndex < 0 || flatIndex >= all.Count) return null;
-			return all[flatIndex].displayName;
-		}
-
-		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
-			var all = GetFlatSearch();
-			if (flatIndex < 0 || flatIndex >= all.Count) return;
-			outIndices[0] = all[flatIndex].categoryIndex;
-			outIndices[1] = all[flatIndex].entryIndex;
-		}
-
-		private List<FlatEntry> GetFlatSearch() {
-			if (_flatSearch != null) return _flatSearch;
-			var result = new List<FlatEntry>();
-			for (int c = 0; c < CATEGORY_COUNT; c++) {
-				var entries = GetCategory(c);
-				if (entries == null) continue;
-				for (int e = 0; e < entries.Count; e++) {
-					result.Add(new FlatEntry {
-						categoryIndex = c,
-						entryIndex = e,
-						displayName = entries[e].displayName,
-					});
-				}
-			}
-			_flatSearch = result;
-			return result;
 		}
 
 		// ========================================
@@ -207,7 +163,6 @@ namespace OniAccess.Handlers.Screens {
 		private void BuildCatalog() {
 			_critters = BuildCritters();
 			_plants = BuildPlants();
-			_flatSearch = null;
 		}
 
 		private static List<CatalogEntry> BuildCritters() {
@@ -320,12 +275,6 @@ namespace OniAccess.Handlers.Screens {
 
 		private struct CatalogEntry {
 			internal Tag printableTag;
-			internal string displayName;
-		}
-
-		private struct FlatEntry {
-			internal int categoryIndex;
-			internal int entryIndex;
 			internal string displayName;
 		}
 	}

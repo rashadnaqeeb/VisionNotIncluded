@@ -1,22 +1,24 @@
 using System.Collections.Generic;
+
+using OniAccess.Navigation;
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Sandbox {
 	/// <summary>
-	/// Modal nested menu for sandbox selectors. Adapts to categorized selectors
-	/// (Element, Entity: MaxLevel=1, SearchLevel=1) or flat selectors
-	/// (Disease, Story: MaxLevel=0, SearchLevel=0).
+	/// Modal menu for sandbox selectors. Adapts to categorized selectors
+	/// (Element, Entity: level 0 = categories, level 1 = items) or flat selectors
+	/// (Disease, Story: level 0 = all items).
 	///
-	/// Categorized: level 0 = filter categories, level 1 = items within category.
-	/// Flat: level 0 = all items.
-	///
-	/// Enter selects the item and pops back to the parameter menu.
+	/// Enter selects the item and pops back to the parameter menu. Type-ahead
+	/// searches the items (activatable leaves) across all categories.
 	/// </summary>
-	public class SandboxSelectorHandler: NestedMenuHandler {
+	public class SandboxSelectorHandler: NavTreeHandler {
 		private readonly SandboxToolParameterMenu.SelectorValue _selector;
 		private readonly bool _hasCategories;
 
-		// Filtered option lists per category (or one list for flat selectors)
+		// Filtered option lists per category (or one list for flat selectors), built
+		// once on activation — the option set is static for the selector's lifetime.
 		private List<List<object>> _categoryOptions;
 		private List<string> _categoryNames;
 
@@ -26,7 +28,7 @@ namespace OniAccess.Handlers.Sandbox {
 
 		static SandboxSelectorHandler() {
 			var list = new List<HelpEntry>();
-			list.AddRange(NestedNavHelpEntries);
+			list.AddRange(DrillNavHelpEntries);
 			list.Add(new HelpEntry("Escape", STRINGS.ONIACCESS.HELP.CLOSE));
 			_helpEntries = list.AsReadOnly();
 		}
@@ -40,107 +42,44 @@ namespace OniAccess.Handlers.Sandbox {
 		}
 
 		// ========================================
-		// NESTED MENU ABSTRACTS
+		// TREE CONSTRUCTION
 		// ========================================
 
-		protected override int MaxLevel => _hasCategories ? 1 : 0;
-		protected override int SearchLevel => _hasCategories ? 1 : 0;
-
-		protected override int GetItemCount(int level, int[] indices) {
-			if (_categoryOptions == null) return 0;
-
-			if (!_hasCategories)
-				return _categoryOptions.Count > 0 ? _categoryOptions[0].Count : 0;
-
-			if (level == 0) return _categoryOptions.Count;
-			if (indices[0] < 0 || indices[0] >= _categoryOptions.Count) return 0;
-			return _categoryOptions[indices[0]].Count;
-		}
-
-		protected override string GetItemLabel(int level, int[] indices) {
-			if (_categoryOptions == null) return null;
+		protected override IReadOnlyList<NavItem> BuildRoots() {
+			var roots = new List<NavItem>();
+			if (_categoryOptions == null) return roots;
 
 			if (!_hasCategories) {
-				if (_categoryOptions.Count == 0) return null;
-				var items = _categoryOptions[0];
-				int idx = indices[0];
-				if (idx < 0 || idx >= items.Count) return null;
-				return _selector.getOptionName(items[idx]);
+				if (_categoryOptions.Count > 0)
+					return BuildItems(_categoryOptions[0]);
+				return roots;
 			}
 
-			if (level == 0) {
-				if (indices[0] < 0 || indices[0] >= _categoryNames.Count) return null;
-				return _categoryNames[indices[0]];
+			for (int c = 0; c < _categoryOptions.Count; c++) {
+				var items = _categoryOptions[c];
+				var name = _categoryNames[c];
+				roots.Add(new MenuNode(
+					() => name,
+					children: () => BuildItems(items)));
 			}
-
-			int cat = indices[0];
-			if (cat < 0 || cat >= _categoryOptions.Count) return null;
-			var catItems = _categoryOptions[cat];
-			int itemIdx = indices[1];
-			if (itemIdx < 0 || itemIdx >= catItems.Count) return null;
-			return _selector.getOptionName(catItems[itemIdx]);
+			return roots;
 		}
 
-		protected override string GetParentLabel(int level, int[] indices) {
-			if (!_hasCategories || level == 0) return null;
-			if (indices[0] < 0 || indices[0] >= _categoryNames.Count) return null;
-			return _categoryNames[indices[0]];
+		private IReadOnlyList<NavItem> BuildItems(List<object> items) {
+			var list = new List<NavItem>(items.Count);
+			foreach (var opt in items) {
+				var o = opt;
+				list.Add(new MenuNode(
+					() => _selector.getOptionName(o),
+					activate: () => { Select(o); return true; }));
+			}
+			return list;
 		}
 
-		protected override void ActivateLeafItem(int[] indices) {
-			object selected = GetSelectedOption(indices);
-			if (selected == null) return;
-
-			_selector.onValueChanged(selected);
+		private void Select(object opt) {
+			_selector.onValueChanged(opt);
 			SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.STATES.SELECTED);
 			HandlerStack.Pop();
-		}
-
-		// ========================================
-		// SEARCH
-		// ========================================
-
-		private int _flatSearchCount = -1;
-
-		protected override int GetSearchItemCount(int[] indices) {
-			if (_flatSearchCount >= 0) return _flatSearchCount;
-			int total = 0;
-			if (_categoryOptions != null)
-				foreach (var list in _categoryOptions)
-					total += list.Count;
-			_flatSearchCount = total;
-			return total;
-		}
-
-		protected override string GetSearchItemLabel(int flatIndex) {
-			if (_categoryOptions == null) return null;
-			int remaining = flatIndex;
-			foreach (var list in _categoryOptions) {
-				if (remaining < list.Count)
-					return _selector.getOptionName(list[remaining]);
-				remaining -= list.Count;
-			}
-			return null;
-		}
-
-		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
-			if (_categoryOptions == null) return;
-
-			if (!_hasCategories) {
-				outIndices[0] = flatIndex;
-				return;
-			}
-
-			int remaining = flatIndex;
-			for (int c = 0; c < _categoryOptions.Count; c++) {
-				int count = _categoryOptions[c].Count;
-				if (remaining < count) {
-					outIndices[0] = c;
-					outIndices[1] = remaining;
-					return;
-				}
-				remaining -= count;
-			}
 		}
 
 		// ========================================
@@ -150,11 +89,10 @@ namespace OniAccess.Handlers.Sandbox {
 		public override void OnActivate() {
 			BuildOptionLists();
 			PlaySound("HUD_Click_Open");
+			// Search the items, not the (possibly empty) category rows.
+			Nav.SearchFilter = n => n.IsActivatable();
 			base.OnActivate();
-			if (!_hasCategories && _categoryOptions.Count > 0 && _categoryOptions[0].Count > 0)
-				SpeechPipeline.SpeakQueued(GetItemLabel(0, new int[] { 0 }));
-			else if (_hasCategories && _categoryOptions.Count > 0)
-				SpeechPipeline.SpeakQueued(_categoryNames[0]);
+			AnnounceCurrent(interrupt: false);
 		}
 
 		public override void OnDeactivate() {
@@ -180,7 +118,6 @@ namespace OniAccess.Handlers.Sandbox {
 		private void BuildOptionLists() {
 			_categoryOptions = new List<List<object>>();
 			_categoryNames = new List<string>();
-			_flatSearchCount = -1;
 
 			if (!_hasCategories) {
 				// Flat list: all options in one list
@@ -193,10 +130,9 @@ namespace OniAccess.Handlers.Sandbox {
 				return;
 			}
 
-			// Categorized: build one list per top-level filter
-			// Only include top-level filters (parentFilter == null).
-			// Sub-filters (e.g., creature species under Creatures) are
-			// treated as separate categories for flat navigation.
+			// Categorized: build one list per top-level filter.
+			// Empty categories are kept for consistent indexing; navigation skips
+			// them and the IsActivatable search filter keeps them out of type-ahead.
 			foreach (var filter in _selector.filters) {
 				var items = new List<object>();
 				if (_selector.options != null) {
@@ -205,30 +141,9 @@ namespace OniAccess.Handlers.Sandbox {
 							items.Add(opt);
 					}
 				}
-				// Include category even if empty (for consistent indexing)
-				// but NestedMenuHandler will skip empty categories during navigation
 				_categoryOptions.Add(items);
 				_categoryNames.Add(filter.Name);
 			}
-		}
-
-		private object GetSelectedOption(int[] indices) {
-			if (_categoryOptions == null) return null;
-
-			if (!_hasCategories) {
-				if (_categoryOptions.Count == 0) return null;
-				var items = _categoryOptions[0];
-				int idx = indices[0];
-				if (idx < 0 || idx >= items.Count) return null;
-				return items[idx];
-			}
-
-			int cat = indices[0];
-			if (cat < 0 || cat >= _categoryOptions.Count) return null;
-			var catItems = _categoryOptions[cat];
-			int itemIdx = indices[1];
-			if (itemIdx < 0 || itemIdx >= catItems.Count) return null;
-			return catItems[itemIdx];
 		}
 	}
 }

@@ -2,10 +2,12 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
+using OniAccess.Navigation;
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens {
-	public class AssignmentGroupControllerHandler: NestedMenuHandler {
+	public class AssignmentGroupControllerHandler: NavTreeHandler {
 		private AssignmentGroupControllerSideScreen CrewScreen =>
 			(AssignmentGroupControllerSideScreen)_screen;
 
@@ -25,11 +27,8 @@ namespace OniAccess.Handlers.Screens {
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 
-		protected override int MaxLevel => 1;
-		protected override int SearchLevel => 1;
-
 		public AssignmentGroupControllerHandler(AssignmentGroupControllerSideScreen screen) : base(screen) {
-			HelpEntries = new List<HelpEntry>(NestedNavHelpEntries).AsReadOnly();
+			HelpEntries = new List<HelpEntry>(DrillNavHelpEntries).AsReadOnly();
 		}
 
 		// ========================================
@@ -78,40 +77,41 @@ namespace OniAccess.Handlers.Screens {
 			}
 		}
 
-		private List<RowData> GetSection(List<RowData> same, List<RowData> off, int section) {
-			return section == 0 ? same : off;
-		}
-
 		// ========================================
-		// NESTED MENU ABSTRACTS
+		// TREE CONSTRUCTION
 		// ========================================
 
-		protected override int GetItemCount(int level, int[] indices) {
+		protected override IReadOnlyList<NavItem> BuildRoots() {
 			GetAllRows(out var same, out var off);
-			if (level == 0) return off.Count > 0 ? 2 : 1;
-			if (level == 1) return GetSection(same, off, indices[0]).Count;
-			return 0;
+			var roots = new List<NavItem> {
+				SectionNode(GetSectionHeader(0), same),
+			};
+			if (off.Count > 0)
+				roots.Add(SectionNode(GetSectionHeader(1), off));
+			return roots;
 		}
 
-		protected override string GetItemLabel(int level, int[] indices) {
-			if (level == 0) return GetSectionHeader(indices[0]);
-			if (level == 1) return GetRowLabel(indices[0], indices[1]);
-			return null;
+		private NavItem SectionNode(string header, List<RowData> rows) {
+			return new MenuNode(
+				() => header,
+				children: () => BuildRowNodes(rows));
 		}
 
-		protected override string GetParentLabel(int level, int[] indices) {
-			if (level == 1) return GetSectionHeader(indices[0]);
-			return null;
+		private IReadOnlyList<NavItem> BuildRowNodes(List<RowData> rows) {
+			var list = new List<NavItem>(rows.Count);
+			foreach (var row in rows) {
+				var r = row;
+				list.Add(new MenuNode(
+					() => BuildRowLabel(r),
+					activate: () => { ToggleRow(r); return true; }));
+			}
+			return list;
 		}
 
-		protected override void ActivateLeafItem(int[] indices) {
-			GetAllRows(out var same, out var off);
-			var rows = GetSection(same, off, indices[0]);
-			if (indices[1] < 0 || indices[1] >= rows.Count) return;
-			var row = rows[indices[1]];
+		private void ToggleRow(RowData row) {
 			row.Toggle.onClick?.Invoke();
 			// Read state from the captured toggle reference — RefreshRows
-			// re-sorts the list, so re-querying by index could hit the wrong row
+			// re-sorts the list, so re-querying by index could hit the wrong row.
 			int memberCount = GetTarget().GetMembers().Count;
 			string state = row.Toggle.CurrentState == 1
 				? (string)STRINGS.ONIACCESS.STATES.ASSIGNED
@@ -120,50 +120,17 @@ namespace OniAccess.Handlers.Screens {
 			SpeechPipeline.SpeakInterrupt(feedback);
 		}
 
-		protected override int GetSearchItemCount(int[] indices) {
-			GetAllRows(out var same, out var off);
-			return same.Count + off.Count;
-		}
-
-		protected override string GetSearchItemLabel(int flatIndex) {
-			GetAllRows(out var same, out var off);
-			if (flatIndex < same.Count)
-				return BuildRowLabel(same[flatIndex]);
-			int offIdx = flatIndex - same.Count;
-			if (offIdx < off.Count)
-				return BuildRowLabel(off[offIdx]);
-			return null;
-		}
-
-		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
-			GetAllRows(out var same, out var off);
-			if (flatIndex < same.Count) {
-				outIndices[0] = 0;
-				outIndices[1] = flatIndex;
-			} else {
-				outIndices[0] = 1;
-				outIndices[1] = flatIndex - same.Count;
-			}
-		}
-
 		// ========================================
 		// LABELS
 		// ========================================
 
-		private string GetSectionHeader(int section) {
+		private static string GetSectionHeader(int section) {
 			if (section == 0)
 				return (string)STRINGS.ONIACCESS.CREW_SCREEN.AVAILABLE;
 			return (string)STRINGS.UI.UISIDESCREENS.ASSIGNMENTGROUPCONTROLLER.OFFWORLD;
 		}
 
-		private string GetRowLabel(int section, int rowIndex) {
-			GetAllRows(out var same, out var off);
-			var rows = GetSection(same, off, section);
-			if (rowIndex < 0 || rowIndex >= rows.Count) return null;
-			return BuildRowLabel(rows[rowIndex]);
-		}
-
-		private string BuildRowLabel(RowData row) {
+		private static string BuildRowLabel(RowData row) {
 			string label = row.Name;
 			// Skip designation for offworld rows — section header already provides context
 			if (!row.IsOffworld && !string.IsNullOrEmpty(row.Designation))
@@ -210,7 +177,7 @@ namespace OniAccess.Handlers.Screens {
 				string title = (string)STRINGS.UI.UISIDESCREENS.ASSIGNMENTGROUPCONTROLLER.TITLE;
 				int memberCount = GetTarget().GetMembers().Count;
 				string countLabel = string.Format(STRINGS.ONIACCESS.SKILLS.ASSIGNED, memberCount);
-				string firstItem = GetItemLabel(0, new[] { 0 });
+				string firstItem = Nav.Current()?.Announce();
 				string announcement = title + ", " + countLabel + ", " + firstItem;
 				SpeechPipeline.SpeakInterrupt(announcement);
 				return false;
