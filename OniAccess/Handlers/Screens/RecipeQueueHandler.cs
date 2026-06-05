@@ -4,23 +4,25 @@ using System.Reflection;
 using UnityEngine;
 
 using OniAccess.Input;
+using OniAccess.Navigation;
 using OniAccess.Patches;
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens {
 	/// <summary>
 	/// Handler for SelectedRecipeQueueScreen (secondary side screen opened from
 	/// ComplexFabricatorSideScreen when a recipe toggle is clicked).
-	/// Two-level nested navigation: level 0 lists recipe info, ingredient slots,
-	/// queue count, and infinite toggle; level 1 shows material options within
-	/// a drilled ingredient slot.
+	/// Two-level navigation: level 0 lists recipe info, ingredient slots, queue
+	/// count, infinite toggle, and confirm; level 1 shows material options within
+	/// a drilled ingredient slot. Picking a material returns to the slot.
 	///
 	/// All labels are built from game model data (ComplexRecipe, ComplexFabricator,
 	/// world inventory) rather than LocText UI components. The Harmony postfix
 	/// fires before SetRecipeCategory populates the UI, and LocText.SetText vs
 	/// .text property can disagree due to TMPro's m_inputSource tracking.
 	/// </summary>
-	public class RecipeQueueHandler: NestedMenuHandler {
+	public class RecipeQueueHandler: NavTreeHandler {
 		private SelectedRecipeQueueScreen RecipeScreen =>
 			(SelectedRecipeQueueScreen)_screen;
 
@@ -63,12 +65,12 @@ namespace OniAccess.Handlers.Screens {
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }
 
-		protected override int MaxLevel => 1;
-		protected override int SearchLevel => Level;
+		// Search the items at the current level (level-0 rows, or a slot's materials).
+		protected override SearchScope SearchScope => SearchScope.CurrentLevel;
 
 		public RecipeQueueHandler(SelectedRecipeQueueScreen screen) : base(screen) {
 			var list = new List<HelpEntry>();
-			list.AddRange(NestedNavHelpEntries);
+			list.AddRange(DrillNavHelpEntries);
 			list.Add(new HelpEntry("Left/Right", STRINGS.ONIACCESS.HELP.ADJUST_VALUE));
 			list.Add(new HelpEntry("Tab/Shift+Tab", STRINGS.ONIACCESS.HELP.CYCLE_RECIPE));
 			HelpEntries = list.AsReadOnly();
@@ -86,11 +88,6 @@ namespace OniAccess.Handlers.Screens {
 			}
 		}
 
-		/// <summary>
-		/// Level 0 items: [RecipeInfo, Slot0, Slot1, ..., QueueCount, InfiniteToggle, Confirm].
-		/// </summary>
-		private int Level0Count => 1 + IngredientCount + 3;
-
 		private ItemKind GetItemKind(int index) {
 			if (index == 0) return ItemKind.RecipeInfo;
 			int ingredientCount = IngredientCount;
@@ -105,66 +102,50 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		// ========================================
-		// NESTED MENU ABSTRACTS
+		// TREE CONSTRUCTION
 		// ========================================
 
-		protected override int GetItemCount(int level, int[] indices) {
-			if (level == 0) return Level0Count;
-			if (level == 1) {
-				if (GetItemKind(indices[0]) != ItemKind.IngredientSlot) return 0;
-				int slotIdx = GetSlotIndex(indices[0]);
-				return GetMaterialTagsForSlot(slotIdx).Count;
+		protected override IReadOnlyList<NavItem> BuildRoots() {
+			var roots = new List<NavItem> {
+				// Recipe info (read-only summary).
+				new MenuNode(() => BuildRecipeInfoLabel()),
+			};
+			int slots = IngredientCount;
+			for (int s = 0; s < slots; s++) {
+				int slot = s;
+				roots.Add(new MenuNode(
+					() => BuildSlotLabel(slot),
+					children: () => BuildMaterials(slot),
+					activate: () => { SpeakUndiscovered(); return true; }));
 			}
-			return 0;
+			roots.Add(new MenuNode(() => BuildQueueLabel()));
+			roots.Add(new MenuNode(
+				() => BuildInfiniteLabel(),
+				activate: () => { ToggleInfinite(); return true; }));
+			roots.Add(new MenuNode(
+				() => (string)STRINGS.UI.CONFIRMDIALOG.OK,
+				activate: () => { CloseScreen(); return true; }));
+			return roots;
 		}
 
-		protected override string GetItemLabel(int level, int[] indices) {
-			if (level == 0) return GetLevel0Label(indices[0]);
-			if (level == 1) return GetMaterialLabel(GetSlotIndex(indices[0]), indices[1]);
-			return null;
-		}
-
-		protected override string GetParentLabel(int level, int[] indices) {
-			if (level == 1) return GetLevel0Label(indices[0]);
-			return null;
-		}
-
-		protected override void ActivateLeafItem(int[] indices) {
-			if (Level == 0) {
-				var kind = GetItemKind(indices[0]);
-				if (kind == ItemKind.Confirm) {
-					CloseScreen();
-				} else if (kind == ItemKind.InfiniteToggle) {
-					ToggleInfinite();
-				} else if (kind == ItemKind.IngredientSlot) {
-					SpeakUndiscovered();
-				}
-				return;
+		private IReadOnlyList<NavItem> BuildMaterials(int slotIdx) {
+			var tags = GetMaterialTagsForSlot(slotIdx);
+			var list = new List<NavItem>(tags.Count);
+			for (int r = 0; r < tags.Count; r++) {
+				int row = r;
+				list.Add(new MenuNode(
+					() => GetMaterialLabel(slotIdx, row),
+					activate: () => { PickMaterial(slotIdx, row); return true; }));
 			}
-			// Level 1: select material
-			int slotIdx = GetSlotIndex(indices[0]);
-			ClickMaterial(slotIdx, indices[1]);
-			// Auto-drill out
-			Level = 0;
+			return list;
+		}
+
+		private void PickMaterial(int slotIdx, int rowIdx) {
+			ClickMaterial(slotIdx, rowIdx);
+			// Auto-drill out to the ingredient slot.
 			_search.Clear();
-			SpeakCurrentItem();
-		}
-
-		protected override int GetSearchItemCount(int[] indices) {
-			return GetItemCount(Level, indices);
-		}
-
-		protected override string GetSearchItemLabel(int flatIndex) {
-			if (Level == 0) return GetLevel0Label(flatIndex);
-			return GetMaterialLabel(GetSlotIndex(GetIndex(0)), flatIndex);
-		}
-
-		protected override void MapSearchIndex(int flatIndex, int[] outIndices) {
-			if (Level == 0) {
-				outIndices[0] = flatIndex;
-			} else {
-				outIndices[1] = flatIndex;
-			}
+			Nav.SetPath(new[] { slotIdx + 1 });
+			AnnounceCurrent();
 		}
 
 		// ========================================
@@ -172,14 +153,14 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		protected override void HandleLeftRight(int direction, int stepLevel) {
-			if (Level == 0) {
-				var kind = GetItemKind(GetIndex(0));
+			if (Nav.Depth == 0) {
+				var kind = GetItemKind(Nav.Path[0]);
 				if (kind == ItemKind.QueueCount) {
 					AdjustQueueCount(direction, stepLevel);
 					return;
 				}
 				if (direction > 0 && kind == ItemKind.IngredientSlot
-					&& GetItemCount(1, new[] { GetIndex(0) }) == 0) {
+					&& GetMaterialTagsForSlot(GetSlotIndex(Nav.Path[0])).Count == 0) {
 					SpeakUndiscovered();
 					return;
 				}
@@ -225,7 +206,7 @@ namespace OniAccess.Handlers.Screens {
 		public override bool Tick() {
 			if (_pendingActivation) {
 				_pendingActivation = false;
-				SpeechPipeline.SpeakInterrupt(GetLevel0Label(0));
+				AnnounceCurrent(interrupt: true);
 				return false;
 			}
 			return base.Tick();
@@ -234,24 +215,6 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 		// LABEL BUILDERS (from game model data)
 		// ========================================
-
-		private string GetLevel0Label(int index) {
-			var kind = GetItemKind(index);
-			switch (kind) {
-				case ItemKind.RecipeInfo:
-					return BuildRecipeInfoLabel();
-				case ItemKind.IngredientSlot:
-					return BuildSlotLabel(GetSlotIndex(index));
-				case ItemKind.QueueCount:
-					return BuildQueueLabel();
-				case ItemKind.InfiniteToggle:
-					return BuildInfiniteLabel();
-				case ItemKind.Confirm:
-					return (string)STRINGS.UI.CONFIRMDIALOG.OK;
-				default:
-					return null;
-			}
-		}
 
 		private string BuildRecipeInfoLabel() {
 			var recipe = GetFirstRecipe();
