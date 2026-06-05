@@ -1149,6 +1149,11 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.COORDINATE_MODE"
 msgid "Tile cursor coordinate mode"
 msgstr "Режим координат курсора плитки"
 
+#. STRINGS.ONIACCESS.CONFIG.CUSTOM_SCANNER_CATEGORIES
+msgctxt "STRINGS.ONIACCESS.CONFIG.CUSTOM_SCANNER_CATEGORIES"
+msgid "Custom scanner categories"
+msgstr "Пользовательские категории сканера"
+
 #. STRINGS.ONIACCESS.CONFIG.FLOW_DIRECTION_READOUT
 msgctxt "STRINGS.ONIACCESS.CONFIG.FLOW_DIRECTION_READOUT"
 msgid "Flow direction readout"
@@ -1576,6 +1581,56 @@ msgstr "Коренастое динозавроподобное существо
 msgctxt "STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.WOODDEER"
 msgid "A fox-like critter with a fluffy teal-green body and a long curling tail. It has a narrow white face with a wide open mouth showing teeth, and tall dark antler-like branches growing from the back of its head. Its body is covered in soft fur and it stands on four short legs, giving it a woodland creature look."
 msgstr "Лисоподобное существо с пушистым бирюзово-зелёным телом и длинным закрученным хвостом. Узкая белая морда с широко раскрытой пастью, показывающей зубы, и высокие тёмные рогоподобные ветви, растущие из затылка. Тело покрыто мягким мехом, стоит на четырёх коротких ногах, придающих ему вид лесного существа."
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.CREATE_NEW
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.CREATE_NEW"
+msgid "Create new"
+msgstr "Создать новую"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.DEFAULT_NAME
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.DEFAULT_NAME"
+msgid "Custom category {0}"
+msgstr "Пользовательская категория {0}"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.DELETE
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.DELETE"
+msgid "Delete"
+msgstr "Удалить"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.DELETED
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.DELETED"
+msgid "Deleted {0}"
+msgstr "Удалено: {0}"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_EDIT
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_EDIT"
+msgid "Edit category"
+msgstr "Редактировать категорию"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_TOGGLE
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_TOGGLE"
+msgid "Toggle filter"
+msgstr "Переключить фильтр"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAME
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAME"
+msgid "Rename"
+msgstr "Переименовать"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAME_PROMPT
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAME_PROMPT"
+msgid "Rename custom category"
+msgstr "Переименовать пользовательскую категорию"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAMED
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAMED"
+msgid "Renamed to {0}"
+msgstr "Переименовано в {0}"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.TITLE
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.TITLE"
+msgid "Custom scanner categories"
+msgstr "Пользовательские категории сканера"
 
 #. STRINGS.ONIACCESS.DEMOLIOR.DESTROYED
 msgctxt "STRINGS.ONIACCESS.DEMOLIOR.DESTROYED"

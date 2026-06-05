@@ -1148,6 +1148,11 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.COORDINATE_MODE"
 msgid "Tile cursor coordinate mode"
 msgstr "Modo de coordenadas del cursor de casilla"
 
+#. STRINGS.ONIACCESS.CONFIG.CUSTOM_SCANNER_CATEGORIES
+msgctxt "STRINGS.ONIACCESS.CONFIG.CUSTOM_SCANNER_CATEGORIES"
+msgid "Custom scanner categories"
+msgstr "Categorías de escáner personalizadas"
+
 #. STRINGS.ONIACCESS.CONFIG.FLOW_DIRECTION_READOUT
 msgctxt "STRINGS.ONIACCESS.CONFIG.FLOW_DIRECTION_READOUT"
 msgid "Flow direction readout"
@@ -1575,6 +1580,56 @@ msgstr "Una criatura robusta tipo dinosaurio con un cuerpo redondo rojo-anaranja
 msgctxt "STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.WOODDEER"
 msgid "A fox-like critter with a fluffy teal-green body and a long curling tail. It has a narrow white face with a wide open mouth showing teeth, and tall dark antler-like branches growing from the back of its head. Its body is covered in soft fur and it stands on four short legs, giving it a woodland creature look."
 msgstr "Una criatura tipo zorro con un cuerpo esponjoso verde-azulado y una larga cola enroscada. Tiene una cara blanca estrecha con una boca muy abierta mostrando dientes, y altas ramas oscuras tipo cornamenta que crecen desde la parte trasera de la cabeza. Su cuerpo está cubierto de pelaje suave y se apoya en cuatro patas cortas, dándole un aspecto de criatura del bosque."
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.CREATE_NEW
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.CREATE_NEW"
+msgid "Create new"
+msgstr "Crear nuevo"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.DEFAULT_NAME
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.DEFAULT_NAME"
+msgid "Custom category {0}"
+msgstr "Categoría personalizada {0}"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.DELETE
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.DELETE"
+msgid "Delete"
+msgstr "Eliminar"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.DELETED
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.DELETED"
+msgid "Deleted {0}"
+msgstr "{0} eliminado"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_EDIT
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_EDIT"
+msgid "Edit category"
+msgstr "Editar categoría"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_TOGGLE
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_TOGGLE"
+msgid "Toggle filter"
+msgstr "Alternar filtro"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAME
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAME"
+msgid "Rename"
+msgstr "Renombrar"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAME_PROMPT
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAME_PROMPT"
+msgid "Rename custom category"
+msgstr "Renombrar categoría personalizada"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAMED
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAMED"
+msgid "Renamed to {0}"
+msgstr "Renombrado a {0}"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.TITLE
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.TITLE"
+msgid "Custom scanner categories"
+msgstr "Categorías de escáner personalizadas"
 
 #. STRINGS.ONIACCESS.DEMOLIOR.DESTROYED
 msgctxt "STRINGS.ONIACCESS.DEMOLIOR.DESTROYED"

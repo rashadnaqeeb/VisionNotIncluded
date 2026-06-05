@@ -1149,6 +1149,11 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.COORDINATE_MODE"
 msgid "Tile cursor coordinate mode"
 msgstr "타일 커서 좌표 모드"
 
+#. STRINGS.ONIACCESS.CONFIG.CUSTOM_SCANNER_CATEGORIES
+msgctxt "STRINGS.ONIACCESS.CONFIG.CUSTOM_SCANNER_CATEGORIES"
+msgid "Custom scanner categories"
+msgstr "사용자 지정 스캐너 카테고리"
+
 #. STRINGS.ONIACCESS.CONFIG.FLOW_DIRECTION_READOUT
 msgctxt "STRINGS.ONIACCESS.CONFIG.FLOW_DIRECTION_READOUT"
 msgid "Flow direction readout"
@@ -1576,6 +1581,56 @@ msgstr "둥근 빨간-주황색 몸과 스테고사우루스처럼 등을 따라
 msgctxt "STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.WOODDEER"
 msgid "A fox-like critter with a fluffy teal-green body and a long curling tail. It has a narrow white face with a wide open mouth showing teeth, and tall dark antler-like branches growing from the back of its head. Its body is covered in soft fur and it stands on four short legs, giving it a woodland creature look."
 msgstr "푹신한 청록색 몸과 길고 말린 꼬리를 가진 여우 같은 생물입니다. 이빨이 보이는 크게 벌린 입이 있는 좁고 흰 얼굴과, 머리 뒤에서 자라는 높은 어두운 뿔 모양 가지를 가지고 있습니다. 몸은 부드러운 털로 덮여 있고 네 개의 짧은 다리로 서서 숲속 생물 같은 느낌을 줍니다."
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.CREATE_NEW
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.CREATE_NEW"
+msgid "Create new"
+msgstr "새로 만들기"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.DEFAULT_NAME
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.DEFAULT_NAME"
+msgid "Custom category {0}"
+msgstr "사용자 지정 카테고리 {0}"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.DELETE
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.DELETE"
+msgid "Delete"
+msgstr "삭제"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.DELETED
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.DELETED"
+msgid "Deleted {0}"
+msgstr "{0} 삭제됨"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_EDIT
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_EDIT"
+msgid "Edit category"
+msgstr "카테고리 편집"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_TOGGLE
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_TOGGLE"
+msgid "Toggle filter"
+msgstr "필터 전환"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAME
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAME"
+msgid "Rename"
+msgstr "이름 변경"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAME_PROMPT
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAME_PROMPT"
+msgid "Rename custom category"
+msgstr "사용자 지정 카테고리 이름 변경"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAMED
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAMED"
+msgid "Renamed to {0}"
+msgstr "{0}(으)로 이름 변경됨"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.TITLE
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.TITLE"
+msgid "Custom scanner categories"
+msgstr "사용자 지정 스캐너 카테고리"
 
 #. STRINGS.ONIACCESS.DEMOLIOR.DESTROYED
 msgctxt "STRINGS.ONIACCESS.DEMOLIOR.DESTROYED"

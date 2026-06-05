@@ -1149,6 +1149,11 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.COORDINATE_MODE"
 msgid "Tile cursor coordinate mode"
 msgstr "方块光标坐标模式"
 
+#. STRINGS.ONIACCESS.CONFIG.CUSTOM_SCANNER_CATEGORIES
+msgctxt "STRINGS.ONIACCESS.CONFIG.CUSTOM_SCANNER_CATEGORIES"
+msgid "Custom scanner categories"
+msgstr "自定义扫描器分类"
+
 #. STRINGS.ONIACCESS.CONFIG.FLOW_DIRECTION_READOUT
 msgctxt "STRINGS.ONIACCESS.CONFIG.FLOW_DIRECTION_READOUT"
 msgid "Flow direction readout"
@@ -1576,6 +1581,56 @@ msgstr "矮壮的恐龙状生物，圆形红橙色身体，背部排列着一排
 msgctxt "STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.WOODDEER"
 msgid "A fox-like critter with a fluffy teal-green body and a long curling tail. It has a narrow white face with a wide open mouth showing teeth, and tall dark antler-like branches growing from the back of its head. Its body is covered in soft fur and it stands on four short legs, giving it a woodland creature look."
 msgstr "狐狸状生物，蓬松的青绿色身体和长卷尾巴。狭窄的白色面孔张大嘴露出牙齿，头部后方长出高大的深色鹿角状枝条。身体覆盖柔软毛发，四条短腿站立，呈现林地生物的外观。"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.CREATE_NEW
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.CREATE_NEW"
+msgid "Create new"
+msgstr "新建"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.DEFAULT_NAME
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.DEFAULT_NAME"
+msgid "Custom category {0}"
+msgstr "自定义分类 {0}"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.DELETE
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.DELETE"
+msgid "Delete"
+msgstr "删除"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.DELETED
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.DELETED"
+msgid "Deleted {0}"
+msgstr "已删除 {0}"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_EDIT
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_EDIT"
+msgid "Edit category"
+msgstr "编辑分类"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_TOGGLE
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.HELP_TOGGLE"
+msgid "Toggle filter"
+msgstr "切换筛选"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAME
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAME"
+msgid "Rename"
+msgstr "重命名"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAME_PROMPT
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAME_PROMPT"
+msgid "Rename custom category"
+msgstr "重命名自定义分类"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAMED
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.RENAMED"
+msgid "Renamed to {0}"
+msgstr "已重命名为 {0}"
+
+#. STRINGS.ONIACCESS.CUSTOM_CATEGORY.TITLE
+msgctxt "STRINGS.ONIACCESS.CUSTOM_CATEGORY.TITLE"
+msgid "Custom scanner categories"
+msgstr "自定义扫描器分类"
 
 #. STRINGS.ONIACCESS.DEMOLIOR.DESTROYED
 msgctxt "STRINGS.ONIACCESS.DEMOLIOR.DESTROYED"
