@@ -263,8 +263,7 @@ namespace OniAccess.Navigation {
 			int d = 0;
 			while (d < _path.Count) {
 				if (items.Count == 0) {
-					if (d == 0) { _path = new List<int> { 0 }; }
-					else { _path.RemoveRange(d, _path.Count - d); }
+					if (d == 0) { _path = new List<int> { 0 }; } else { _path.RemoveRange(d, _path.Count - d); }
 					return;
 				}
 				if (_path[d] >= items.Count) _path[d] = items.Count - 1;
@@ -396,19 +395,16 @@ namespace OniAccess.Navigation {
 			if (cur >= 0) {
 				if (forward) {
 					int ng = cur + 1;
-					if (ng >= starts.Count) { target = starts[0]; wrapped = true; }
-					else { target = starts[ng]; wrapped = false; }
+					if (ng >= starts.Count) { target = starts[0]; wrapped = true; } else { target = starts[ng]; wrapped = false; }
 				} else {
 					int pg = cur - 1;
-					if (pg < 0) { target = starts[starts.Count - 1]; wrapped = true; }
-					else { target = starts[pg]; wrapped = false; }
+					if (pg < 0) { target = starts[starts.Count - 1]; wrapped = true; } else { target = starts[pg]; wrapped = false; }
 				}
 			} else {
 				// Current group has no navigable entries; pick the nearest group.
 				int g = forward ? FirstGroupGreater(f, starts, _path, depth)
 								 : LastGroupLess(f, starts, _path, depth);
-				if (g >= 0) { target = starts[g]; wrapped = false; }
-				else {
+				if (g >= 0) { target = starts[g]; wrapped = false; } else {
 					target = forward ? starts[0] : starts[starts.Count - 1];
 					wrapped = true;
 				}
@@ -437,7 +433,9 @@ namespace OniAccess.Navigation {
 			if (Depth == 0) return NavMove.None;
 			_path.RemoveAt(_path.Count - 1);
 			return new NavMove {
-				Moved = true, Wrapped = false, Item = Current(),
+				Moved = true,
+				Wrapped = false,
+				Item = Current(),
 				ChangedAncestors = Array.Empty<NavItem>(),
 			};
 		}

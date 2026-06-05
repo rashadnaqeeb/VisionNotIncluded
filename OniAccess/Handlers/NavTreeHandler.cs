@@ -220,7 +220,9 @@ namespace OniAccess.Handlers {
 			var node = Nav.Current();
 			if (node == null) return;
 			Announce(new NavMove {
-				Moved = true, Wrapped = false, Item = node,
+				Moved = true,
+				Wrapped = false,
+				Item = node,
 				ChangedAncestors = System.Array.Empty<NavItem>(),
 			}, sound: false, interrupt: interrupt);
 		}
@@ -238,7 +240,10 @@ namespace OniAccess.Handlers {
 				? (IReadOnlyList<NavItem>)new[] { parent }
 				: System.Array.Empty<NavItem>();
 			Announce(new NavMove {
-				Moved = true, Wrapped = false, Item = node, ChangedAncestors = ancestors,
+				Moved = true,
+				Wrapped = false,
+				Item = node,
+				ChangedAncestors = ancestors,
 			}, sound: false, interrupt: interrupt);
 		}
 

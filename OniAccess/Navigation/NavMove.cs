@@ -38,7 +38,9 @@ namespace OniAccess.Navigation {
 		public IReadOnlyList<NavItem> ChangedAncestors;
 
 		public static readonly NavMove None = new NavMove {
-			Moved = false, Wrapped = false, Item = null,
+			Moved = false,
+			Wrapped = false,
+			Item = null,
 			ChangedAncestors = Array.Empty<NavItem>(),
 		};
 	}
