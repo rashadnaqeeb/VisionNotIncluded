@@ -4,6 +4,7 @@ using Database;
 
 using OniAccess.Input;
 using OniAccess.Speech;
+using OniAccess.Widgets;
 
 namespace OniAccess.Handlers.Screens.Schedule {
 	/// <summary>
@@ -133,7 +134,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 			// Speak opening state
 			var gr = GetRow(_row);
 			if (!gr.IsAddButton) {
-				string opening = BuildFullCellAnnouncement(gr, forceScheduleName: true);
+				string opening = WidgetSpeech.ComposeLabel(BuildFullCellAnnouncement(gr, forceScheduleName: true));
 				string brushName = ScheduleHelper.GetGroupName(_brushGroupId);
 				opening += ". " + string.Format(STRINGS.ONIACCESS.SCHEDULE.BRUSH_ACTIVE, brushName);
 				SpeechPipeline.SpeakQueued(opening);
@@ -238,7 +239,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 				_optionIndex = next;
 				ScheduleHelper.PlayHoverSound();
 			}
-			SpeechPipeline.SpeakInterrupt(_currentOptions[_optionIndex].label);
+			SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(_currentOptions[_optionIndex].label));
 		}
 
 		private void ActivateOption() {
@@ -419,7 +420,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 					_inOptions = true;
 					_optionIndex = 0;
 					if (_currentOptions.Count > 0)
-						SpeechPipeline.SpeakInterrupt(_currentOptions[0].label);
+						SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(_currentOptions[0].label));
 				}
 				return true;
 			}
@@ -655,12 +656,13 @@ namespace OniAccess.Handlers.Screens.Schedule {
 
 			if (gr.IsAddButton) {
 				_lastSpokenScheduleIndex = -1;
-				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.SCHEDULE.ADD_SCHEDULE);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(
+					(string)STRINGS.ONIACCESS.SCHEDULE.ADD_SCHEDULE));
 				return;
 			}
 
-			string announcement = BuildFullCellAnnouncement(gr, forceScheduleName: false, includeRowContext);
+			string announcement = WidgetSpeech.ComposeLabel(
+				BuildFullCellAnnouncement(gr, forceScheduleName: false, includeRowContext));
 			SpeechPipeline.SpeakInterrupt(announcement);
 			_lastSpokenScheduleIndex = gr.ScheduleIndex;
 		}
