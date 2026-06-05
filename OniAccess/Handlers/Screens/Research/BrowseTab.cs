@@ -31,7 +31,7 @@ namespace OniAccess.Handlers.Screens.Research {
 		public void OnTabActivated(bool announce) {
 			ResetState();
 			if (announce)
-				SpeechPipeline.SpeakInterrupt(TabName);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(TabName));
 			if (ItemCount > 0) {
 				string label = GetItemLabel(CurrentIndex);
 				if (!string.IsNullOrEmpty(label))
@@ -95,15 +95,15 @@ namespace OniAccess.Handlers.Screens.Research {
 
 			if (tech.IsComplete()) {
 				ResearchHelper.PlayRejectSound();
-				SpeechPipeline.SpeakInterrupt(
-					tech.Name + ", " + STRINGS.ONIACCESS.RESEARCH.COMPLETED);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(
+					tech.Name + ", " + STRINGS.ONIACCESS.RESEARCH.COMPLETED));
 				return;
 			}
 
 			ResearchHelper.PlayClickSound();
 			global::Research.Instance.SetActiveResearch(tech, clearQueue: true);
-			SpeechPipeline.SpeakInterrupt(
-				string.Format(STRINGS.ONIACCESS.RESEARCH.QUEUED, tech.Name));
+			SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(
+				string.Format(STRINGS.ONIACCESS.RESEARCH.QUEUED, tech.Name)));
 		}
 
 		// ========================================

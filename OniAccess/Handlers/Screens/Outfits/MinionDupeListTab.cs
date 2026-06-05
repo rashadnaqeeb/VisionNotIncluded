@@ -30,7 +30,7 @@ namespace OniAccess.Handlers.Screens.Outfits {
 
 		public void OnTabActivated(bool announce) {
 			if (announce)
-				SpeechPipeline.SpeakInterrupt(TabName);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(TabName));
 			if (ItemCount > 0) {
 				string label = GetItemLabel(CurrentIndex);
 				if (!string.IsNullOrEmpty(label))
@@ -58,7 +58,7 @@ namespace OniAccess.Handlers.Screens.Outfits {
 			if (dupe != null)
 				NavigateToDupe(dupe);
 			if (announce)
-				SpeechPipeline.SpeakInterrupt(TabName);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(TabName));
 			if (ItemCount > 0) {
 				string label = GetItemLabel(CurrentIndex);
 				if (!string.IsNullOrEmpty(label))

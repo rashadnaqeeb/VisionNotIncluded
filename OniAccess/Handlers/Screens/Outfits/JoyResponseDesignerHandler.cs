@@ -43,8 +43,8 @@ namespace OniAccess.Handlers.Screens.Outfits {
 		public override void OnActivate() {
 			base.OnActivate();
 
-			SpeechPipeline.SpeakInterrupt(
-				(string)STRINGS.ONIACCESS.HANDLERS.JOY_RESPONSE_DESIGNER);
+			SpeechPipeline.SpeakInterrupt(Widgets.WidgetSpeech.ComposeMessage(
+				(string)STRINGS.ONIACCESS.HANDLERS.JOY_RESPONSE_DESIGNER));
 
 			// Navigate to the initially selected item if set
 			if (_designerScreen.Config.initalSelectedItem.IsSome()) {
@@ -153,12 +153,12 @@ namespace OniAccess.Handlers.Screens.Outfits {
 				if (tooltip != null) {
 					string reason = Widgets.WidgetOps.ReadAllTooltipText(tooltip);
 					if (!string.IsNullOrEmpty(reason)) {
-						SpeechPipeline.SpeakInterrupt(reason);
+						SpeechPipeline.SpeakInterrupt(Widgets.WidgetSpeech.ComposeMessage(reason));
 						return;
 					}
 				}
-				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE);
+				SpeechPipeline.SpeakInterrupt(Widgets.WidgetSpeech.ComposeMessage(
+					(string)STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE));
 				return;
 			}
 

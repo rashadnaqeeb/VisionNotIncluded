@@ -45,7 +45,7 @@ namespace OniAccess.Handlers.Screens {
 			_search.Clear();
 			SuppressSearchThisFrame();
 			if (announce)
-				SpeechPipeline.SpeakInterrupt(TabName);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(TabName));
 			SpeakCurrentItemQueued();
 		}
 
@@ -115,7 +115,7 @@ namespace OniAccess.Handlers.Screens {
 			if (wallet < cost) {
 				PlaySound("Negative");
 				string tooltip = (string)STRINGS.UI.PRINTERCEPTORSCREEN.PRINT_TOOLTIP_DISABLED;
-				SpeechPipeline.SpeakInterrupt(tooltip);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(tooltip));
 				return;
 			}
 

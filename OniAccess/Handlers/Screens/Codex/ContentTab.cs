@@ -59,7 +59,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 			_search.Clear();
 			SuppressSearchThisFrame();
 			if (announce)
-				SpeechPipeline.SpeakInterrupt(TabName);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(TabName));
 			RebuildWidgetList();
 			ApplyPendingSubEntry();
 			SpeakCurrentItemQueued();
@@ -109,7 +109,8 @@ namespace OniAccess.Handlers.Screens.Codex {
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			if (_items.Count == 0) {
-				SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.CODEX.NO_ARTICLE);
+				SpeechPipeline.SpeakInterrupt(
+					WidgetSpeech.ComposeMessage(STRINGS.ONIACCESS.CODEX.NO_ARTICLE));
 				return;
 			}
 			if (CurrentIndex < 0 || CurrentIndex >= _items.Count) return;
@@ -242,13 +243,15 @@ namespace OniAccess.Handlers.Screens.Codex {
 
 			if (back) {
 				if (idx <= 0) {
-					SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.CODEX.NO_BACK);
+					SpeechPipeline.SpeakInterrupt(
+						WidgetSpeech.ComposeMessage(STRINGS.ONIACCESS.CODEX.NO_BACK));
 					return;
 				}
 				t.Method("HistoryStepBack").GetValue();
 			} else {
 				if (idx >= history.Count - 1) {
-					SpeechPipeline.SpeakInterrupt(STRINGS.ONIACCESS.CODEX.NO_FORWARD);
+					SpeechPipeline.SpeakInterrupt(
+						WidgetSpeech.ComposeMessage(STRINGS.ONIACCESS.CODEX.NO_FORWARD));
 					return;
 				}
 				t.Method("HistoryStepForward").GetValue();
@@ -490,7 +493,8 @@ namespace OniAccess.Handlers.Screens.Codex {
 
 		private void SpeakCurrentItemQueued() {
 			if (_items.Count == 0) {
-				SpeechPipeline.SpeakQueued(STRINGS.ONIACCESS.CODEX.NO_ARTICLE);
+				SpeechPipeline.SpeakQueued(
+					WidgetSpeech.ComposeMessage(STRINGS.ONIACCESS.CODEX.NO_ARTICLE));
 				return;
 			}
 			if (CurrentIndex < 0 || CurrentIndex >= _items.Count) return;

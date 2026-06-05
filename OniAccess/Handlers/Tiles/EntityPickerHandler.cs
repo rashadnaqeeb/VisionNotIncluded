@@ -50,8 +50,8 @@ namespace OniAccess.Handlers.Tiles {
 			PlaySound("HUD_Click_Open");
 			CurrentIndex = 0;
 			_search.Clear();
-			SpeechPipeline.SpeakQueued(
-				(string)STRINGS.ONIACCESS.TILE_CURSOR.SELECT_OBJECT);
+			SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeMessage(
+				(string)STRINGS.ONIACCESS.TILE_CURSOR.SELECT_OBJECT));
 			if (_selectables.Count > 0)
 				SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(
 					TextFilter.FilterForSpeech(GetDisplayText(0))));
@@ -78,8 +78,8 @@ namespace OniAccess.Handlers.Tiles {
 			if (base.HandleKeyDown(e))
 				return true;
 			if (e.TryConsume(Action.Escape)) {
-				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.TOOLTIP.CLOSED);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(
+					(string)STRINGS.ONIACCESS.TOOLTIP.CLOSED));
 				HandlerStack.Pop();
 				return true;
 			}

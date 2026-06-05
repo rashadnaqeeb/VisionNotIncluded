@@ -37,8 +37,8 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 			PlaySound("HUD_Click_Open");
 			CurrentIndex = 0;
 			_search.Clear();
-			SpeechPipeline.SpeakQueued(
-				(string)STRINGS.ONIACCESS.CLUSTER_MAP.SELECT_OBJECT);
+			SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeMessage(
+				(string)STRINGS.ONIACCESS.CLUSTER_MAP.SELECT_OBJECT));
 			if (_entities.Count > 0)
 				SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(_entities[0].Name));
 		}
@@ -61,8 +61,8 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 		public override bool HandleKeyDown(KButtonEvent e) {
 			if (base.HandleKeyDown(e)) return true;
 			if (e.TryConsume(Action.Escape)) {
-				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.TOOLTIP.CLOSED);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(
+					(string)STRINGS.ONIACCESS.TOOLTIP.CLOSED));
 				HandlerStack.Pop();
 				return true;
 			}

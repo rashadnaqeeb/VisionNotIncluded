@@ -193,8 +193,8 @@ namespace OniAccess.Handlers {
 			_lastSpokenRow = -1;
 			_lastSpokenCol = -1;
 
-			SpeechPipeline.SpeakInterrupt(
-				name + ", " + BuildCellParts(forceFullContext: true));
+			SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(
+				name + ", " + BuildCellParts(forceFullContext: true)));
 		}
 
 		private int FindFirstDataRow() {
@@ -228,7 +228,8 @@ namespace OniAccess.Handlers {
 			_search.Clear();
 			SuppressSearchThisFrame();
 			base.OnActivate();
-			SpeechPipeline.SpeakQueued(BuildCellParts(forceFullContext: true));
+			SpeechPipeline.SpeakQueued(
+				WidgetSpeech.ComposeLabel(BuildCellParts(forceFullContext: true)));
 		}
 
 		public override void OnDeactivate() {
@@ -242,7 +243,8 @@ namespace OniAccess.Handlers {
 
 		protected void SpeakCell() {
 			if (_row < 0 || _row >= _rows.Count) return;
-			SpeechPipeline.SpeakInterrupt(BuildCellParts(forceFullContext: false));
+			SpeechPipeline.SpeakInterrupt(
+				WidgetSpeech.ComposeLabel(BuildCellParts(forceFullContext: false)));
 		}
 
 		protected string BuildCellParts(bool forceFullContext) {
@@ -266,8 +268,7 @@ namespace OniAccess.Handlers {
 			_lastSpokenRow = _row;
 			_lastSpokenCol = _col;
 
-			return WidgetSpeech.Compose(
-				new LabelItem(string.Join(", ", parts)), NavContext.None, null);
+			return string.Join(", ", parts);
 		}
 
 		// ========================================
@@ -296,10 +297,11 @@ namespace OniAccess.Handlers {
 				var landedKind = _rows[beyondDivider].Kind;
 				if (landedKind == TableRowKind.Minion || landedKind == TableRowKind.StoredMinion) {
 					string worldName = GetWorldName(_rows[beyondDivider].WorldId);
-					SpeechPipeline.SpeakInterrupt(
-						worldName + ", " + BuildCellParts(forceFullContext: true));
+					SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(
+						worldName + ", " + BuildCellParts(forceFullContext: true)));
 				} else {
-					SpeechPipeline.SpeakInterrupt(BuildCellParts(forceFullContext: true));
+					SpeechPipeline.SpeakInterrupt(
+						WidgetSpeech.ComposeLabel(BuildCellParts(forceFullContext: true)));
 				}
 				return;
 			}
@@ -383,16 +385,16 @@ namespace OniAccess.Handlers {
 			if (_sortColumn != _col) {
 				_sortColumn = _col;
 				_sortAscending = false;
-				SpeechPipeline.SpeakInterrupt(
-					string.Format(STRINGS.ONIACCESS.TABLE.SORT_DESC_FMT, colName));
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(
+					string.Format(STRINGS.ONIACCESS.TABLE.SORT_DESC_FMT, colName)));
 			} else if (!_sortAscending) {
 				_sortAscending = true;
-				SpeechPipeline.SpeakInterrupt(
-					string.Format(STRINGS.ONIACCESS.TABLE.SORT_ASC_FMT, colName));
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(
+					string.Format(STRINGS.ONIACCESS.TABLE.SORT_ASC_FMT, colName)));
 			} else {
 				_sortColumn = -1;
-				SpeechPipeline.SpeakInterrupt(
-					string.Format(STRINGS.ONIACCESS.TABLE.SORT_CLEARED_FMT, colName));
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(
+					string.Format(STRINGS.ONIACCESS.TABLE.SORT_CLEARED_FMT, colName)));
 			}
 
 			RebuildRows();

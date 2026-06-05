@@ -44,7 +44,7 @@ namespace OniAccess.Handlers.Screens.Outfits {
 		public void OnTabActivated(bool announce) {
 			CurrentIndex = 0;
 			if (announce)
-				SpeechPipeline.SpeakInterrupt(TabName);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(TabName));
 			SpeakCurrentItemQueued();
 		}
 

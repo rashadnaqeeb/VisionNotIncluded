@@ -176,7 +176,7 @@ namespace OniAccess.Handlers.Screens {
 				string firstItem = GetItemLabel(0);
 				if (!string.IsNullOrEmpty(firstItem))
 					label += ": " + firstItem;
-				SpeechPipeline.SpeakInterrupt(label);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(label));
 				return false;
 			}
 			return base.Tick();

@@ -37,11 +37,12 @@ namespace OniAccess.Handlers.Screens.Research {
 			_search.Clear();
 			SuppressSearchThisFrame();
 			if (announce)
-				SpeechPipeline.SpeakInterrupt(TabName);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(TabName));
 			if (ItemCount > 0)
 				SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(GetCurrentLabel()));
 			else
-				SpeechPipeline.SpeakQueued(STRINGS.ONIACCESS.RESEARCH.QUEUE_EMPTY);
+				SpeechPipeline.SpeakQueued(
+					WidgetSpeech.ComposeMessage(STRINGS.ONIACCESS.RESEARCH.QUEUE_EMPTY));
 		}
 
 		public void OnTabDeactivated() {
@@ -119,7 +120,7 @@ namespace OniAccess.Handlers.Screens.Research {
 			if (CurrentIndex > maxIndex)
 				CurrentIndex = System.Math.Max(0, maxIndex);
 
-			SpeechPipeline.SpeakInterrupt(message);
+			SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(message));
 		}
 
 		// ========================================

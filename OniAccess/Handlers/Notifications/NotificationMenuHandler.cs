@@ -68,7 +68,8 @@ namespace OniAccess.Handlers.Notifications {
 			if (ItemCount > 0)
 				SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(BuildCurrentLabel()));
 			else
-				SpeechPipeline.SpeakQueued((string)STRINGS.ONIACCESS.NOTIFICATIONS.EMPTY);
+				SpeechPipeline.SpeakQueued(
+					WidgetSpeech.ComposeMessage((string)STRINGS.ONIACCESS.NOTIFICATIONS.EMPTY));
 		}
 
 		public override void OnDeactivate() {
@@ -142,7 +143,7 @@ namespace OniAccess.Handlers.Notifications {
 			if (!group.Members[0].showDismissButton) {
 				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.NOTIFICATIONS.CANNOT_DISMISS);
+					WidgetSpeech.ComposeMessage((string)STRINGS.ONIACCESS.NOTIFICATIONS.CANNOT_DISMISS));
 				return;
 			}
 
@@ -151,11 +152,11 @@ namespace OniAccess.Handlers.Notifications {
 			// Cursor clamping is handled by OnTrackerChanged via the remove events.
 			if (ItemCount > 0) {
 				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.NOTIFICATIONS.DISMISSED);
+					WidgetSpeech.ComposeMessage((string)STRINGS.ONIACCESS.NOTIFICATIONS.DISMISSED));
 				SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(BuildCurrentLabel()));
 			} else {
 				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.NOTIFICATIONS.EMPTY);
+					WidgetSpeech.ComposeMessage((string)STRINGS.ONIACCESS.NOTIFICATIONS.EMPTY));
 			}
 		}
 

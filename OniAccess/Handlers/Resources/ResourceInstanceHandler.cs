@@ -74,7 +74,7 @@ namespace OniAccess.Handlers.Resources {
 			if (Tiles.TileCursor.Instance != null) {
 				string speech = Tiles.TileCursor.Instance.JumpTo(cell);
 				if (speech != null)
-					SpeechPipeline.SpeakInterrupt(speech);
+					SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(speech));
 				HashedString mode = OverlayScreen.Instance != null
 					? OverlayScreen.Instance.GetMode()
 					: OverlayModes.None.ID;

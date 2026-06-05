@@ -45,7 +45,7 @@ namespace OniAccess.Handlers.Screens.Skills {
 				}
 			}
 			if (announce)
-				SpeechPipeline.SpeakInterrupt(TabName);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(TabName));
 			if (dupes.Count > 0 && CurrentIndex < dupes.Count)
 				SpeechPipeline.SpeakQueued(
 					WidgetSpeech.ComposeLabel(SkillsHelper.BuildDupeLabel(dupes[CurrentIndex])));

@@ -39,7 +39,7 @@ namespace OniAccess.Handlers.Screens.Outfits {
 		public void OnTabActivated(bool announce) {
 			CurrentIndex = 0;
 			if (announce)
-				SpeechPipeline.SpeakInterrupt(TabName);
+				SpeechPipeline.SpeakInterrupt(Widgets.WidgetSpeech.ComposeMessage(TabName));
 			SpeakCurrentItemQueued();
 		}
 
@@ -253,7 +253,7 @@ namespace OniAccess.Handlers.Screens.Outfits {
 					if (tooltip != null) {
 						string reason = Widgets.WidgetOps.ReadAllTooltipText(tooltip);
 						if (!string.IsNullOrEmpty(reason)) {
-							SpeechPipeline.SpeakInterrupt(reason);
+							SpeechPipeline.SpeakInterrupt(Widgets.WidgetSpeech.ComposeMessage(reason));
 							return;
 						}
 					}

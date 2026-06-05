@@ -137,7 +137,7 @@ namespace OniAccess.Handlers.Screens {
 			if (!w.IsInteractable) {
 				PlaySound("Negative");
 				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE);
+					WidgetSpeech.ComposeMessage((string)STRINGS.ONIACCESS.FABRICATOR.UNAVAILABLE));
 				return;
 			}
 
@@ -316,7 +316,8 @@ namespace OniAccess.Handlers.Screens {
 				RefreshSections();
 				var fresh = GetCurrentWidget();
 				if (fresh != null)
-					SpeechPipeline.SpeakInterrupt(WidgetOps.GetSpeechText(fresh));
+					SpeechPipeline.SpeakInterrupt(
+						WidgetSpeech.ComposeLabel(WidgetOps.GetSpeechText(fresh)));
 			}
 		}
 
@@ -333,7 +334,8 @@ namespace OniAccess.Handlers.Screens {
 				RefreshSections();
 				var fresh = GetCurrentWidget();
 				if (fresh != null)
-					SpeechPipeline.SpeakInterrupt(WidgetOps.GetSpeechText(fresh));
+					SpeechPipeline.SpeakInterrupt(
+						WidgetSpeech.ComposeLabel(WidgetOps.GetSpeechText(fresh)));
 			}
 		}
 
@@ -554,7 +556,7 @@ namespace OniAccess.Handlers.Screens {
 					RebuildSections();
 					ResetNavigation();
 
-					SpeechPipeline.SpeakInterrupt(DisplayName);
+					SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(DisplayName));
 					SpeakFirstSection();
 				}
 				return false;
@@ -577,7 +579,7 @@ namespace OniAccess.Handlers.Screens {
 				RebuildSections();
 				if (_sections.Count > 0) {
 					_pendingFirstSection = false;
-					SpeechPipeline.SpeakInterrupt(DisplayName);
+					SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(DisplayName));
 					SpeakFirstSection();
 					return false;
 				}
@@ -604,8 +606,8 @@ namespace OniAccess.Handlers.Screens {
 			if (target == null) return;
 			if (target.GetComponent<CopyBuildingSettings>() == null) {
 				PlaySound("Negative");
-				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_UNAVAILABLE);
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeMessage(
+					(string)STRINGS.ONIACCESS.TOOLS.COPY_SETTINGS_UNAVAILABLE));
 				return;
 			}
 			CopySettingsTool.Instance.SetSourceObject(target);
@@ -673,7 +675,8 @@ namespace OniAccess.Handlers.Screens {
 			if (wrapped) PlaySound("HUD_Click");
 			else PlaySound("HUD_Mouseover");
 
-			SpeechPipeline.SpeakInterrupt(_activeTabs[_tabIndex].DisplayName);
+			SpeechPipeline.SpeakInterrupt(
+				WidgetSpeech.ComposeMessage(_activeTabs[_tabIndex].DisplayName));
 
 			if (_activeTabs[_tabIndex].GameTabId == null) {
 				_pendingTabSpeech = true;
@@ -834,14 +837,14 @@ namespace OniAccess.Handlers.Screens {
 			if (_sections.Count == 0) {
 				if (_tabIndex >= 0 && _tabIndex < _activeTabs.Count) {
 					if (_activeTabs[_tabIndex] is ConfigSideTab)
-						SpeechPipeline.SpeakQueued(
-							(string)STRINGS.UI.UISIDESCREENS.NOCONFIG.LABEL);
+						SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeMessage(
+							(string)STRINGS.UI.UISIDESCREENS.NOCONFIG.LABEL));
 					else if (_activeTabs[_tabIndex] is ErrandsSideTab)
-						SpeechPipeline.SpeakQueued(
-							(string)STRINGS.ONIACCESS.DETAILS.NO_ERRANDS);
+						SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeMessage(
+							(string)STRINGS.ONIACCESS.DETAILS.NO_ERRANDS));
 					else if (_activeTabs[_tabIndex] is ActionsTab)
-						SpeechPipeline.SpeakQueued(
-							(string)STRINGS.ONIACCESS.DETAILS.NO_ACTIONS);
+						SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeMessage(
+							(string)STRINGS.ONIACCESS.DETAILS.NO_ACTIONS));
 				}
 				return;
 			}
@@ -859,10 +862,10 @@ namespace OniAccess.Handlers.Screens {
 				if (string.IsNullOrWhiteSpace(item)) return;
 				string label = headerIsTabName ? item
 					: string.Format(STRINGS.ONIACCESS.DETAILS.HEADER_ITEM, header, item);
-				SpeechPipeline.SpeakQueued(label);
+				SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(label));
 			} else {
 				if (!headerIsTabName)
-					SpeechPipeline.SpeakQueued(header);
+					SpeechPipeline.SpeakQueued(WidgetSpeech.ComposeLabel(header));
 			}
 		}
 

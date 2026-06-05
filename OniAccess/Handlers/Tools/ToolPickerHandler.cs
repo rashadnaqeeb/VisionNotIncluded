@@ -68,7 +68,8 @@ namespace OniAccess.Handlers.Tools {
 			if (base.HandleKeyDown(e))
 				return true;
 			if (e.TryConsume(Action.Escape)) {
-				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLTIP.CLOSED);
+				SpeechPipeline.SpeakInterrupt(
+					WidgetSpeech.ComposeMessage((string)STRINGS.ONIACCESS.TOOLTIP.CLOSED));
 				HandlerStack.Pop();
 				return true;
 			}
