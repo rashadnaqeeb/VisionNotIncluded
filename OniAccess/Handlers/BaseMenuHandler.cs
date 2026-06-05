@@ -343,7 +343,7 @@ namespace OniAccess.Handlers {
 
 		/// <summary>
 		/// Handle Left/Right arrow keys. Default delegates to AdjustCurrentItem.
-		/// Overridden by NestedMenuHandler for drill-down/go-back behavior.
+		/// Overridden by NavTreeHandler for drill-down/go-back behavior.
 		/// </summary>
 		protected virtual void HandleLeftRight(int direction, int stepLevel) {
 			AdjustCurrentItem(direction, stepLevel);

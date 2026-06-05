@@ -6,7 +6,7 @@ using OniAccess.Speech;
 namespace OniAccess.Handlers.Screens.Inventory {
 	/// <summary>
 	/// Handler for KleiInventoryScreen (blueprint gallery in the Supply Closet).
-	/// Two tabs: Gallery (NestedMenuHandler) and Detail (flat reader + barter).
+	/// Two tabs: Gallery (drill tree) and Detail (flat reader + barter).
 	/// Tab cycling via Tab/Shift+Tab.
 	///
 	/// Lifecycle: Show-patch on KleiInventoryScreen.OnShow(bool).

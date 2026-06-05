@@ -15,8 +15,8 @@ namespace OniAccess.Handlers {
 	///
 	/// The engine is silent: each operation returns a <see cref="NavMove"/>, and this
 	/// adapter renders it into sound and speech. Up/Down/Home/End/jump play the cursor
-	/// sounds; drill, back, and search announce without a navigation sound, matching the
-	/// old NestedMenuHandler. Subclasses override <see cref="FormatWithContext"/>,
+	/// sounds; drill, back, and search announce without a navigation sound. Subclasses
+	/// override <see cref="FormatWithContext"/>,
 	/// <see cref="GetTooltip"/>, <see cref="ShouldDrillOnActivate"/>, or the interaction
 	/// hooks where their behavior differs.
 	/// </summary>

@@ -2,7 +2,7 @@ namespace OniAccess.Widgets {
 	/// <summary>
 	/// Stateless utility methods for widget speech, tooltip reading, validity
 	/// checking, and programmatic interaction. Extracted from BaseWidgetHandler
-	/// so that any handler (including NestedMenuHandler-based ones like
+	/// so that any handler (including NavTreeHandler-based ones like
 	/// DetailsScreenHandler) can reuse them without inheritance.
 	/// </summary>
 	public static class WidgetOps {

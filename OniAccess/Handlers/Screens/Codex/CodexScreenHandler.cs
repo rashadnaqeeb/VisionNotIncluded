@@ -5,7 +5,7 @@ using OniAccess.Input;
 namespace OniAccess.Handlers.Screens.Codex {
 	/// <summary>
 	/// Handler for the CodexScreen (in-game Database/Incyclopedia).
-	/// Two tabs: Categories (NestedMenuHandler) and Content (flat reader).
+	/// Two tabs: Categories (drill tree) and Content (flat reader).
 	/// Tab cycling via Tab/Shift+Tab.
 	///
 	/// Lifecycle: Show-patch on CodexScreen.OnShow(bool).
