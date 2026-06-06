@@ -87,6 +87,16 @@ Utility networks (Power, Plumbing, Ventilation, Conveyor, Automation) cluster di
 
 The scanner clears automatically when you switch asteroids.
 
+### Custom categories
+
+You can define your own scanner categories that bundle the filters you care about and sort ahead of the built-in ones in the cycle. They are saved globally, so they follow you to every colony.
+
+Open **Custom scanner categories** from the Scanner section of Settings (F12). The manager lists your categories with a "Create new" row at the end. Creating one names it "Custom category N" and opens its editor immediately.
+
+The editor lists every built-in category (Solids, Liquids, Gases, and so on). Drill into one to find an **All** toggle plus a checkbox for each subcategory. **Enter** toggles a filter. Every box you check becomes a subcategory of your custom category. Turning All on checks every subcategory at once; toggling a single subcategory while All is on narrows it to just the ones you pick. The last two rows are **Rename** and **Delete**.
+
+A custom category appears in the scan cycle (Ctrl+PageUp/Down) only when it matches something on the current asteroid, like any built-in category.
+
 ## Tools
 
 Selecting a tool (Dig, Deconstruct, Mop, etc.) from the action menu (Tab) enters tool mode. The cursor still moves normally, but you now place orders instead of inspecting.
