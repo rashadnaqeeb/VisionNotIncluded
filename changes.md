@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.5.1
+## Unreleased changes since 1.5.2
+
+## 1.5.2
 
 - Renamed the mod to Vision Not Included.
 
