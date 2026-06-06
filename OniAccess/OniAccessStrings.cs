@@ -1840,6 +1840,7 @@ namespace STRINGS {
 			public static LocString ORIENT_DISTANCE = "{0}. {1}";
 			// Help entries
 			public static LocString HELP_HOME = "Jump to Printing Pod";
+			public static LocString HELP_ORIENT_HOME = "Distance to Printing Pod";
 			public static LocString HELP_SET_BOOKMARK = "Set bookmark";
 			public static LocString HELP_GOTO_BOOKMARK = "Jump to bookmark";
 			public static LocString HELP_ORIENT_BOOKMARK = "Distance to bookmark";

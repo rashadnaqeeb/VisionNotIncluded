@@ -181,6 +181,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Shift+I", (string)STRINGS.ONIACCESS.RESOURCES.HELP_OPEN),
 			new HelpEntry("Shift+P", (string)STRINGS.ONIACCESS.RESOURCES.HELP_READ_PINNED),
 			new HelpEntry("H", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_HOME),
+			new HelpEntry("Alt+H", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_ORIENT_HOME),
 			new HelpEntry("Ctrl+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_SET_BOOKMARK),
 			new HelpEntry("Shift+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_GOTO_BOOKMARK),
 			new HelpEntry("Alt+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_ORIENT_BOOKMARK),
