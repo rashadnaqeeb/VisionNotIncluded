@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.5.2
+## Unreleased changes since 1.5.3
+
+## 1.5.3
 
 - Alt+H now reports the direction and distance to your home location without moving the cursor, the same way Alt plus a number key orients toward a bookmark.
 
