@@ -91,6 +91,7 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.B, Modifier.Ctrl | Modifier.Shift),
 			// Bookmark keybinds
 			new ConsumedKey(KKeyCode.H),
+			new ConsumedKey(KKeyCode.H, Modifier.Alt),
 			new ConsumedKey(KKeyCode.Alpha1, Modifier.Shift),
 			new ConsumedKey(KKeyCode.Alpha2, Modifier.Shift),
 			new ConsumedKey(KKeyCode.Alpha3, Modifier.Shift),
@@ -622,12 +623,17 @@ namespace OniAccess.Handlers.Tiles {
 			}
 
 			// Bookmark keybinds
-			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.H)
-				&& !InputUtil.AnyModifierHeld()) {
-				SpeechPipeline.SpeakInterrupt(CursorBookmarks.JumpHome());
-				Audio.EarconScheduler.Instance?.ResetTransitionState();
-				UpdateAudioForCell();
-				return true;
+			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.H)) {
+				if (InputUtil.AltHeld()) {
+					SpeechPipeline.SpeakInterrupt(CursorBookmarks.OrientHome());
+					return true;
+				}
+				if (!InputUtil.AnyModifierHeld()) {
+					SpeechPipeline.SpeakInterrupt(CursorBookmarks.JumpHome());
+					Audio.EarconScheduler.Instance?.ResetTransitionState();
+					UpdateAudioForCell();
+					return true;
+				}
 			}
 			int bmDigit = InputUtil.GetDigitKeyDown();
 			if (bmDigit >= 0) {

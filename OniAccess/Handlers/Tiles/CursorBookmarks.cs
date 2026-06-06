@@ -50,7 +50,17 @@ namespace OniAccess.Handlers.Tiles {
 		public string Orient(int index) {
 			if (!TryReadBookmark(index, out Vector3 pos))
 				return (string)STRINGS.ONIACCESS.BOOKMARKS.NO_BOOKMARK;
-			int targetCell = Grid.PosToCell(pos);
+			return OrientToCell(Grid.PosToCell(pos));
+		}
+
+		public static string OrientHome() {
+			int cell = FindHomeCell();
+			if (cell == Grid.InvalidCell)
+				return (string)STRINGS.ONIACCESS.BOOKMARKS.NO_HOME;
+			return OrientToCell(cell);
+		}
+
+		private static string OrientToCell(int targetCell) {
 			int cursorCell = TileCursor.Instance.Cell;
 			string coords = Util.GridCoordinates.Format(targetCell);
 			string distance = AnnouncementFormatter.FormatDistance(cursorCell, targetCell);

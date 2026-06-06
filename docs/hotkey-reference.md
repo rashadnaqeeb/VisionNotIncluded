@@ -125,6 +125,7 @@ Camera pan (WASD) and build category keys (Plan1-14) are globally blocked by `Mo
 | Ctrl+B | Place ruler | None | N/A -- unbound |
 | Ctrl+Shift+B | Clear ruler | None | ConsumedKey |
 | H | Jump home | CameraHome (Root) | ConsumedKey |
+| Alt+H | Orient toward home | None | ConsumedKey |
 
 **Bookmarks:**
 
