@@ -8,6 +8,9 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 
 	public class ScannerSubcategory {
 		public string Name;
+		// Set only for keyword subcategories: the user's keyword, spoken in
+		// preference to the taxonomy label lookup. Null for taxonomy subs.
+		public string DisplayName;
 		public List<ScannerItem> Items;
 	}
 
@@ -148,14 +151,27 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 
 		/// <summary>
 		/// Synthesize the user's custom categories from the same entry list.
-		/// Each selector becomes a named subcategory: an "all" selector
-		/// gathers every entry in its source category, a named selector only
-		/// its own subcategory. Items get their own ScannerItem objects
-		/// (distinct from the real category they mirror), but within a custom
-		/// category the selector sub and the implicit "all" share item
-		/// references so prune-by-identity works exactly as it does in a real
-		/// category. A custom category that matches nothing is skipped, like
-		/// any empty built-in category never appears.
+		/// Each keyword and each selector becomes a named subcategory; keyword
+		/// subcategories sort ahead of the taxonomy selector subcategories. A
+		/// keyword gathers every entry whose item name matches it; an "all"
+		/// selector gathers every entry in its source category, a named
+		/// selector only its own subcategory.
+		///
+		/// Items get their own ScannerItem objects (distinct from the real
+		/// category they mirror), but within one custom category every
+		/// subcategory and the implicit "all" share a single ScannerItem per
+		/// item identity (the ItemPool). Identity is the entry's
+		/// category/subcategory/name triple, matching how the built-in hierarchy
+		/// groups items, so the same name under two subcategories (a wild and a
+		/// tame critter of one species) or two categories (a solid element and
+		/// its debris) stays distinct. Sharing matters because a keyword can
+		/// overlap a selector on the very same entries: without the pool that
+		/// entry would become two ScannerItem objects, "all" would list it
+		/// twice, and pruning one would leave the other stale. With the pool,
+		/// prune-by-identity removes an emptied item from every subcategory at
+		/// once, exactly as a real category behaves. A custom category that
+		/// matches nothing is skipped, like any empty built-in category never
+		/// appears.
 		/// </summary>
 		private static List<ScannerCategory> BuildCustomCategories(
 				List<ScanEntry> entries, int cursorCell,
@@ -163,44 +179,38 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			var result = new List<ScannerCategory>();
 			if (customDefs == null) return result;
 
+			// Built lazily and shared across every keyword of every category: the
+			// link-stripped, normalized form of each distinct item name, so a
+			// keyword match strips each name once per rebuild instead of once per
+			// keyword per entry.
+			Dictionary<string, string> plainByName = null;
+
 			foreach (var def in customDefs) {
-				if (def.Selectors == null || def.Selectors.Count == 0) continue;
+				bool hasSelectors = def.Selectors != null && def.Selectors.Count > 0;
+				bool hasKeywords = def.Keywords != null && def.Keywords.Count > 0;
+				if (!hasSelectors && !hasKeywords) continue;
 
+				var pool = new ItemPool(cursorCell);
 				var namedSubs = new List<ScannerSubcategory>();
-				foreach (var sel in OrderedSelectors(def.Selectors)) {
-					bool isAll = sel.Subcategory == ScannerTaxonomy.Subcategories.All;
 
-					var byName = new Dictionary<string, List<ScanEntry>>();
-					foreach (var entry in entries) {
-						if (entry.Category != sel.Category) continue;
-						if (!isAll && entry.Subcategory != sel.Subcategory) continue;
-						if (!byName.TryGetValue(entry.ItemName, out var instances))
-							byName[entry.ItemName] = instances = new List<ScanEntry>();
-						instances.Add(entry);
+				if (hasKeywords) {
+					if (plainByName == null) plainByName = BuildPlainNames(entries);
+					foreach (var keyword in def.Keywords) {
+						var sub = BuildKeywordSub(entries, cursorCell, keyword, pool, plainByName);
+						if (sub != null) namedSubs.Add(sub);
 					}
-					if (byName.Count == 0) continue;
-
-					var items = new List<ScannerItem>();
-					foreach (var kvp in byName) {
-						kvp.Value.Sort((a, b) =>
-							GridUtil.CellDistance(cursorCell, a.Cell)
-								.CompareTo(GridUtil.CellDistance(cursorCell, b.Cell)));
-						items.Add(new ScannerItem { ItemName = kvp.Key, Instances = kvp.Value });
-					}
-					items.Sort((a, b) => CompareItems(a, b, cursorCell));
-
-					// An "all" selector speaks its source category's name; a
-					// named selector speaks the subcategory's name. Both keys
-					// resolve through the navigator's existing label lookup.
-					string subName = isAll ? sel.Category : sel.Subcategory;
-					namedSubs.Add(new ScannerSubcategory { Name = subName, Items = items });
 				}
+
+				if (hasSelectors)
+					foreach (var sel in OrderedSelectors(def.Selectors)) {
+						var sub = BuildSelectorSub(entries, cursorCell, sel, pool);
+						if (sub != null) namedSubs.Add(sub);
+					}
 
 				if (namedSubs.Count == 0) continue;
 
-				var allItems = new List<ScannerItem>();
-				foreach (var sub in namedSubs)
-					allItems.AddRange(sub.Items);
+				// "all" references the same pooled items, deduped by item identity.
+				var allItems = new List<ScannerItem>(pool.Items);
 				allItems.Sort((a, b) => CompareItems(a, b, cursorCell));
 
 				var subs = new List<ScannerSubcategory>(namedSubs.Count + 1) {
@@ -219,6 +229,115 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			}
 
 			return result;
+		}
+
+		/// <summary>An item's identity for pooling: its category, subcategory,
+		/// and name, matching how the built-in hierarchy groups items. Same name
+		/// under two subcategories or two categories stays distinct.</summary>
+		private static string ItemKey(ScanEntry e) =>
+			e.Category + "" + e.Subcategory + "" + e.ItemName;
+
+		/// <summary>One ScannerItem per item identity within a single custom
+		/// category, shared across its subcategories so prune-by-identity works.
+		/// Instances are sorted nearest-first the first time an item is pooled.</summary>
+		private sealed class ItemPool {
+			private readonly int _cursorCell;
+			private readonly Dictionary<string, ScannerItem> _byKey =
+				new Dictionary<string, ScannerItem>();
+
+			public ItemPool(int cursorCell) { _cursorCell = cursorCell; }
+
+			public IEnumerable<ScannerItem> Items => _byKey.Values;
+
+			public ScannerItem GetOrAdd(string key, string itemName, List<ScanEntry> instances) {
+				if (_byKey.TryGetValue(key, out var existing)) return existing;
+				instances.Sort((a, b) =>
+					GridUtil.CellDistance(_cursorCell, a.Cell)
+						.CompareTo(GridUtil.CellDistance(_cursorCell, b.Cell)));
+				var item = new ScannerItem { ItemName = itemName, Instances = instances };
+				_byKey[key] = item;
+				return item;
+			}
+		}
+
+		private static ScannerSubcategory BuildSelectorSub(
+				List<ScanEntry> entries, int cursorCell, CustomSelector sel, ItemPool pool) {
+			bool isAll = sel.Subcategory == ScannerTaxonomy.Subcategories.All;
+
+			var byKey = new Dictionary<string, List<ScanEntry>>();
+			foreach (var entry in entries) {
+				if (entry.Category != sel.Category) continue;
+				if (!isAll && entry.Subcategory != sel.Subcategory) continue;
+				string key = ItemKey(entry);
+				if (!byKey.TryGetValue(key, out var instances))
+					byKey[key] = instances = new List<ScanEntry>();
+				instances.Add(entry);
+			}
+			if (byKey.Count == 0) return null;
+
+			var items = new List<ScannerItem>();
+			foreach (var kvp in byKey)
+				items.Add(pool.GetOrAdd(kvp.Key, kvp.Value[0].ItemName, kvp.Value));
+			items.Sort((a, b) => CompareItems(a, b, cursorCell));
+
+			// An "all" selector speaks its source category's name; a named
+			// selector speaks the subcategory's name. Both keys resolve through
+			// the navigator's existing label lookup.
+			string subName = isAll ? sel.Category : sel.Subcategory;
+			return new ScannerSubcategory { Name = subName, Items = items };
+		}
+
+		/// <summary>All distinct item names mapped to their link-stripped,
+		/// normalized match form, computed once so keyword matching never re-strips
+		/// the same name.</summary>
+		private static Dictionary<string, string> BuildPlainNames(List<ScanEntry> entries) {
+			var map = new Dictionary<string, string>();
+			foreach (var entry in entries)
+				if (!map.ContainsKey(entry.ItemName))
+					map[entry.ItemName] = ScannerSearch.PlainForMatch(entry.ItemName);
+			return map;
+		}
+
+		/// <summary>
+		/// Build a subcategory from a search keyword: every entry whose item
+		/// name matches, ordered by match quality then distance, exactly as the
+		/// scanner search ranks results. The subcategory carries the keyword as
+		/// its DisplayName so it is spoken verbatim rather than routed through
+		/// the taxonomy label lookup, which would mistranslate a keyword that
+		/// happens to equal a taxonomy key.
+		/// </summary>
+		private static ScannerSubcategory BuildKeywordSub(
+				List<ScanEntry> entries, int cursorCell, string keyword, ItemPool pool,
+				Dictionary<string, string> plainByName) {
+			var matcher = new ScannerSearch.NameMatcher(keyword);
+			var byKey = new Dictionary<string, List<ScanEntry>>();
+			var matchKey = new Dictionary<string, int>();
+			foreach (var entry in entries) {
+				int sortKey = matcher.MatchPlain(plainByName[entry.ItemName]);
+				if (sortKey < 0) continue;
+				string key = ItemKey(entry);
+				if (!byKey.TryGetValue(key, out var instances)) {
+					byKey[key] = instances = new List<ScanEntry>();
+					matchKey[key] = sortKey;
+				}
+				instances.Add(entry);
+			}
+			if (byKey.Count == 0) return null;
+
+			var items = new List<ScannerItem>();
+			var itemKeyOf = new Dictionary<ScannerItem, string>();
+			foreach (var kvp in byKey) {
+				var item = pool.GetOrAdd(kvp.Key, kvp.Value[0].ItemName, kvp.Value);
+				items.Add(item);
+				itemKeyOf[item] = kvp.Key;
+			}
+			items.Sort((a, b) => {
+				int sk = matchKey[itemKeyOf[a]].CompareTo(matchKey[itemKeyOf[b]]);
+				if (sk != 0) return sk;
+				return GridUtil.CellDistance(cursorCell, a.Instances[0].Cell)
+					.CompareTo(GridUtil.CellDistance(cursorCell, b.Instances[0].Cell));
+			});
+			return new ScannerSubcategory { Name = keyword, DisplayName = keyword, Items = items };
 		}
 
 		/// <summary>Selectors in taxonomy order so the custom category's

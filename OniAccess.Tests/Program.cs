@@ -108,6 +108,7 @@ namespace OniAccess.Tests {
 			results.Add(ScannerSearchFilterRemapsCategory());
 			results.Add(ScannerSearchBestMatchAcrossPositions());
 			results.Add(ScannerSearchAccentInsensitive());
+			results.Add(ScannerSearchMatcherStripsLinkFormatting());
 
 			// --- TextFilter ---
 			TextFilter.RegisterSprite("warning", "warning:");
@@ -210,6 +211,13 @@ namespace OniAccess.Tests {
 			results.Add(CustomAllSharesRefWithinCustom());
 			results.Add(CustomEmptyCategorySkipped());
 			results.Add(CustomPruneDoesNotAffectReal());
+			results.Add(CustomKeywordGathersMatches());
+			results.Add(CustomKeywordSortsBeforeSelectors());
+			results.Add(CustomKeywordRanksByMatchQuality());
+			results.Add(CustomKeywordSelectorOverlapDedupsAll());
+			results.Add(CustomKeywordPrunePropagates());
+			results.Add(CustomSameNameDistinctSubcategoriesNotMerged());
+			results.Add(CustomKeywordCrossCategoryNotMerged());
 			results.Add(StoreSetAllSupersedesSubs());
 			results.Add(StoreToggleSubWhileAllExpands());
 			results.Add(StoreToggleSubIndividual());
@@ -1271,6 +1279,15 @@ namespace OniAccess.Tests {
 			return Assert("ScannerSearchAccentInsensitive", ok, $"key={key}");
 		}
 
+		private static (string, bool, string) ScannerSearchMatcherStripsLinkFormatting() {
+			// NameMatcher.Match must strip link markup before matching; the link
+			// target ("ELEMENT") must not leak into the matched text.
+			var matcher = new ScannerSearch.NameMatcher("coal");
+			int key = matcher.Match("<link=\"ELEMENT\">Coal</link>");
+			bool ok = key == 0; // prefix match against the stripped "Coal"
+			return Assert("ScannerSearchMatcherStripsLinkFormatting", ok, $"key={key}");
+		}
+
 		// ========================================
 		// TextFilter tests (ported + new edge cases)
 		// ========================================
@@ -2184,6 +2201,148 @@ namespace OniAccess.Tests {
 				&& FindSub(FindCat(snap, "c1"), "Solids") == null;
 			return Assert("CustomPruneDoesNotAffectReal", ok,
 				$"realOres={(realSub == null ? -1 : realSub.Items.Count)}");
+		}
+
+		private static List<CustomScannerCategory> DefKw(string id, string name,
+				string[] keywords, params CustomSelector[] selectors) {
+			return new List<CustomScannerCategory> {
+				new CustomScannerCategory {
+					Id = id, Name = name,
+					Selectors = new List<CustomSelector>(selectors),
+					Keywords = new List<string>(keywords ?? new string[0]),
+				}
+			};
+		}
+
+		private static (string, bool, string) CustomKeywordGathersMatches() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Solids", "Ores", "Iron Ore", 0),
+				CustomEntry("Buildings", "Production", "Iron Volcano", 1),
+				CustomEntry("Solids", "Stone", "Granite", 2),
+			};
+			var snap = new ScannerSnapshot(entries, 0, DefKw("c1", "Iron", new[] { "iron" }));
+			var sub = FindSub(FindCat(snap, "c1"), "iron");
+			bool ok = sub != null && sub.Items.Count == 2;
+			return Assert("CustomKeywordGathersMatches", ok,
+				$"items={(sub == null ? -1 : sub.Items.Count)}");
+		}
+
+		private static (string, bool, string) CustomKeywordSortsBeforeSelectors() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Solids", "Ores", "Iron Ore", 0),
+			};
+			var snap = new ScannerSnapshot(entries, 0,
+				DefKw("c1", "Mix", new[] { "iron" }, Sel("Solids", "all")));
+			var cat = FindCat(snap, "c1");
+			// subs[0] is the synthetic "all"; keyword precedes the selector sub.
+			bool ok = cat != null && cat.Subcategories.Count == 3
+				&& cat.Subcategories[1].Name == "iron"
+				&& cat.Subcategories[2].Name == "Solids";
+			return Assert("CustomKeywordSortsBeforeSelectors", ok,
+				cat == null ? "no cat" : string.Join("/", cat.Subcategories.ConvertAll(s => s.Name).ToArray()));
+		}
+
+		private static (string, bool, string) CustomKeywordRanksByMatchQuality() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Debris", "Materials", "Scrap Iron", 0),
+				CustomEntry("Solids", "Ores", "Iron Ore", 1),
+			};
+			var snap = new ScannerSnapshot(entries, 0, DefKw("c1", "Iron", new[] { "iron" }));
+			var sub = FindSub(FindCat(snap, "c1"), "iron");
+			// Prefix match ("Iron Ore") outranks word-boundary match ("Scrap Iron").
+			bool ok = sub != null && sub.Items.Count == 2
+				&& sub.Items[0].ItemName == "Iron Ore"
+				&& sub.Items[1].ItemName == "Scrap Iron";
+			return Assert("CustomKeywordRanksByMatchQuality", ok,
+				sub == null ? "no sub" : $"{sub.Items[0].ItemName},{sub.Items[1].ItemName}");
+		}
+
+		private static (string, bool, string) CustomKeywordSelectorOverlapDedupsAll() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Solids", "Ores", "Iron Ore", 0),
+			};
+			var snap = new ScannerSnapshot(entries, 0,
+				DefKw("c1", "Mix", new[] { "iron" }, Sel("Solids", "all")));
+			var cat = FindCat(snap, "c1");
+			var allSub = FindSub(cat, "all");
+			var kwItem = FindSub(cat, "iron")?.Items[0];
+			var selItem = FindSub(cat, "Solids")?.Items[0];
+			// "all" lists the overlapping item once, and the keyword and selector
+			// subs share the one pooled ScannerItem so prune-by-identity reaches both.
+			bool ok = allSub != null && allSub.Items.Count == 1
+				&& kwItem != null && ReferenceEquals(kwItem, selItem);
+			return Assert("CustomKeywordSelectorOverlapDedupsAll", ok,
+				$"all={(allSub == null ? -1 : allSub.Items.Count)}, shared={ReferenceEquals(kwItem, selItem)}");
+		}
+
+		private static (string, bool, string) CustomKeywordPrunePropagates() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Solids", "Ores", "Iron Ore", 0),
+			};
+			var snap = new ScannerSnapshot(entries, 0,
+				DefKw("c1", "Mix", new[] { "iron" }, Sel("Solids", "all")));
+			var kwItem = FindSub(FindCat(snap, "c1"), "iron").Items[0];
+			snap.RemoveInstance(kwItem, kwItem.Instances[0]);
+			// Removing the shared item empties every sub, so the custom category
+			// disappears, while the real Solids category keeps its own item.
+			bool ok = FindCat(snap, "c1") == null
+				&& FindSub(FindCat(snap, "Solids"), "Ores")?.Items.Count == 1;
+			return Assert("CustomKeywordPrunePropagates", ok,
+				$"customGone={(FindCat(snap, "c1") == null)}");
+		}
+
+		private static (string, bool, string) CustomSameNameDistinctSubcategoriesNotMerged() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Life", "Wild Critters", "Hatch", 0),
+				CustomEntry("Life", "Tame Critters", "Hatch", 1),
+			};
+			var defs = new List<CustomScannerCategory> {
+				new CustomScannerCategory { Id = "c1", Name = "Critters",
+					Selectors = new List<CustomSelector> {
+						Sel("Life", "Wild Critters"), Sel("Life", "Tame Critters") } }
+			};
+			var snap = new ScannerSnapshot(entries, 0, defs);
+			var cat = FindCat(snap, "c1");
+			var wild = FindSub(cat, "Wild Critters");
+			var tame = FindSub(cat, "Tame Critters");
+			var all = FindSub(cat, "all");
+			// Same species name under two subcategories must stay two distinct
+			// items, each with its own instance, not collapse via the pool.
+			bool ok = wild != null && tame != null && all != null
+				&& wild.Items.Count == 1 && wild.Items[0].Instances[0].Cell == 0
+				&& tame.Items.Count == 1 && tame.Items[0].Instances[0].Cell == 1
+				&& !ReferenceEquals(wild.Items[0], tame.Items[0])
+				&& all.Items.Count == 2;
+			return Assert("CustomSameNameDistinctSubcategoriesNotMerged", ok,
+				$"wild={(wild == null ? -1 : wild.Items.Count)}, tame={(tame == null ? -1 : tame.Items.Count)}, all={(all == null ? -1 : all.Items.Count)}");
+		}
+
+		private static (string, bool, string) CustomKeywordCrossCategoryNotMerged() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Solids", "Ores", "Coal", 0),
+				CustomEntry("Debris", "Materials", "Coal", 1),
+			};
+			var snap = new ScannerSnapshot(entries, 0,
+				DefKw("c1", "Coal", new[] { "coal" }, Sel("Solids", "all")));
+			var cat = FindCat(snap, "c1");
+			var kwSub = FindSub(cat, "coal");
+			var selSub = FindSub(cat, "Solids");
+			// The keyword matches both Coals (two distinct items), but the Solids
+			// selector must keep only the solid one, not inherit the debris
+			// instance through the shared pool.
+			bool ok = kwSub != null && kwSub.Items.Count == 2
+				&& selSub != null && selSub.Items.Count == 1
+				&& selSub.Items[0].Instances.Count == 1
+				&& selSub.Items[0].Instances[0].Cell == 0;
+			return Assert("CustomKeywordCrossCategoryNotMerged", ok,
+				$"kw={(kwSub == null ? -1 : kwSub.Items.Count)}, selInst={(selSub == null || selSub.Items.Count == 0 ? -1 : selSub.Items[0].Instances.Count)}");
 		}
 
 		// ========================================

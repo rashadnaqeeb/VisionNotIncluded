@@ -190,7 +190,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			_instanceIndex = 0;
 
 			var sub = cat.Subcategories[_subcategoryIndex];
-			string subName = GetSubcategoryName(sub.Name);
+			string subName = SpokenSubcategoryName(sub);
 			SpeechPipeline.SpeakInterrupt(subName);
 
 			string itemAnnouncement = ValidateAndAnnounce(speakOnEmpty: false);
@@ -525,6 +525,13 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		private static string SpokenCategoryName(ScannerCategory cat) {
 			return !string.IsNullOrEmpty(cat.DisplayName)
 				? cat.DisplayName : GetCategoryName(cat.Name);
+		}
+
+		// Keyword subcategories carry the raw keyword as DisplayName; speak it
+		// directly. Taxonomy subs fall through to the label lookup.
+		private static string SpokenSubcategoryName(ScannerSubcategory sub) {
+			return !string.IsNullOrEmpty(sub.DisplayName)
+				? sub.DisplayName : GetSubcategoryName(sub.Name);
 		}
 
 		internal static string GetCategoryName(string taxonomyName) {

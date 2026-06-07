@@ -49,11 +49,11 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 
 		public void SearchRefresh(string query, AxialI cursor) {
 			var entries = ScanGrid(cursor);
-			string q = query.ToLowerInvariant();
+			var matcher = new ScannerSearch.NameMatcher(query);
 			var filtered = new List<ClusterScanEntry>();
 
 			foreach (var entry in entries) {
-				int sortKey = ScannerSearch.MatchSortKey(entry.ItemName, q);
+				int sortKey = matcher.Match(entry.ItemName);
 				if (sortKey < 0) continue;
 				filtered.Add(new ClusterScanEntry {
 					Location = entry.Location,

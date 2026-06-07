@@ -68,6 +68,48 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			ConfigManager.Save();
 		}
 
+		// ===== Keyword mutation =====
+
+		/// <summary>This category's search keywords, never null.</summary>
+		public static IReadOnlyList<string> GetKeywords(string id) {
+			var c = Find(id);
+			if (c == null) return new string[0];
+			if (c.Keywords == null) c.Keywords = new List<string>();
+			return c.Keywords;
+		}
+
+		/// <summary>Add a keyword, trimmed. Returns false (no-op) for a blank
+		/// keyword or one already present (case-insensitive), so the editor never
+		/// grows duplicate subcategories and can avoid a false "added"
+		/// confirmation.</summary>
+		public static bool AddKeyword(string id, string keyword) {
+			var c = Find(id);
+			if (c == null) {
+				Log.Warn($"CustomCategoryStore.AddKeyword: unknown id {id}");
+				return false;
+			}
+			if (c.Keywords == null) c.Keywords = new List<string>();
+			keyword = keyword.Trim();
+			if (keyword.Length == 0) return false;
+			if (c.Keywords.Any(k => string.Equals(k, keyword, StringComparison.OrdinalIgnoreCase)))
+				return false;
+			c.Keywords.Add(keyword);
+			ConfigManager.Save();
+			return true;
+		}
+
+		public static void RemoveKeyword(string id, string keyword) {
+			var c = Find(id);
+			if (c == null) {
+				Log.Warn($"CustomCategoryStore.RemoveKeyword: unknown id {id}");
+				return;
+			}
+			if (c.Keywords == null) return;
+			int removed = c.Keywords.RemoveAll(
+				k => string.Equals(k, keyword, StringComparison.OrdinalIgnoreCase));
+			if (removed > 0) ConfigManager.Save();
+		}
+
 		// ===== Selector mutation (id-keyed wrappers) =====
 
 		public static bool IsAll(string id, string category) {

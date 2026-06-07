@@ -1817,11 +1817,20 @@ namespace STRINGS {
 			// Per-category actions (editor rows)
 			public static LocString RENAME = "Rename";
 			public static LocString DELETE = "Delete";
+			// Editor row that adds a search keyword as a subcategory
+			public static LocString ADD_KEYWORD = "Add search keyword";
+			// Prompt title spoken when entering a keyword
+			public static LocString KEYWORD_PROMPT = "Search keyword";
 			// Prompt title spoken when renaming
 			public static LocString RENAME_PROMPT = "Rename custom category";
 			// Confirmations. {0} = name
 			public static LocString RENAMED = "Renamed to {0}";
 			public static LocString DELETED = "Deleted {0}";
+			// Keyword confirmations. {0} = keyword
+			public static LocString KEYWORD_ADDED = "Added {0}";
+			public static LocString KEYWORD_REMOVED = "Removed {0}";
+			// Spoken when a keyword the user typed is already in the category
+			public static LocString KEYWORD_DUPLICATE = "{0} already added";
 			// Help entries
 			public static LocString HELP_EDIT = "Edit category";
 			public static LocString HELP_TOGGLE = "Toggle filter";

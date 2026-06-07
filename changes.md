@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.5.4
 
+- Custom scanner categories can now include search keywords. Add a keyword in a category's editor and it becomes a subcategory that gathers everything whose name matches, sorted ahead of the taxonomy subcategories.
+
 ## 1.5.4
 
 - Fix being unable to set per-robot access on a door's Access Control: the Robots category can now be drilled into to set individual robot access, not just the category default.

@@ -20,6 +20,14 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		public string Name { get; set; }
 
 		public List<CustomSelector> Selectors { get; set; } = new List<CustomSelector>();
+
+		/// <summary>
+		/// Free-text search keywords. Each becomes a subcategory that gathers
+		/// every entry whose item name matches the keyword, by the same
+		/// name-matching the scanner search uses. Keyword subcategories sort
+		/// ahead of the taxonomy selector subcategories in the scan cycle.
+		/// </summary>
+		public List<string> Keywords { get; set; } = new List<string>();
 	}
 
 	/// <summary>

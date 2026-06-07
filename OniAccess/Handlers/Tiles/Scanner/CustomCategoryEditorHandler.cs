@@ -55,6 +55,18 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 
 		protected override IReadOnlyList<NavItem> BuildRoots() {
 			var roots = new List<NavItem>();
+			// Keyword rows first, mirroring the scan cycle where keyword
+			// subcategories sort ahead of the taxonomy ones. Enter removes.
+			foreach (var keyword in CustomCategoryStore.GetKeywords(_id)) {
+				var k = keyword;
+				roots.Add(new MenuNode(
+					() => k,
+					activate: () => { RemoveKeyword(k); return true; }));
+			}
+			roots.Add(new MenuNode(
+				() => (string)STRINGS.ONIACCESS.CUSTOM_CATEGORY.ADD_KEYWORD,
+				activate: () => { OpenKeywordPrompt(); return true; },
+				roleKey: NavRoles.Button));
 			foreach (var category in ScannerTaxonomy.CategoryOrder) {
 				var cat = category;
 				roots.Add(new MenuNode(
@@ -144,6 +156,38 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			ScannerNavigator.Instance?.InvalidateSnapshot();
 			PlaySound("HUD_Click");
 			AnnounceCurrent();
+		}
+
+		// ========================================
+		// KEYWORDS
+		// ========================================
+
+		private void OpenKeywordPrompt() {
+			string prompt = (string)STRINGS.ONIACCESS.CUSTOM_CATEGORY.KEYWORD_PROMPT;
+			HandlerStack.Push(new TextPromptHandler(prompt, "", keyword => {
+				if (string.IsNullOrWhiteSpace(keyword)) return;
+				bool added = CustomCategoryStore.AddKeyword(_id, keyword);
+				if (added) ScannerNavigator.Instance?.InvalidateSnapshot();
+				// Spoken when this editor reactivates as the prompt pops. Don't
+				// claim an add that the store rejected as a duplicate.
+				_pendingAnnouncement = string.Format(
+					added
+						? (string)STRINGS.ONIACCESS.CUSTOM_CATEGORY.KEYWORD_ADDED
+						: (string)STRINGS.ONIACCESS.CUSTOM_CATEGORY.KEYWORD_DUPLICATE,
+					keyword.Trim());
+			}));
+		}
+
+		private void RemoveKeyword(string keyword) {
+			CustomCategoryStore.RemoveKeyword(_id, keyword);
+			ScannerNavigator.Instance?.InvalidateSnapshot();
+			PlaySound("HUD_Click_Close");
+			SpeechPipeline.SpeakInterrupt(string.Format(
+				STRINGS.ONIACCESS.CUSTOM_CATEGORY.KEYWORD_REMOVED, keyword));
+			// The removed row is gone; pull the cursor back into the live tree and
+			// read where it landed so the user isn't left on a silent unknown row.
+			Nav.ClampToTree();
+			AnnounceCurrent(interrupt: false);
 		}
 
 		// ========================================
