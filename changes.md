@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.5.4
+## Unreleased changes since 1.5.5
+
+## 1.5.5
 
 - Custom scanner categories can now include search keywords. Add a keyword in a category's editor and it becomes a subcategory that gathers everything whose name matches, sorted ahead of the taxonomy subcategories.
 
