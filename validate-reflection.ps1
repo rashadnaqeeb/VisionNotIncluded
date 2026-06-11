@@ -151,9 +151,9 @@ function Resolve-FieldType {
             $visited[$f] = $true
 
             $content = Get-SourceContent $f
-            # Match: private/protected/public [static] TypeName fieldName;
-            # or: private/protected/public [static] TypeName fieldName =
-            if ($content -match "(?m)(?:private|protected|public)\s+(?:static\s+)?(\w+)\s+$escaped\s*[;=]") {
+            # Match: private/protected/public [static] TypeName memberName followed by
+            # ; (field), = (field initializer or expression-bodied property), or { (property)
+            if ($content -match "(?m)(?:private|protected|public)\s+(?:static\s+)?(\w+)\s+$escaped\s*[;={]") {
                 return $Matches[1]
             }
 
@@ -203,7 +203,11 @@ function Resolve-Types {
 # nestedClassIndex: className -> filePath (for inner/nested classes not in their own file)
 $script:subclassIndex = @{}
 $script:nestedClassIndex = @{}
-foreach ($f in Get-ChildItem -Path $asmDir -Filter "*.cs") {
+# Recurse: project-mode decompilation puts namespaced types (Database, Klei.AI,
+# TUNING, STRINGS, ...) in subdirectories, not just flat files at the top level.
+$indexDirs = @($asmDir)
+if (Test-Path $asmFirstpassDir) { $indexDirs += $asmFirstpassDir }
+foreach ($f in Get-ChildItem -Path $indexDirs -Recurse -Filter "*.cs") {
     $content = Get-Content -Path $f.FullName -Raw -ErrorAction SilentlyContinue
     if (-not $content) { continue }
     $firstLines = ($content -split "`n" | Select-Object -First 15) -join ' '
@@ -576,9 +580,19 @@ foreach ($file in $csFiles) {
             }
         }
 
-        # Track var x = TypeName.Instance
-        if ($line -match '^\s*var\s+(\w+)\s*=\s*(\w+)\.Instance\b') {
+        # Track var x = TypeName.Instance; (statement must end there — a chained
+        # member access like TypeName.Instance.Member has the member's type, not TypeName)
+        if ($line -match '^\s*var\s+(\w+)\s*=\s*(\w+)\.Instance\s*;') {
             Add-VarType $varTypes $Matches[1] $Matches[2]
+        }
+
+        # Singleton member access: var x = TypeName.Instance.Member;
+        # Resolve Member's declared type on TypeName from decompiled source.
+        if ($line -match '^\s*var\s+(\w+)\s*=\s*(\w+)\.Instance\.(\w+)\s*;') {
+            $memberType = Resolve-FieldType $Matches[2] $Matches[3]
+            if ($memberType -and $memberType -ne 'object') {
+                Add-VarType $varTypes $Matches[1] $memberType
+            }
         }
 
         # Single-line chained traversal: var foo = Traverse.Create(bar).Field("x").GetValue<object>()
