@@ -85,6 +85,8 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 				{ ("equipment", "manufacturing"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
 				{ ("equipment", "archaeology"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
 				{ ("equipment", "meteordefense"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
+				// Marine Drill (geyser tamer, next to GeoTuner which routes via equipment > research)
+				{ ("utilities", "conveyancestructures"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
 
 				// Buildings > Storage
 				{ ("base", "storage"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Storage) },
