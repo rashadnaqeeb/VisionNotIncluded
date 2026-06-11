@@ -899,6 +899,10 @@ namespace STRINGS {
 			// Tool confirmation messages after applying a tool to a selection.
 			// {0} = cell/item count (int), {1} = priority level (int), {2} = item type word (singular or plural)
 			public static LocString CONFIRM_DIG = "marked {0} for digging at priority {1}";
+			// Appended to the dig confirmation when the drag also marks plants
+			// for uprooting (the dig tool's Plants filter is on). {0} = plant count
+			public static LocString CONFIRM_DIG_UPROOT_ONE = "1 plant to uproot";
+			public static LocString CONFIRM_DIG_UPROOT_MANY = "{0} plants to uproot";
 			public static LocString CONFIRM_MOP = "marked {0} for mopping at priority {1}";
 			public static LocString CONFIRM_DISINFECT = "marked {0} for disinfection at priority {1}";
 			public static LocString CONFIRM_SWEEP = "marked {0} for sweeping at priority {1}";

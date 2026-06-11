@@ -572,7 +572,12 @@ namespace OniAccess.Handlers.Tools {
 
 		private string BuildConfirmSummary(out int total) {
 			var cells = new HashSet<int>();
-			total = 0;
+			int digCount = 0;
+			int plants = 0;
+			var seenPlants = new HashSet<UnityEngine.GameObject>();
+			bool countPlants = _toolInfo != null && _toolInfo.ToolType == typeof(DigTool)
+				&& IsFilterLayerActive(ReadFilterTargets(),
+					ToolParameterMenu.FILTERLAYERS.UPROOTPLANTS);
 			foreach (var r in Selection.GetRectangles()) {
 				r.GetBounds(out int minX, out int maxX, out int minY, out int maxY);
 				for (int y = minY; y <= maxY; y++)
@@ -581,11 +586,14 @@ namespace OniAccess.Handlers.Tools {
 						if (!Grid.IsValidCell(cell) || !Grid.IsVisible(cell)) continue;
 						if (!cells.Add(cell)) continue;
 						if (_toolInfo != null && _toolInfo.CountTargets != null)
-							total += _toolInfo.CountTargets(cell);
+							digCount += _toolInfo.CountTargets(cell);
 						else
-							total++;
+							digCount++;
+						if (countPlants)
+							plants += CountUprootTargets(cell, seenPlants);
 					}
 			}
+			total = digCount + plants;
 			string priorityText = "";
 			if (_toolInfo != null && _toolInfo.SupportsPriority) {
 				try {
@@ -599,17 +607,29 @@ namespace OniAccess.Handlers.Tools {
 				}
 			}
 
-			return GetConfirmString(total, priorityText);
+			return GetConfirmString(digCount, priorityText, plants);
 		}
 
-		private string GetConfirmString(int count, string priority) {
+		private string GetConfirmString(int count, string priority, int plants = 0) {
 			string format = _toolInfo != null
 				? _toolInfo.ConfirmFormat
 				: (string)STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG;
 			string noun = count == 1
 				? (string)STRINGS.ONIACCESS.TOOLS.ITEM_SINGULAR
 				: (string)STRINGS.ONIACCESS.TOOLS.ITEM_PLURAL;
-			return string.Format(format, count, priority, noun);
+			if (count == 0 && plants > 0)
+				return FormatUprootCount(plants);
+			string summary = string.Format(format, count, priority, noun);
+			if (plants > 0)
+				summary += ", " + FormatUprootCount(plants);
+			return summary;
+		}
+
+		private static string FormatUprootCount(int plants) {
+			return plants == 1
+				? (string)STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG_UPROOT_ONE
+				: string.Format(
+					(string)STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG_UPROOT_MANY, plants);
 		}
 
 		// ========================================
@@ -745,6 +765,22 @@ namespace OniAccess.Handlers.Tools {
 		// ========================================
 		// CELL VALIDATORS
 		// ========================================
+
+		// Mirrors DigAction.Uproot's entity lookup: the Building layer first,
+		// then the Plants layer (Carvables register there). Skips entities
+		// already marked, and dedups multi-cell entities via the seen set.
+		private static int CountUprootTargets(int cell, HashSet<UnityEngine.GameObject> seen) {
+			var go = Grid.Objects[cell, (int)ObjectLayer.Building];
+			if (go == null)
+				go = Grid.Objects[cell, (int)ObjectLayer.Plants];
+			if (go == null || !seen.Add(go)) return 0;
+			if (go.GetComponent<IDigActionEntity>() == null) return 0;
+			var uprootable = go.GetComponent<Uprootable>();
+			if (uprootable != null && uprootable.IsMarkedForUproot) return 0;
+			var carvable = go.GetComponent<Carvable>();
+			if (carvable != null && carvable.IsMarkedForCarve) return 0;
+			return 1;
+		}
 
 		private static int CountDigTargets(int cell) {
 			if (Grid.Foundation[cell]) return 0;

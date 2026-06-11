@@ -4,7 +4,7 @@
 
 - Fix tool filter menus (F) broken by the game update: the game reworked its filter menu internals, which silently emptied the menu for Cancel, Deconstruct, and Prioritize, stopped filter changes from applying, and made confirm counts ignore the active filter.
 
-- The dig tool now has a filter menu (F) with the game's new checkbox filters: Tiles, Natural Backwall, and Plants. Checkboxes toggle in place and announce their new state; the menu stays open until Escape. Note that Plants is on by default, so dig drags also mark plants in the area for uprooting.
+- The dig tool now has a filter menu (F) with the game's new checkbox filters: Tiles, Natural Backwall, and Plants. Checkboxes toggle in place and announce their new state; the menu stays open until Escape. Note that Plants is on by default, so dig drags also mark plants in the area for uprooting; the dig confirmation announces how many plants that affects (for example "marked 14 for digging at priority 5, 3 plants to uproot").
 
 - Scanner dig order clusters over backwall name the backwall material (for example "dig Granite Backwall") instead of the gas or liquid occupying the cell.
 
