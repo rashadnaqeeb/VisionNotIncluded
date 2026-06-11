@@ -42,7 +42,10 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 			SimHashes.Magma, SimHashes.MoltenIron, SimHashes.MoltenCopper,
 			SimHashes.MoltenGold, SimHashes.MoltenAluminum, SimHashes.MoltenTungsten,
 			SimHashes.MoltenNiobium, SimHashes.MoltenCobalt, SimHashes.MoltenGlass,
-			SimHashes.MoltenLead,
+			SimHashes.MoltenLead, SimHashes.MoltenSteel, SimHashes.MoltenCarbon,
+			SimHashes.MoltenSalt, SimHashes.MoltenUranium, SimHashes.MoltenSyngas,
+			SimHashes.MoltenSucrose, SimHashes.MoltenNickel, SimHashes.MoltenIridium,
+			SimHashes.MoltenZinc,
 		};
 
 		public static string GetSolidSubcategory(Element element) {

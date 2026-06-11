@@ -12,6 +12,8 @@
 
 - Fix scanner items for large regions (gas pockets, biomes, backwall sheets) sorting far down the list even when the cursor is inside them: distance now measures to the nearest tile of a region instead of its bottom-left corner.
 
+- Fix molten steel, salt, carbon, uranium, syngas, sucrose, nickel, and iridium sorting under Liquids, Misc in the scanner: they now join the Molten subcategory with the other molten metals.
+
 - Natural backwall is now reported: the tile cursor speaks it after the cell's element (for example "Granite Backwall"), and backwall clusters appear in the scanner under Solids next to their element. The dig tool's new Natural Backwall and Plants filters work through the existing filter menu.
 
 - The pathing description when examining a duplicant now includes their swimming abilities once they have the swim skill, and the new Slogo, Seaquine, and Glo Squid movement types are described when examining those critters.
