@@ -161,6 +161,11 @@ namespace OniAccess.Handlers.Tools {
 			if (_toolInfo == null || !_toolInfo.HasFilterMenu)
 				return;
 
+			// DigTool overrides FilteredDragTool.OnOverlayChanged: overlays
+			// never switch its filters, so there is nothing to announce
+			if (_toolInfo.ToolType == typeof(DigTool))
+				return;
+
 			string newKey = FilterKeyForOverlay(newMode);
 			if (newKey == _lastFilterKey)
 				return;
@@ -552,30 +557,17 @@ namespace OniAccess.Handlers.Tools {
 		}
 
 		private static string ReadActiveFilterName() {
-			var menuTraverse = Traverse.Create(ToolMenu.Instance.toolParameterMenu);
-			var parameters = menuTraverse
-				.Field<Dictionary<string, ToolParameterMenu.ToggleState>>("currentParameters")
-				.Value;
-			if (parameters == null) return null;
-			foreach (var kv in parameters) {
-				if (kv.Value == ToolParameterMenu.ToggleState.On) {
-					return Strings.Get("STRINGS.UI.TOOLS.FILTERLAYERS." + kv.Key + ".NAME");
-				}
+			var toggles = Traverse.Create(ToolMenu.Instance.toolParameterMenu)
+				.Field<ToolParameterMenu.ToggleData[]>("currentTogglesData").Value;
+			if (toggles == null) return null;
+			// Radio menus have exactly one filter on; checkbox menus (dig)
+			// can have several, so list them all
+			var names = new List<string>();
+			foreach (var toggle in toggles) {
+				if (toggle.state == ToolParameterMenu.ToggleState.On)
+					names.Add(Strings.Get("STRINGS.UI.TOOLS.FILTERLAYERS." + toggle.name + ".NAME"));
 			}
-			return null;
-		}
-
-		private static string ReadActiveFilterKey() {
-			var menuTraverse = Traverse.Create(ToolMenu.Instance.toolParameterMenu);
-			var parameters = menuTraverse
-				.Field<Dictionary<string, ToolParameterMenu.ToggleState>>("currentParameters")
-				.Value;
-			if (parameters == null) return null;
-			foreach (var kv in parameters) {
-				if (kv.Value == ToolParameterMenu.ToggleState.On)
-					return kv.Key;
-			}
-			return null;
+			return names.Count > 0 ? string.Join(", ", names) : null;
 		}
 
 		private string BuildConfirmSummary(out int total) {
@@ -677,7 +669,7 @@ namespace OniAccess.Handlers.Tools {
 			return new List<ModToolInfo> {
 				new ModToolInfo("DigTool",
 					Strings.Get("STRINGS.UI.TOOLS.DIG.TOOLNAME"),
-					typeof(DigTool), false, false, true, false,
+					typeof(DigTool), true, false, true, false,
 					"Tile_Drag", "Tile_Confirm",
 					(string)STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG,
 					CountDigTargets),
@@ -755,9 +747,14 @@ namespace OniAccess.Handlers.Tools {
 		// ========================================
 
 		private static int CountDigTargets(int cell) {
-			if (!Grid.Solid[cell] || Grid.Foundation[cell]) return 0;
+			if (Grid.Foundation[cell]) return 0;
 			if (Grid.Objects[cell, (int)ObjectLayer.DigPlacer] != null) return 0;
-			return 1;
+			var targets = ReadFilterTargets();
+			if (Grid.Solid[cell])
+				return IsFilterLayerActive(targets, ToolParameterMenu.FILTERLAYERS.TILES) ? 1 : 0;
+			if (BackwallManager.HasBackwall(cell))
+				return IsFilterLayerActive(targets, ToolParameterMenu.FILTERLAYERS.NATURALBACKWALL) ? 1 : 0;
+			return 0;
 		}
 
 		private static int CountMopTargets(int cell) {
@@ -909,8 +906,13 @@ namespace OniAccess.Handlers.Tools {
 		private static Dictionary<string, ToolParameterMenu.ToggleState> ReadFilterTargets() {
 			var tool = PlayerController.Instance.ActiveTool as FilteredDragTool;
 			if (tool == null) return null;
-			return Traverse.Create(tool)
-				.Field<Dictionary<string, ToolParameterMenu.ToggleState>>("currentFilterTargets").Value;
+			var filters = Traverse.Create(tool)
+				.Field<ToolParameterMenu.ToggleData[]>("currentFilters").Value;
+			if (filters == null) return null;
+			var targets = new Dictionary<string, ToolParameterMenu.ToggleState>();
+			foreach (var filter in filters)
+				targets[filter.name] = filter.state;
+			return targets;
 		}
 
 		private static bool IsFilterLayerActive(

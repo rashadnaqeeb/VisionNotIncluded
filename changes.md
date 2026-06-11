@@ -2,6 +2,12 @@
 
 ## Unreleased changes since 1.5.5
 
+- Fix tool filter menus (F) broken by the game update: the game reworked its filter menu internals, which silently emptied the menu for Cancel, Deconstruct, and Prioritize, stopped filter changes from applying, and made confirm counts ignore the active filter.
+
+- The dig tool now has a filter menu (F) with the game's new checkbox filters: Tiles, Natural Backwall, and Plants. Checkboxes toggle in place and announce their new state; the menu stays open until Escape. Note that Plants is on by default, so dig drags also mark plants in the area for uprooting.
+
+- Scanner dig order clusters over backwall name the backwall material (for example "dig Granite Backwall") instead of the gas or liquid occupying the cell.
+
 - Fix scanner items for large regions (gas pockets, biomes, backwall sheets) sorting far down the list even when the cursor is inside them: distance now measures to the nearest tile of a region instead of its bottom-left corner.
 
 - Natural backwall is now reported: the tile cursor speaks it after the cell's element (for example "Granite Backwall"), and backwall clusters appear in the scanner under Solids next to their element. The dig tool's new Natural Backwall and Plants filters work through the existing filter menu.

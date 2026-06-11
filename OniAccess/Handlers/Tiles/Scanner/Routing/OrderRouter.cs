@@ -90,8 +90,20 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 		/// <summary>
 		/// Returns the target material name for a dig order cell,
 		/// used for cluster naming (e.g., "dig sandstone" vs "dig mixed").
+		/// Mirrors Diggable.OnSolidChanged's element resolution: a dig order
+		/// can target the solid tile, the natural backwall behind it, or both;
+		/// the tile is dug first, so it names the order when present.
 		/// </summary>
 		public static string GetDigTarget(int cell) {
+			var go = Grid.Objects[cell, (int)ObjectLayer.DigPlacer];
+			var diggable = go != null ? go.GetComponent<Diggable>() : null;
+			if (diggable != null) {
+				if (diggable.WillDigTile() && Grid.IsSolidCell(cell))
+					return Grid.Element[cell].name;
+				if (diggable.WillDigBackwall() && BackwallManager.HasBackwall(cell))
+					return Sections.ElementSection.FormatBackwallName(
+						BackwallManager.At(cell).Element);
+			}
 			return Grid.Element[cell].name;
 		}
 

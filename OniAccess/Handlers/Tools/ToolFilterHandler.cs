@@ -18,6 +18,9 @@ namespace OniAccess.Handlers.Tools {
 		private readonly ModToolInfo _pendingTool;
 		private List<string> _filterKeys;
 		private List<string> _filterNames;
+		// Live ToggleData objects from the game's menu, parallel to _filterKeys.
+		// Null when running on the harvest mode-pick fallback (menu not populated).
+		private List<ToolParameterMenu.ToggleData> _toggles;
 
 		public override string DisplayName => (string)STRINGS.ONIACCESS.TOOLS.FILTER_NAME;
 
@@ -48,36 +51,57 @@ namespace OniAccess.Handlers.Tools {
 
 		public override void SpeakCurrentItem(string parentContext = null) {
 			if (_filterNames != null && CurrentIndex >= 0 && CurrentIndex < _filterNames.Count)
-				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(_filterNames[CurrentIndex]));
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(ItemSpeech(CurrentIndex)));
+		}
+
+		/// <summary>
+		/// Spoken form of an item: checkbox filters (dig tool) append their
+		/// on/off state; radio filters are just the name.
+		/// </summary>
+		private string ItemSpeech(int index) {
+			string name = _filterNames[index];
+			if (_toggles == null) return name;
+			var toggle = _toggles[index];
+			if (!toggle.isToggleInclusive) return name;
+			string state = toggle.IsOn
+				? (string)STRINGS.ONIACCESS.STATES.ON
+				: (string)STRINGS.ONIACCESS.STATES.OFF;
+			return name + ", " + state;
+		}
+
+		private static ToolParameterMenu.ToggleData[] ReadMenuToggles() {
+			var toggles = Traverse.Create(ToolMenu.Instance.toolParameterMenu)
+				.Field<ToolParameterMenu.ToggleData[]>("currentTogglesData").Value;
+			return toggles != null && toggles.Length > 0 ? toggles : null;
 		}
 
 		public override void OnActivate() {
 			PlaySound("HUD_Click_Open");
 			_filterKeys = new List<string>();
 			_filterNames = new List<string>();
+			_toggles = null;
 			CurrentIndex = 0;
 			_search.Clear();
 
-			var menuTraverse = Traverse.Create(ToolMenu.Instance.toolParameterMenu);
-			var parameters = menuTraverse
-				.Field<Dictionary<string, ToolParameterMenu.ToggleState>>("currentParameters")
-				.Value;
+			var toggles = ReadMenuToggles();
 
-			if (parameters == null && _pendingTool != null
+			if (toggles == null && _pendingTool != null
 				&& _pendingTool.ToolType == typeof(HarvestTool)) {
 				_filterKeys.Add(HarvestWhenReadyKey);
 				_filterKeys.Add(DoNotHarvestKey);
 				for (int i = 0; i < _filterKeys.Count; i++)
 					_filterNames.Add(Strings.Get("STRINGS.UI.TOOLS.FILTERLAYERS." + _filterKeys[i] + ".NAME"));
-			} else if (parameters != null) {
+			} else if (toggles != null) {
+				_toggles = new List<ToolParameterMenu.ToggleData>();
 				int onIndex = 0;
 				int idx = 0;
-				foreach (var kv in parameters) {
-					if (kv.Value == ToolParameterMenu.ToggleState.Disabled)
+				foreach (var toggle in toggles) {
+					if (toggle.state == ToolParameterMenu.ToggleState.Disabled)
 						continue;
-					_filterKeys.Add(kv.Key);
-					_filterNames.Add(Strings.Get("STRINGS.UI.TOOLS.FILTERLAYERS." + kv.Key + ".NAME"));
-					if (kv.Value == ToolParameterMenu.ToggleState.On)
+					_toggles.Add(toggle);
+					_filterKeys.Add(toggle.name);
+					_filterNames.Add(Strings.Get("STRINGS.UI.TOOLS.FILTERLAYERS." + toggle.name + ".NAME"));
+					if (toggle.state == ToolParameterMenu.ToggleState.On)
 						onIndex = idx;
 					idx++;
 				}
@@ -85,7 +109,7 @@ namespace OniAccess.Handlers.Tools {
 			}
 
 			if (_filterNames.Count > 0) {
-				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(_filterNames[CurrentIndex]));
+				SpeechPipeline.SpeakInterrupt(WidgetSpeech.ComposeLabel(ItemSpeech(CurrentIndex)));
 			} else {
 				Util.Log.Warn("ToolFilterHandler.OnActivate: no filter parameters available");
 				SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.TOOLTIP.CLOSED);
@@ -98,7 +122,6 @@ namespace OniAccess.Handlers.Tools {
 			base.OnDeactivate();
 		}
 
-		private static System.Reflection.MethodInfo _changeToSettingMethod;
 		private static System.Reflection.MethodInfo _onChangeMethod;
 
 		protected override void ActivateCurrentItem() {
@@ -108,24 +131,61 @@ namespace OniAccess.Handlers.Tools {
 			if (_pendingTool != null)
 				ToolPickerHandler.ActivateTool(_pendingTool);
 
-			try {
-				var menu = ToolMenu.Instance.toolParameterMenu;
-				if (_changeToSettingMethod == null)
-					_changeToSettingMethod = AccessTools.Method(typeof(ToolParameterMenu), "ChangeToSetting");
-				if (_onChangeMethod == null)
-					_onChangeMethod = AccessTools.Method(typeof(ToolParameterMenu), "OnChange");
-				_changeToSettingMethod.Invoke(menu, new object[] { _filterKeys[CurrentIndex] });
-				_onChangeMethod.Invoke(menu, null);
-			} catch (System.Exception ex) {
-				Util.Log.Error($"ToolFilterHandler.ActivateCurrentItem: filter apply failed: {ex}");
+			// Activating a pending tool populates the parameter menu, so the
+			// toggles may only exist now. Find the clicked one by key.
+			var toggles = ReadMenuToggles();
+			ToolParameterMenu.ToggleData clicked = null;
+			if (toggles != null) {
+				foreach (var toggle in toggles) {
+					if (toggle.name == _filterKeys[CurrentIndex]
+						&& toggle.state != ToolParameterMenu.ToggleState.Disabled) {
+						clicked = toggle;
+						break;
+					}
+				}
 			}
 
-			if (_owner != null) {
-				bool hadSelection = _owner.HasSelection;
+			if (clicked != null) {
+				// Mirrors the game's ToolParameterMenu.ChangeToSetting, which now
+				// takes a private Widget and can't be invoked with a filter key.
+				// The ToggleData objects are shared with the tool's currentFilters,
+				// so mutating them and firing OnChange updates both the menu
+				// visuals and the tool.
+				if (clicked.isToggleInclusive) {
+					clicked.state = clicked.IsOn
+						? ToolParameterMenu.ToggleState.Off
+						: ToolParameterMenu.ToggleState.On;
+				} else {
+					foreach (var toggle in toggles)
+						if (toggle.state != ToolParameterMenu.ToggleState.Disabled)
+							toggle.state = ToolParameterMenu.ToggleState.Off;
+					clicked.state = ToolParameterMenu.ToggleState.On;
+				}
+
+				try {
+					if (_onChangeMethod == null)
+						_onChangeMethod = AccessTools.Method(typeof(ToolParameterMenu), "OnChange");
+					_onChangeMethod.Invoke(ToolMenu.Instance.toolParameterMenu, null);
+				} catch (System.Exception ex) {
+					Util.Log.Error($"ToolFilterHandler.ActivateCurrentItem: filter apply failed: {ex}");
+				}
+			} else {
+				Util.Log.Warn($"ToolFilterHandler.ActivateCurrentItem: filter '{_filterKeys[CurrentIndex]}' not found in menu");
+			}
+
+			bool hadSelection = _owner != null && _owner.HasSelection;
+			if (_owner != null)
 				_owner.ClearSelection();
-				string announcement = _filterNames[CurrentIndex];
-				if (hadSelection)
-					announcement += ", " + (string)STRINGS.ONIACCESS.TOOLS.SELECTION_CLEARED;
+
+			bool isInclusive = clicked != null && clicked.isToggleInclusive;
+			string announcement = isInclusive ? ItemSpeech(CurrentIndex) : _filterNames[CurrentIndex];
+			if (hadSelection)
+				announcement += ", " + (string)STRINGS.ONIACCESS.TOOLS.SELECTION_CLEARED;
+
+			if (isInclusive) {
+				// Checkbox menu: stay open so more filters can be toggled
+				SpeechPipeline.SpeakInterrupt(announcement);
+			} else if (_owner != null) {
 				SpeechPipeline.SpeakInterrupt(announcement);
 				HandlerStack.Pop();
 			} else {
