@@ -296,6 +296,10 @@ namespace OniAccess.Handlers.Screens.Codex {
 			if (!CodexCache.entries.TryGetValue(entryId, out var entry)) return;
 			if (entry.contentContainers == null) return;
 
+			// For building articles with converters, the mod speaks one grouped
+			// conversion summary; the game rows it duplicates are skipped below.
+			var converterSummary = WidgetTextExtractor.GetConverterSummary(entryId);
+
 			string lastLockedId = null;
 			foreach (var cc in entry.contentContainers) {
 				_containerMap.Add((cc, _items.Count));
@@ -320,6 +324,18 @@ namespace OniAccess.Handlers.Screens.Codex {
 				for (int w = 0; w < cc.content.Count; w++) {
 					var widget = cc.content[w];
 					if (!CodexHelper.IsWidgetVisible(widget)) continue;
+
+					if (converterSummary != null) {
+						// Skip game rows duplicated by the grouped summary: the
+						// "Inputs:" line, converter descriptor rows, and per-converter
+						// group headers in Requirements/Effects. The per-cycle
+						// conversion panels are kept — they communicate cycle
+						// totals the per-second summary does not.
+						string raw = widget is CodexText rawCt ? rawCt.text
+							: widget is CodexTextWithTooltip rawCtwt ? rawCtwt.text : null;
+						if (raw != null && WidgetTextExtractor.IsSuppressedRow(raw, converterSummary))
+							continue;
+					}
 
 					// CodexElementCategoryList expands to header + individual elements
 					if (widget is CodexElementCategoryList ecl) {
@@ -361,47 +377,21 @@ namespace OniAccess.Handlers.Screens.Codex {
 							});
 						}
 					}
+
+					// The grouped summary goes right under the Effects heading
+					if (converterSummary != null && widget is CodexText headingCt
+							&& headingCt.style == CodexTextStyle.Subtitle
+							&& headingCt.text == (string)STRINGS.CODEX.HEADERS.BUILDINGEFFECTS) {
+						foreach (string item in converterSummary.GroupedItems) {
+							_items.Add(new ContentItem {
+								text = item,
+								isHeading = false,
+								links = null,
+							});
+						}
+					}
 				}
 			}
-
-			GroupMultiConverterEffects(entryId);
-		}
-
-		private void GroupMultiConverterEffects(string entryId) {
-			var result = WidgetTextExtractor.GetGroupedConverterItems(entryId);
-			if (result == null) return;
-
-			var (groupedItems, inputCount, outputCount) = result.Value;
-
-			// Remove input items from Requirements section
-			string reqHeader = (string)STRINGS.CODEX.HEADERS.BUILDINGREQUIREMENTS;
-			int reqIndex = FindHeadingIndex(reqHeader);
-			if (reqIndex >= 0 && reqIndex + inputCount < _items.Count)
-				_items.RemoveRange(reqIndex + 1, inputCount);
-
-			// Replace output items in Effects section with grouped items
-			string effectsHeader = (string)STRINGS.CODEX.HEADERS.BUILDINGEFFECTS;
-			int effectsIndex = FindHeadingIndex(effectsHeader);
-			if (effectsIndex < 0 || effectsIndex + outputCount >= _items.Count) return;
-
-			int removeStart = effectsIndex + 1;
-			_items.RemoveRange(removeStart, outputCount);
-
-			for (int i = 0; i < groupedItems.Count; i++) {
-				_items.Insert(removeStart + i, new ContentItem {
-					text = groupedItems[i],
-					isHeading = false,
-					links = null,
-				});
-			}
-		}
-
-		private int FindHeadingIndex(string text) {
-			for (int i = 0; i < _items.Count; i++) {
-				if (_items[i].isHeading && _items[i].text == text)
-					return i;
-			}
-			return -1;
 		}
 
 		private void AddElementCategoryItems(CodexElementCategoryList widget) {

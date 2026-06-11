@@ -523,12 +523,21 @@ namespace OniAccess.Handlers.Screens.Codex {
 		// ========================================
 
 		/// <summary>
-		/// For buildings with multiple ElementConverters, returns grouped per-converter
-		/// speech items that pair each input with its outputs and temperature info.
-		/// Returns null if not applicable (not a building, single converter, etc.).
-		/// The int is the count of individual output items being replaced.
+		/// Conversion summary for a building article. GroupedItems are the mod's
+		/// per-converter speech lines pairing each input with its outputs and
+		/// temperature info. SuppressedRows are the exact game-rendered descriptor
+		/// row texts those lines replace (trimmed, without indent or bullet).
 		/// </summary>
-		internal static (List<string> items, int inputCount, int outputCount)? GetGroupedConverterItems(string entryId) {
+		internal sealed class ConverterSummary {
+			public List<string> GroupedItems;
+			public HashSet<string> SuppressedRows;
+		}
+
+		/// <summary>
+		/// Build the conversion summary for a building entry, or null if the
+		/// entry is not a building or has no ElementConverters.
+		/// </summary>
+		internal static ConverterSummary GetConverterSummary(string entryId) {
 			// Codex entry IDs are uppercase but PrefabIDs are mixed case
 			BuildingDef buildingDef = null;
 			foreach (var def in Assets.BuildingDefs) {
@@ -548,8 +557,6 @@ namespace OniAccess.Handlers.Screens.Codex {
 			// that just emits Dirty Water) folds its outputs into the previous group.
 			var groups = new List<(List<ElementConverter.ConsumedElement> inputs,
 				List<ElementConverter.OutputElement> outputs)>();
-			int inputCount = 0;
-			int outputCount = 0;
 
 			foreach (var converter in converters) {
 				if (!converter.showDescriptors) continue;
@@ -557,13 +564,7 @@ namespace OniAccess.Handlers.Screens.Codex {
 				bool hasInputs = false;
 				if (converter.consumedElements != null) {
 					foreach (var input in converter.consumedElements) {
-						if (input.IsActive) { hasInputs = true; inputCount++; }
-					}
-				}
-
-				if (converter.outputElements != null) {
-					foreach (var output in converter.outputElements) {
-						if (output.IsActive) outputCount++;
+						if (input.IsActive) hasInputs = true;
 					}
 				}
 
@@ -585,6 +586,9 @@ namespace OniAccess.Handlers.Screens.Codex {
 			if (groups.Count == 0) return null;
 
 			// Build speech strings
+			var byproduct = buildingDef.BuildingComplete
+				.GetDefImplementingInterface<IConverterByproduct>();
+			bool byproductSpoken = false;
 			var groupedItems = new List<string>();
 			foreach (var (inputs, outputs) in groups) {
 				var sb = new StringBuilder();
@@ -625,12 +629,98 @@ namespace OniAccess.Handlers.Screens.Codex {
 						sb.Append((string)STRINGS.ONIACCESS.CODEX.INPUT_TEMPERATURE);
 				}
 
+				// A converter byproduct (the Gleaner's Caviar) is mechanically just
+				// another output of the conversion whose input it's tied to; the game
+				// only delivers it through a separate interface. Speak it with the
+				// group's outputs, emitted at input temperature like its descriptor.
+				if (byproduct != null && !byproductSpoken && byproduct.ByproductRate > 0f) {
+					foreach (var input in inputs) {
+						if (input.Tag != byproduct.ByproductAssociatedInputTag) continue;
+						if (firstOutput) {
+							sb.Append(". ");
+							sb.Append((string)STRINGS.ONIACCESS.CODEX.PRODUCES);
+							sb.Append(' ');
+							firstOutput = false;
+						} else {
+							sb.Append(". ");
+						}
+						sb.Append(byproduct.ByproductTag.ProperName());
+						sb.Append(", ");
+						sb.Append(GameUtil.GetFormattedMass(byproduct.ByproductRate, GameUtil.TimeSlice.PerSecond));
+						sb.Append(", ");
+						sb.Append((string)STRINGS.ONIACCESS.CODEX.INPUT_TEMPERATURE);
+						byproductSpoken = true;
+						break;
+					}
+				}
+
 				groupedItems.Add(sb.ToString());
 			}
 
 			if (groupedItems.Count == 0) return null;
-			return (groupedItems, inputCount, outputCount);
+
+			return new ConverterSummary {
+				GroupedItems = groupedItems,
+				SuppressedRows = BuildSuppressedRows(buildingDef.BuildingComplete, converters),
+			};
 		}
+
+		/// <summary>
+		/// The exact descriptor row texts the game renders for converter data in
+		/// a building article: the "Inputs:" partition heading, each converter's
+		/// own requirement/effect descriptor lines, and the per-converter
+		/// "input names:" group headers in the Effects section. All trimmed;
+		/// rendered rows carry indentation and bullets on top of these.
+		/// </summary>
+		private static HashSet<string> BuildSuppressedRows(
+				UnityEngine.GameObject go, ElementConverter[] converters) {
+			var rows = new HashSet<string> {
+				((string)STRINGS.UI.BUILDINGEFFECTS.OPERATIONINPUTS).Trim()
+			};
+
+			foreach (var converter in converters) {
+				var descriptors = converter.GetDescriptors(go);
+				if (descriptors != null) {
+					foreach (var d in descriptors)
+						rows.Add(d.text.Trim());
+				}
+
+				// Effects group header: input names joined, with a trailing colon
+				// (mirrors GameUtil.BuildPartitionedEffects / AddEffectDescriptors)
+				if (converter.consumedElements != null && converter.consumedElements.Length > 0) {
+					var names = new List<string>();
+					foreach (var input in converter.consumedElements)
+						names.Add(input.Name);
+					rows.Add(string.Join(", ", names) + ":");
+				}
+			}
+
+			// Byproduct rows (the Gleaner's Caviar) are spoken inside the grouped
+			// summary, so the game's standalone row is suppressed like the rest.
+			var byproduct = go.GetDefImplementingInterface<IConverterByproduct>();
+			if (byproduct != null && byproduct.ByproductRate > 0f) {
+				var byproductDescriptors = new List<Descriptor>();
+				byproduct.GetByproductDescriptors(go, byproductDescriptors);
+				foreach (var d in byproductDescriptors)
+					rows.Add(d.text.Trim());
+			}
+
+			return rows;
+		}
+
+		/// <summary>
+		/// Whether a rendered descriptor row duplicates the converter summary.
+		/// Strips the indentation and bullet the game prepends, then matches
+		/// against the suppressed row texts exactly.
+		/// </summary>
+		internal static bool IsSuppressedRow(string rawText, ConverterSummary summary) {
+			if (string.IsNullOrEmpty(rawText)) return false;
+			string t = rawText.Trim();
+			if (t.StartsWith("•"))
+				t = t.Substring(1).TrimStart();
+			return summary.SuppressedRows.Contains(t);
+		}
+
 
 		// ========================================
 		// LINK HELPERS

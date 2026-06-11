@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.5.5
 
+- Updated the mod to support game update U59-736649.
+
 ## 1.5.5
 
 - Custom scanner categories can now include search keywords. Add a keyword in a category's editor and it becomes a subcategory that gathers everything whose name matches, sorted ahead of the taxonomy subcategories.
