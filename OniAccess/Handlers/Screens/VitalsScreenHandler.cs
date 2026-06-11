@@ -346,7 +346,7 @@ namespace OniAccess.Handlers.Screens {
 		static string GetSicknessLabel(MinionIdentity mi) {
 			var sicknessList = new List<KeyValuePair<string, float>>();
 
-			foreach (SicknessInstance sickness in mi.GetComponent<MinionModifiers>().sicknesses) {
+			foreach (var sickness in mi.GetComponent<MinionModifiers>().sicknesses.ModifierList) {
 				sicknessList.Add(new KeyValuePair<string, float>(
 					sickness.modifier.Name, sickness.GetInfectedTimeRemaining()));
 			}
@@ -398,7 +398,7 @@ namespace OniAccess.Handlers.Screens {
 
 			var sicknesses = mi.GetComponent<MinionModifiers>().sicknesses;
 			if (sicknesses.IsInfected()) {
-				foreach (SicknessInstance item in sicknesses) {
+				foreach (var item in sicknesses.ModifierList) {
 					parts.Add(item.modifier.Name);
 					var statusItem = item.GetStatusItem();
 					parts.Add(statusItem.GetTooltip(item.ExposureInfo));
