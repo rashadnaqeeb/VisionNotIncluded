@@ -98,6 +98,11 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			}
 
 			allEntries.RemoveAll(e => e.Subcategory == ScannerTaxonomy.Subcategories.Duplicants);
+			// Item sorting measures distance to entry.Cell, which backends seed
+			// with the cluster's first-scanned (bottom-left) cell. Validate every
+			// entry against the cursor now so each points at its nearest cell and
+			// large regions sort by their closest edge, not a distant corner.
+			allEntries.RemoveAll(e => !e.Backend.ValidateEntry(e, cursorCell));
 			_snapshot = new ScannerSnapshot(
 				allEntries, cursorCell, CustomCategoryStore.GetAll());
 
