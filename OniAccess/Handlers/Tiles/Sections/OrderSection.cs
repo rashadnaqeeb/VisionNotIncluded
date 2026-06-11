@@ -31,12 +31,30 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		private static void CollectDigOrder(int cell, CellContext ctx, List<string> parts) {
 			var go = Grid.Objects[cell, (int)ObjectLayer.DigPlacer];
 			if (go == null) return;
-			if (go.GetComponent<Diggable>() == null) return;
+			var diggable = go.GetComponent<Diggable>();
+			if (diggable == null) return;
 			if (ctx.Claimed.Contains(go)) return;
 			string label = MaybeBlocked(
-				(string)STRINGS.ONIACCESS.GLANCE.ORDER_DIG,
+				DigOrderLabel(cell, diggable),
 				go, Db.Get().BuildingStatusItems.DigUnreachable);
 			parts.Add(FormatOrder(label, go));
+		}
+
+		// Plain "dig" when the order removes everything diggable at the cell;
+		// qualified by target when the cell has both a solid tile and a natural
+		// backwall but the order only digs one of them
+		private static string DigOrderLabel(int cell, Diggable diggable) {
+			bool tilePresent = Grid.Solid[cell];
+			bool backwallPresent = BackwallManager.HasBackwall(cell);
+			if (!tilePresent || !backwallPresent)
+				return (string)STRINGS.ONIACCESS.GLANCE.ORDER_DIG;
+			bool digsTile = diggable.WillDigTile();
+			bool digsBackwall = diggable.WillDigBackwall();
+			if (digsTile && !digsBackwall)
+				return (string)STRINGS.ONIACCESS.GLANCE.ORDER_DIG_TILE;
+			if (digsBackwall && !digsTile)
+				return (string)STRINGS.ONIACCESS.GLANCE.ORDER_DIG_BACKWALL;
+			return (string)STRINGS.ONIACCESS.GLANCE.ORDER_DIG;
 		}
 
 		private static void CollectMopOrder(int cell, List<string> parts) {

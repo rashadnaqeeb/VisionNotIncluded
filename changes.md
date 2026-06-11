@@ -8,6 +8,8 @@
 
 - Scanner dig order clusters over backwall name the backwall material (for example "dig Granite Backwall") instead of the gas or liquid occupying the cell.
 
+- The tile cursor qualifies partial dig orders: when a cell has both a solid tile and a backwall but the order only digs one of them, it reads "dig tile" or "dig backwall" instead of a plain "dig".
+
 - Fix scanner items for large regions (gas pockets, biomes, backwall sheets) sorting far down the list even when the cursor is inside them: distance now measures to the nearest tile of a region instead of its bottom-left corner.
 
 - Natural backwall is now reported: the tile cursor speaks it after the cell's element (for example "Granite Backwall"), and backwall clusters appear in the scanner under Solids next to their element. The dig tool's new Natural Backwall and Plants filters work through the existing filter menu.

@@ -1015,6 +1015,10 @@ namespace STRINGS {
 			// Work order labels on tiles
 			public static LocString ORDER_BUILD = "build";
 			public static LocString ORDER_DIG = "dig";
+			// Dig order qualifiers, spoken when the cell has both a solid tile
+			// and a natural backwall but the order only digs one of them
+			public static LocString ORDER_DIG_TILE = "dig tile";
+			public static LocString ORDER_DIG_BACKWALL = "dig backwall";
 			public static LocString ORDER_MOP = "mop";
 			public static LocString ORDER_SWEEP = "sweep";
 			public static LocString ORDER_DECONSTRUCT = "deconstruct";
