@@ -22,6 +22,8 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 				yield return entry;
 			foreach (var entry in ScanGravitasProps(worldId))
 				yield return entry;
+			foreach (var entry in ScanMinnowPOIs(worldId))
+				yield return entry;
 			foreach (var entry in ScanDebris(worldId))
 				yield return entry;
 			foreach (var entry in ScanDuplicants(worldId))
@@ -113,6 +115,32 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 						ItemName = go.GetComponent<KSelectable>()?.GetName() ?? go.name,
 					};
 				}
+			}
+		}
+
+		/// <summary>
+		/// Minnow quest sites (Aquatic DLC "Unknown Duplicant") are placed
+		/// entities without a Building component or Gravitas tag, so neither
+		/// building scan sees them; the game registers them only in this list.
+		/// Cmps.GetWorldItems casts to KMonoBehaviour and these are state
+		/// machine instances, so world filtering must be done manually.
+		/// </summary>
+		private IEnumerable<ScanEntry> ScanMinnowPOIs(int worldId) {
+			foreach (var smi in Components.MinnowImperativePOIs.Items) {
+				var go = smi.gameObject;
+				if (go.GetMyWorldId() != worldId) continue;
+
+				int cell = Grid.PosToCell(go.transform.GetPosition());
+				if (!Grid.IsVisible(cell)) continue;
+
+				yield return new ScanEntry {
+					Cell = cell,
+					Backend = this,
+					BackendData = go,
+					Category = ScannerTaxonomy.Categories.Buildings,
+					Subcategory = ScannerTaxonomy.Subcategories.Gravitas,
+					ItemName = go.GetComponent<KSelectable>()?.GetName() ?? go.name,
+				};
 			}
 		}
 
