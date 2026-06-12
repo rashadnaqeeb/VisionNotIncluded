@@ -8,6 +8,7 @@ Updated the game to support the new Aquatic Planet Pack DLC.
 
 &#x20;An audio description of the DLC's YouTube trailer can be found here, curtesy of Scene Tell, a soon to be released product bringing AI powered audio descriptions to the wider community. for more info, contact Austin Hix. the link: https://github.com/rashadnaqeeb/VisionNotIncluded/blob/main/videos/Aquatic%20Intro%20Described.m4a
 
+* Fixed the Geothermal victory loop video descriptions never being spoken: the game names that clip in lowercase, unlike every other video, and the lookup is case sensitive.
 * The dig tool now has a filter menu (F) with the game's new checkbox filters. Unlike all other filters, these are not radio buttons. You can check and uncheck each of them independently. The plants filter is the same as using the uproot tool, just brought into the dig tool for convenience.
 * Fixed scanner items for large regions (gas pockets, biomes, backwall sheets) sorting far down the list even when the cursor is inside them: distance now measures to the nearest tile of a region instead of its bottom-left corner.
 * Fix molten steel, salt, carbon, uranium, syngas, sucrose, nickel, and iridium sorting under Liquids, Misc in the scanner: they now join magma and the other molten elements in the Molten subcategory.

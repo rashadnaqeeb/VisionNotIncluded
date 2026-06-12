@@ -132,7 +132,8 @@ namespace OniAccess.Handlers.Screens {
 					(4, D.STAY_LOOP.DEBRIS),
 					(7, D.STAY_LOOP.DETAILS),
 				},
-				["Geothermal_loop"] = new List<(double, string)> {
+				// The game's asset name is lowercase, unlike every other clip
+				["geothermal_loop"] = new List<(double, string)> {
 					(0, D.GEOTHERMAL_LOOP.MACHINE),
 					(3, D.GEOTHERMAL_LOOP.PUMPING),
 					(6, D.GEOTHERMAL_LOOP.DANCING),
