@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.5.5
+## Unreleased changes since 1.6.0
+
+## 1.6.0
 
 * Updated the mod to support game update U59-736649.
 
