@@ -1757,6 +1757,11 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DUPLICANT"
 msgid "Is 1 wide by 2 tall. Walks on solid ground and can travel vertically or horizontally on ladders. Can climb ledges up to 2 tiles tall, jump over gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Can also reach a platform 2 tiles away horizontally and 1 tile up, or 1 tile away and 2 tiles up. Falls through larger drops, though will attempt to avoid this."
 msgstr "Mesure 1 de large par 2 de haut. Marche sur le sol solide et peut se déplacer verticalement ou horizontalement sur les échelles. Peut escalader des rebords de 2 cases de haut, sauter des trous de 1 case de large et descendre des rebords de 2 cases de haut. Peut aussi atteindre une plateforme à 2 cases horizontalement et 1 case en haut, ou 1 case horizontalement et 2 cases en haut. Tombe dans les chutes plus grandes, mais tentera de les éviter."
 
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DUPLICANT_SWIM
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DUPLICANT_SWIM"
+msgid "Can also swim through liquid in any direction, dive in from ledges up to 2 tiles above the water, climb out onto ledges up to 2 tiles above the surface, and grab ladders and fire poles directly from the water. Swimming in an atmo suit, jet suit, or lead suit is much slower."
+msgstr "Peut aussi nager dans le liquide dans toutes les directions, plonger depuis des rebords jusqu'à 2 cases au-dessus de l'eau, ressortir sur des rebords jusqu'à 2 cases au-dessus de la surface, et attraper les échelles et les barres de pompier directement depuis l'eau. Nager en combinaison pressurisée, combinaison jet ou combinaison de plomb est beaucoup plus lent."
+
 #. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLOATER
 msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLOATER"
 msgid "Occupies 1 tile. Hovers 1 tile above the nearest solid surface or liquid below it, following the terrain contour from above. If submerged by rising liquid, can swim to escape."
@@ -1802,10 +1807,15 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_1X1"
 msgid "Occupies 1 tile. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk."
 msgstr "Occupe 1 case. Nage dans le liquide dans toutes les directions. Sur terre ferme, se débat en cherchant du liquide à proximité mais ne peut pas marcher."
 
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_1X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_1X2"
+msgid "Occupies 1 wide by 2 tall. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk. Needs deeper liquid than 1-tile swimmers due to its height."
+msgstr "Occupe 1 de large par 2 de haut. Nage dans le liquide dans toutes les directions. Sur terre ferme, se débat en cherchant du liquide à proximité mais ne peut pas marcher. Nécessite du liquide plus profond que les nageurs de 1 case en raison de sa taille."
+
 #. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_2X2
 msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_2X2"
-msgid "Occupies 2 wide by 2 tall. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk. Needs more space to navigate than smaller swimmers."
-msgstr "Occupe 2 de large par 2 de haut. Nage dans le liquide dans toutes les directions. Sur terre ferme, se débat en cherchant du liquide à proximité mais ne peut pas marcher. Nécessite plus d'espace pour naviguer que les nageurs plus petits."
+msgid "Occupies 2 wide by 2 tall. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk. Needs deeper and wider liquid than smaller swimmers due to its size."
+msgstr "Occupe 2 de large par 2 de haut. Nage dans le liquide dans toutes les directions. Sur terre ferme, se débat en cherchant du liquide à proximité mais ne peut pas marcher. Nécessite du liquide plus profond et plus large que les nageurs plus petits en raison de sa taille."
 
 #. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.TREE_CLIMBER
 msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.TREE_CLIMBER"
@@ -1816,6 +1826,11 @@ msgstr "Occupe 1 case. Marche sur le sol solide, grimpe aux murs et marche à l'
 msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X1"
 msgid "Occupies 1 tile. Walks on solid ground. Can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and drop down ledges up to 2 tiles tall."
 msgstr "Occupe 1 case. Marche sur le sol solide. Peut escalader des rebords de 2 cases de haut, traverser des trous de 1 case de large et descendre des rebords de 2 cases de haut."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X1_NOJUMP
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X1_NOJUMP"
+msgid "Occupies 1 tile. Walks on solid ground. Can climb or descend ledges 1 tile tall, but cannot cross gaps or climb taller ledges, unlike most walkers."
+msgstr "Occupe 1 case. Marche sur le sol solide. Peut monter ou descendre des rebords de 1 case de haut, mais ne peut pas traverser de trous ni escalader des rebords plus hauts, contrairement à la plupart des marcheurs."
 
 #. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X2
 msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X2"
@@ -2632,6 +2647,16 @@ msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_DIG"
 msgid "dig"
 msgstr "creuser"
 
+#. STRINGS.ONIACCESS.GLANCE.ORDER_DIG_BACKWALL
+msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_DIG_BACKWALL"
+msgid "dig backwall"
+msgstr "creuser le mur arrière"
+
+#. STRINGS.ONIACCESS.GLANCE.ORDER_DIG_TILE
+msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_DIG_TILE"
+msgid "dig tile"
+msgstr "creuser la case"
+
 #. STRINGS.ONIACCESS.GLANCE.ORDER_DISINFECT
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_DISINFECT"
 msgid "disinfect"
@@ -3431,6 +3456,21 @@ msgctxt "STRINGS.ONIACCESS.KEY_BINDINGS.UNBOUND"
 msgid "Unbound"
 msgstr "Non assigné"
 
+#. STRINGS.ONIACCESS.MINNOW.NEXT_SITE
+msgctxt "STRINGS.ONIACCESS.MINNOW.NEXT_SITE"
+msgid "{0} revealed, {1}"
+msgstr "{0} révélé, {1}"
+
+#. STRINGS.ONIACCESS.MINNOW.REWARD_COUNT
+msgctxt "STRINGS.ONIACCESS.MINNOW.REWARD_COUNT"
+msgid "{0} {1}"
+msgstr "{0} {1}"
+
+#. STRINGS.ONIACCESS.MINNOW.REWARDS
+msgctxt "STRINGS.ONIACCESS.MINNOW.REWARDS"
+msgid "Rewards gained: {0}"
+msgstr "Récompenses obtenues : {0}"
+
 #. STRINGS.ONIACCESS.MODULE_SCREEN.FACADE
 msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.FACADE"
 msgid "Select skin"
@@ -4130,6 +4170,11 @@ msgstr "déplacement auto désactivé"
 msgctxt "STRINGS.ONIACCESS.SCANNER.AUTO_MOVE_ON"
 msgid "auto-move on"
 msgstr "déplacement auto activé"
+
+#. STRINGS.ONIACCESS.SCANNER.BACKWALL_NAME
+msgctxt "STRINGS.ONIACCESS.SCANNER.BACKWALL_NAME"
+msgid "{0} {1}"
+msgstr "{1} en {0}"
 
 #. STRINGS.ONIACCESS.SCANNER.BIOME_NAME
 msgctxt "STRINGS.ONIACCESS.SCANNER.BIOME_NAME"
@@ -5645,6 +5690,16 @@ msgstr "{0} marqué pour déconstruction, priorité {1}"
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG"
 msgid "marked {0} for digging at priority {1}"
 msgstr "{0} marqué pour creusage, priorité {1}"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG_UPROOT_MANY
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG_UPROOT_MANY"
+msgid "{0} plants to uproot"
+msgstr "{0} plantes à déraciner"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG_UPROOT_ONE
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG_UPROOT_ONE"
+msgid "1 plant to uproot"
+msgstr "1 plante à déraciner"
 
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_DISCONNECT
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_DISCONNECT"

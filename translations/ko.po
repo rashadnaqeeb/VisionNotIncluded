@@ -1757,6 +1757,11 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DUPLICANT"
 msgid "Is 1 wide by 2 tall. Walks on solid ground and can travel vertically or horizontally on ladders. Can climb ledges up to 2 tiles tall, jump over gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Can also reach a platform 2 tiles away horizontally and 1 tile up, or 1 tile away and 2 tiles up. Falls through larger drops, though will attempt to avoid this."
 msgstr "가로 1, 세로 2 크기. 단단한 바닥 위를 걷고 사다리를 통해 수직 또는 수평으로 이동할 수 있습니다. 2타일 높이의 턱을 오르고, 1타일 너비의 틈을 뛰어넘고, 2타일 높이의 턱에서 내려올 수 있습니다. 수평으로 2타일 떨어지고 1타일 위에 있는 발판, 또는 1타일 떨어지고 2타일 위에 있는 발판에도 도달할 수 있습니다. 더 큰 낙차에서는 떨어지지만, 이를 피하려고 시도합니다."
 
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DUPLICANT_SWIM
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.DUPLICANT_SWIM"
+msgid "Can also swim through liquid in any direction, dive in from ledges up to 2 tiles above the water, climb out onto ledges up to 2 tiles above the surface, and grab ladders and fire poles directly from the water. Swimming in an atmo suit, jet suit, or lead suit is much slower."
+msgstr "액체 속에서 모든 방향으로 수영할 수도 있으며, 수면 위 2타일 이하의 턱에서 물로 뛰어들고, 수면 위 2타일 이하의 턱으로 올라가고, 물에서 바로 사다리와 소방 봉을 잡을 수 있습니다. 기압 슈트, 제트 슈트, 납 슈트를 입고 수영하면 훨씬 느립니다."
+
 #. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLOATER
 msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.FLOATER"
 msgid "Occupies 1 tile. Hovers 1 tile above the nearest solid surface or liquid below it, following the terrain contour from above. If submerged by rising liquid, can swim to escape."
@@ -1802,10 +1807,15 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_1X1"
 msgid "Occupies 1 tile. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk."
 msgstr "1타일 차지. 액체 속에서 모든 방향으로 수영합니다. 육지에서는 주변 액체를 찾아 퍼덕거리지만 걸을 수 없습니다."
 
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_1X2
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_1X2"
+msgid "Occupies 1 wide by 2 tall. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk. Needs deeper liquid than 1-tile swimmers due to its height."
+msgstr "가로 1, 세로 2 차지. 액체 속에서 모든 방향으로 수영합니다. 육지에서는 주변 액체를 찾아 퍼덕거리지만 걸을 수 없습니다. 키가 커서 1타일 수영 생물보다 더 깊은 액체가 필요합니다."
+
 #. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_2X2
 msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.SWIMMER_2X2"
-msgid "Occupies 2 wide by 2 tall. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk. Needs more space to navigate than smaller swimmers."
-msgstr "가로 2, 세로 2 차지. 액체 속에서 모든 방향으로 수영합니다. 육지에서는 주변 액체를 찾아 퍼덕거리지만 걸을 수 없습니다. 작은 수영 생물보다 이동에 더 많은 공간이 필요합니다."
+msgid "Occupies 2 wide by 2 tall. Swims through liquid in any direction. On dry land, flops around searching for nearby liquid but cannot walk. Needs deeper and wider liquid than smaller swimmers due to its size."
+msgstr "가로 2, 세로 2 차지. 액체 속에서 모든 방향으로 수영합니다. 육지에서는 주변 액체를 찾아 퍼덕거리지만 걸을 수 없습니다. 덩치가 커서 작은 수영 생물보다 더 깊고 넓은 액체가 필요합니다."
 
 #. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.TREE_CLIMBER
 msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.TREE_CLIMBER"
@@ -1816,6 +1826,11 @@ msgstr "1타일 차지. 단단한 바닥 위를 걷고, 벽을 타고, 천장에
 msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X1"
 msgid "Occupies 1 tile. Walks on solid ground. Can climb ledges up to 2 tiles tall, cross gaps 1 tile wide, and drop down ledges up to 2 tiles tall."
 msgstr "1타일 차지. 단단한 바닥 위를 걷습니다. 2타일 높이의 턱을 오르고, 1타일 너비의 틈을 건너고, 2타일 높이의 턱에서 내려올 수 있습니다."
+
+#. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X1_NOJUMP
+msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X1_NOJUMP"
+msgid "Occupies 1 tile. Walks on solid ground. Can climb or descend ledges 1 tile tall, but cannot cross gaps or climb taller ledges, unlike most walkers."
+msgstr "1타일 차지. 단단한 바닥 위를 걷습니다. 1타일 높이의 턱은 오르내릴 수 있지만, 대부분의 보행 생물과 달리 틈을 건너거나 더 높은 턱을 오르지 못합니다."
 
 #. STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X2
 msgctxt "STRINGS.ONIACCESS.DETAILS.PATHING_DESC.WALKER_1X2"
@@ -2632,6 +2647,16 @@ msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_DIG"
 msgid "dig"
 msgstr "굴착"
 
+#. STRINGS.ONIACCESS.GLANCE.ORDER_DIG_BACKWALL
+msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_DIG_BACKWALL"
+msgid "dig backwall"
+msgstr "배경 벽 굴착"
+
+#. STRINGS.ONIACCESS.GLANCE.ORDER_DIG_TILE
+msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_DIG_TILE"
+msgid "dig tile"
+msgstr "타일 굴착"
+
 #. STRINGS.ONIACCESS.GLANCE.ORDER_DISINFECT
 msgctxt "STRINGS.ONIACCESS.GLANCE.ORDER_DISINFECT"
 msgid "disinfect"
@@ -3431,6 +3456,21 @@ msgctxt "STRINGS.ONIACCESS.KEY_BINDINGS.UNBOUND"
 msgid "Unbound"
 msgstr "미설정"
 
+#. STRINGS.ONIACCESS.MINNOW.NEXT_SITE
+msgctxt "STRINGS.ONIACCESS.MINNOW.NEXT_SITE"
+msgid "{0} revealed, {1}"
+msgstr "{0} 공개됨, {1}"
+
+#. STRINGS.ONIACCESS.MINNOW.REWARD_COUNT
+msgctxt "STRINGS.ONIACCESS.MINNOW.REWARD_COUNT"
+msgid "{0} {1}"
+msgstr "{1} {0}개"
+
+#. STRINGS.ONIACCESS.MINNOW.REWARDS
+msgctxt "STRINGS.ONIACCESS.MINNOW.REWARDS"
+msgid "Rewards gained: {0}"
+msgstr "획득한 보상: {0}"
+
 #. STRINGS.ONIACCESS.MODULE_SCREEN.FACADE
 msgctxt "STRINGS.ONIACCESS.MODULE_SCREEN.FACADE"
 msgid "Select skin"
@@ -4130,6 +4170,11 @@ msgstr "자동 이동 꺼짐"
 msgctxt "STRINGS.ONIACCESS.SCANNER.AUTO_MOVE_ON"
 msgid "auto-move on"
 msgstr "자동 이동 켜짐"
+
+#. STRINGS.ONIACCESS.SCANNER.BACKWALL_NAME
+msgctxt "STRINGS.ONIACCESS.SCANNER.BACKWALL_NAME"
+msgid "{0} {1}"
+msgstr "{0} {1}"
 
 #. STRINGS.ONIACCESS.SCANNER.BIOME_NAME
 msgctxt "STRINGS.ONIACCESS.SCANNER.BIOME_NAME"
@@ -5645,6 +5690,16 @@ msgstr "{0}을(를) 우선순위 {1}(으)로 해체 지정"
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG"
 msgid "marked {0} for digging at priority {1}"
 msgstr "{0}을(를) 우선순위 {1}(으)로 굴착 지정"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG_UPROOT_MANY
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG_UPROOT_MANY"
+msgid "{0} plants to uproot"
+msgstr "뿌리 뽑을 식물 {0}개"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG_UPROOT_ONE
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_DIG_UPROOT_ONE"
+msgid "1 plant to uproot"
+msgstr "뿌리 뽑을 식물 1개"
 
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_DISCONNECT
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_DISCONNECT"
