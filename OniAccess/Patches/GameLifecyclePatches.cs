@@ -60,8 +60,8 @@ namespace OniAccess.Patches {
 				Log.Info("ModInputRouter registered at priority 50");
 
 				var buildText = BuildWatermark.GetBuildText();
-				if (!buildText.StartsWith("U57-707956"))
-					Log.Warn($"Game build '{buildText}' is newer than last tested 'U57-707956'. Field names may have changed.");
+				if (!buildText.StartsWith("U59-736649"))
+					Log.Warn($"Game build '{buildText}' is newer than last tested 'U59-736649'. Field names may have changed.");
 			} catch (System.Exception ex) {
 				Log.Error($"Failed to register ModInputRouter: {ex}");
 			}

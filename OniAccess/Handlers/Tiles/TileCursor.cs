@@ -26,6 +26,7 @@ namespace OniAccess.Handlers.Tiles {
 		private int _pendingCell;
 		private bool _wasPanning;
 		private bool _wasTimelapsing;
+		private bool _pendingInitialSnap;
 		private string _lastRoomName;
 		private string _lastBiomeName;
 		private readonly Scanner.Routing.BiomeNameResolver _biomeResolver = new Scanner.Routing.BiomeNameResolver();
@@ -67,7 +68,11 @@ namespace OniAccess.Handlers.Tiles {
 			_lastWorldId = ClusterManager.Instance.activeWorldId;
 			_cell = Util.GridCoordinates.GetOriginCell();
 			LockMouseToCell(_cell);
-			SnapCameraToCell(_cell);
+			// CameraController may not exist yet this early in load; SyncToCamera retries.
+			if (CameraController.Instance != null)
+				SnapCameraToCell(_cell);
+			else
+				_pendingInitialSnap = true;
 			UpdateBiomeTracking();
 		}
 
@@ -252,6 +257,10 @@ namespace OniAccess.Handlers.Tiles {
 				return null;
 			}
 			if (Camera.main == null) return null;
+			if (_pendingInitialSnap && CameraController.Instance != null) {
+				_pendingInitialSnap = false;
+				SnapCameraToCell(_cell);
+			}
 			var ctrl = CameraController.Instance;
 			bool gameMoving = ctrl != null
 				&& (ctrl.isTargetPosSet || ctrl.followTarget != null);
