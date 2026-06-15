@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.6.1
 
+* The new-game Shuffle seed button now announces the applied world traits after rerolling, so players no longer need to open the destination info submenu just to hear the new traits.
+
 ## 1.6.1
 
 * Fixed the load screen announcing itself at the main menu on startup. The game quietly activates that screen in the background to check for old saves, and the mod was treating it as if you had opened it.

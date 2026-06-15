@@ -83,6 +83,12 @@ namespace OniAccess.Handlers.Screens {
 		private bool _pendingClusterRefresh;
 
 		/// <summary>
+		/// When true, the deferred refresh came from the Shuffle button and should
+		/// announce the newly applied world traits instead of the focused button.
+		/// </summary>
+		private bool _pendingShuffleTraitSpeech;
+
+		/// <summary>
 		/// When true, the next cluster speech omits the "Choose a Destination" prefix.
 		/// Set by Left/Right cycling so the repeated prefix isn't annoying.
 		/// </summary>
@@ -462,6 +468,63 @@ namespace OniAccess.Handlers.Screens {
 				label += ". " + (string)STRINGS.ONIACCESS.COLONY_SETUP.CLUSTER_SELECTOR_HINT;
 
 			return label;
+		}
+
+		private ColonyDestinationAsteroidBeltData GetCurrentClusterBelt() {
+			if (_clusterKeys == null || _clusterIndex < 0 || _clusterIndex >= _clusterKeys.Count) return null;
+
+			var panelTraverse = Traverse.Create(_screen).Field("destinationMapPanel");
+			var panel = panelTraverse.GetValue<object>();
+			if (panel == null) return null;
+
+			var pt = Traverse.Create(panel);
+			var asteroidData = pt.Field("asteroidData")
+				.GetValue<Dictionary<string, ColonyDestinationAsteroidBeltData>>();
+			if (asteroidData == null) return null;
+
+			ColonyDestinationAsteroidBeltData belt;
+			return asteroidData.TryGetValue(_clusterKeys[_clusterIndex], out belt) ? belt : null;
+		}
+
+		private string BuildCurrentClusterTraitsSpeech() {
+			try {
+				var belt = GetCurrentClusterBelt();
+				if (belt == null) return null;
+
+				var labels = new List<string>();
+				var startWorld = belt.GetStartWorld;
+				if (startWorld != null) {
+					AppendTraitDescriptorLabels(belt.GenerateTraitDescriptors(startWorld), labels);
+				}
+				if (labels.Count == 0) {
+					AppendTraitDescriptorLabels(belt.GetTraitDescriptors(), labels);
+				}
+				if (labels.Count == 0) {
+					labels.Add(Speech.TextFilter.FilterForSpeech((string)STRINGS.WORLD_TRAITS.NO_TRAITS.NAME));
+				}
+
+				string header = STRINGS.UI.FRONTEND.COLONYDESTINATIONSCREEN.TRAITS_HEADER;
+				return $"{header}: {string.Join(", ", labels)}";
+			} catch (System.Exception ex) {
+				Util.Log.Error($"ColonySetupHandler.BuildCurrentClusterTraitsSpeech: {ex.Message}");
+				return null;
+			}
+		}
+
+		private static void AppendTraitDescriptorLabels(List<AsteroidDescriptor> descriptors, List<string> labels) {
+			if (descriptors == null) return;
+			foreach (var trait in descriptors) {
+				string text = trait.text?.Trim() ?? "";
+				if (string.IsNullOrEmpty(text)) continue;
+				if (!text.StartsWith("<color") && !text.StartsWith("<i>")) continue;
+
+				string traitLabel = Speech.TextFilter.FilterForSpeech(text);
+				string tooltip = trait.tooltip?.Trim() ?? "";
+				if (!string.IsNullOrEmpty(tooltip))
+					traitLabel += $", {Speech.TextFilter.FilterForSpeech(tooltip)}";
+				if (!string.IsNullOrEmpty(traitLabel))
+					labels.Add(traitLabel);
+			}
 		}
 
 		/// <summary>
@@ -1125,6 +1188,7 @@ namespace OniAccess.Handlers.Screens {
 				if (shuffleField != null && shuffleField == shuffleCandidate) {
 					base.ActivateCurrentItem();
 					_pendingClusterRefresh = true;
+					_pendingShuffleTraitSpeech = true;
 					return;
 				} else {
 					Util.Log.Warn("ColonySetupHandler: shuffleButton field not found via Traverse");
@@ -1266,12 +1330,22 @@ namespace OniAccess.Handlers.Screens {
 			// after Left/Right cycling or shuffle fired OnAsteroidClicked.
 			// Re-discover widgets and speak the current cluster.
 			if (_pendingClusterRefresh) {
+				bool speakShuffleTraits = _pendingShuffleTraitSpeech;
 				_pendingClusterRefresh = false;
+				_pendingShuffleTraitSpeech = false;
 				int savedIndex = CurrentIndex;
 				DiscoverWidgets(_screen);
 				CurrentIndex = UnityEngine.Mathf.Clamp(savedIndex, 0,
 					_widgets.Count > 0 ? _widgets.Count - 1 : 0);
-				SpeakCurrentWidget();
+				if (speakShuffleTraits) {
+					string traitsSpeech = BuildCurrentClusterTraitsSpeech();
+					if (!string.IsNullOrEmpty(traitsSpeech))
+						Speech.SpeechPipeline.SpeakInterrupt(traitsSpeech);
+					else
+						SpeakCurrentWidget();
+				} else {
+					SpeakCurrentWidget();
+				}
 				return false;
 			}
 
