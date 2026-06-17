@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.6.1
+## Unreleased changes since 1.6.2
+
+## 1.6.2
 
 * Fixed the DLC list on the main menu's second tab going un-arrowable after the Aquatic Planet Pack update. The game now builds the DLC logos dynamically, so the mod discovers them live and will pick up future DLCs automatically.
 
