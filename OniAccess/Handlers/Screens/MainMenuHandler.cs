@@ -14,7 +14,7 @@ namespace OniAccess.Handlers.Screens {
 	///
 	/// Three sections reachable via Tab/Shift+Tab:
 	/// - Buttons: the main menu button list (Resume, New Game, Load, etc.)
-	/// - DLC: 4 DLC logos showing name + ownership/activation status
+	/// - DLC: one logo per non-cosmetic DLC, showing name + ownership/activation status
 	/// - News: MOTD boxes with headlines from Klei's server (async-loaded)
 	/// </summary>
 	public class MainMenuHandler: BaseWidgetHandler {
@@ -25,8 +25,6 @@ namespace OniAccess.Handlers.Screens {
 
 		private int _currentSection;
 
-		private static readonly string[] DlcFieldNames = { "logoDLC1", "logoDLC2", "logoDLC3", "logoDLC4" };
-		private static readonly string[] DlcIds = { "EXPANSION1_ID", "DLC2_ID", "DLC3_ID", "DLC4_ID" };
 		private static readonly string[] MotdBoxFields = { "boxA", "boxB", "boxC" };
 
 		public override string DisplayName => STRINGS.ONIACCESS.HANDLERS.MAIN_MENU;
@@ -104,26 +102,63 @@ namespace OniAccess.Handlers.Screens {
 		/// <summary>
 		/// Discover DLC logo entries. Each has a name (from DlcManager) and
 		/// ownership/activation status.
+		///
+		/// The game serializes only logoDLC1 (Spaced Out); every other non-cosmetic
+		/// pack is instantiated into logoGroup in DLC_PACKS order, with the whole
+		/// sibling list optionally reversed. We rebuild that same ordering to pair
+		/// each DlcInfo with its live widget (see MainMenu.BuildDlcLogoWidgets).
 		/// </summary>
 		private void DiscoverDLCWidgets(KScreen screen) {
 			var screenTraverse = Traverse.Create(screen);
+			var logoDLC1 = screenTraverse.Field("logoDLC1").GetValue<HierarchyReferences>();
+			var logoGroupGO = screenTraverse.Field("logoGroup").GetValue<UnityEngine.GameObject>();
 
-			for (int i = 0; i < DlcFieldNames.Length; i++) {
-				var hierRef = screenTraverse.Field(DlcFieldNames[i])
-					.GetValue<HierarchyReferences>();
-				if (hierRef == null) continue;
-				if (!hierRef.gameObject.activeInHierarchy) continue;
-
-				string dlcId = DlcIds[i];
-				string name = DlcManager.GetDlcTitleNoFormatting(dlcId);
-				string status = GetDlcStatus(dlcId);
-
-				_widgets.Add(new LabelWidget {
-					Label = $"{name}, {status}",
-					GameObject = hierRef.gameObject,
-					Tag = DlcFieldNames[i]
-				});
+			// Collect the pack widgets from logoGroup, normalized to DLC_PACKS order
+			// (Spaced-Out-first, before the optional sibling reversal the game applies).
+			var packWidgets = new List<HierarchyReferences>();
+			if (logoGroupGO != null) {
+				var parent = logoGroupGO.transform;
+				var children = new List<HierarchyReferences>();
+				for (int i = 0; i < parent.childCount; i++) {
+					var hr = parent.GetChild(i).GetComponent<HierarchyReferences>();
+					if (hr != null && hr.gameObject.activeInHierarchy)
+						children.Add(hr);
+				}
+				if (screenTraverse.Field("reverseDlcLogoOrder").GetValue<bool>())
+					children.Reverse();
+				foreach (var hr in children)
+					if (hr != logoDLC1) packWidgets.Add(hr);
 			}
+
+			AddDLCWidget(DlcManager.EXPANSION1_INFO, logoDLC1);
+
+			int packIndex = 0;
+			foreach (var info in DlcManager.DLC_PACKS.Values) {
+				if (info.isCosmetic) continue;
+				var widget = packIndex < packWidgets.Count ? packWidgets[packIndex] : null;
+				packIndex++;
+				AddDLCWidget(info, widget);
+			}
+
+			if (packIndex != packWidgets.Count)
+				Util.Log.Warn($"MainMenuHandler: {packWidgets.Count} DLC pack widgets but {packIndex} non-cosmetic packs; pairing may be off");
+		}
+
+		/// <summary>
+		/// Add a navigable entry for one DLC, pairing its DlcManager info (name +
+		/// status) with the live widget's MultiToggle for activation.
+		/// </summary>
+		private void AddDLCWidget(DlcManager.DlcInfo info, HierarchyReferences widget) {
+			if (widget == null || !widget.gameObject.activeInHierarchy) return;
+
+			string name = DlcManager.GetDlcTitleNoFormatting(info.id);
+			string status = GetDlcStatus(info.id);
+
+			_widgets.Add(new LabelWidget {
+				Label = $"{name}, {status}",
+				Component = widget.GetReference<MultiToggle>("multitoggle"),
+				GameObject = widget.gameObject
+			});
 		}
 
 		/// <summary>
@@ -219,10 +254,9 @@ namespace OniAccess.Handlers.Screens {
 		// ========================================
 
 		/// <summary>
-		/// DLC section: re-fetch the MultiToggle from the screen's HierarchyReferences
-		/// and fire OnPointerClick to trigger the game-wired onClick delegate.
-		/// DLC1 owned: opens activate/deactivate dialog. DLC1 not owned: opens store.
-		/// DLC2-4: always opens store page.
+		/// DLC section: fire OnPointerClick on the widget's MultiToggle to trigger
+		/// the game-wired onClick delegate. Spaced Out owned: opens activate/deactivate
+		/// dialog. Spaced Out not owned: opens store. Other packs: open store page.
 		/// News section: click the URLOpenFunction's triggerButton to open in browser.
 		/// Buttons section: default KButton.SignalClick behavior.
 		/// </summary>
@@ -230,14 +264,10 @@ namespace OniAccess.Handlers.Screens {
 			if (CurrentIndex < 0 || CurrentIndex >= _widgets.Count) return;
 			var widget = _widgets[CurrentIndex];
 
-			if (_currentSection == SectionDLC && widget.Tag is string dlcFieldName) {
-				var hierRef = Traverse.Create(_screen).Field(dlcFieldName)
-					.GetValue<HierarchyReferences>();
-				if (hierRef != null) {
-					var multiToggle = hierRef.GetReference<MultiToggle>("multitoggle");
-					if (multiToggle != null)
-						ClickMultiToggle(multiToggle);
-				}
+			if (_currentSection == SectionDLC) {
+				var multiToggle = widget.Component as MultiToggle;
+				if (multiToggle != null)
+					ClickMultiToggle(multiToggle);
 				return;
 			}
 
