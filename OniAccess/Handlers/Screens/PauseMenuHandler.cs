@@ -71,39 +71,28 @@ namespace OniAccess.Handlers.Screens {
 		}
 
 		private void AddWorldSeedCopyButton(KScreen screen) {
-			try {
-				var clipboard = Traverse.Create(screen).Field("clipboard")
-					.GetValue<CopyTextFieldToClipboard>();
-				if (clipboard == null) return;
+			// PauseScreen.clipboard is a private serialized CopyTextFieldToClipboard;
+			// its KButton copies the coordinates but is not part of the buttons array.
+			var clipboard = Traverse.Create(screen).Field("clipboard")
+				.GetValue<CopyTextFieldToClipboard>();
+			if (clipboard == null) return;
 
-				var kbutton = Traverse.Create(clipboard).Field("button")
-					.GetValue<KButton>();
-				if (kbutton == null || !kbutton.isInteractable) return;
+			var kbutton = clipboard.button;
+			if (!kbutton.isInteractable || !kbutton.gameObject.activeInHierarchy) return;
 
-				var buttonGO = kbutton.gameObject;
-				if (buttonGO == null || !buttonGO.activeInHierarchy) return;
+			// The control has no button text of its own, so take the title line of the
+			// game's copy tooltip as the label; the composer appends the rest of the
+			// tooltip live and drops the duplicated first line.
+			string label = ((string)STRINGS.UI.FRONTEND.PAUSE_SCREEN.WORLD_SEED_COPY_TOOLTIP)
+				.Split('\n')[0];
 
-				string label = (string)STRINGS.UI.CRASHSCREEN.COPYTOCLIPBOARDBUTTON;
-				if (string.IsNullOrEmpty(label))
-					label = (string)STRINGS.UI.FRONTEND.PAUSE_SCREEN.WORLD_SEED_COPY_TOOLTIP;
-				if (string.IsNullOrEmpty(label)) return;
-
-				var widget = new ButtonWidget {
-					Label = label,
-					Component = kbutton,
-					GameObject = buttonGO
-				};
-
-				// The copy control is visually grouped with the world seed at the top of the
-				// pause screen.  Insert it after the first normal pause action so it is easy
-				// to find without changing the initial "continue" focus.
-				if (_widgets.Count > 0)
-					_widgets.Insert(1, widget);
-				else
-					_widgets.Add(widget);
-			} catch (System.Exception ex) {
-				Util.Log.Warn($"PauseMenuHandler: failed to add world seed copy button: {ex}");
-			}
+			// Place it right after Resume so it is quick to reach without changing the
+			// initial focus.
+			_widgets.Insert(_widgets.Count > 0 ? 1 : 0, new ButtonWidget {
+				Label = label,
+				Component = kbutton,
+				GameObject = kbutton.gameObject
+			});
 		}
 	}
 }
