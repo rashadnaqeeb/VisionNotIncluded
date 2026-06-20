@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.6.2
+## Unreleased changes since 1.6.3
+
+## 1.6.3
 
 * Fixed the scanner missing build orders for wires, pipes, conduit bridges, and logic wires; it only ever found build orders for regular buildings. It now also reports pipe, wire, and tile replacement tasks.
 
