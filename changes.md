@@ -6,13 +6,13 @@
 
 * Fixed the scanner counting a conduit bridge as two tiles in an order cluster; bridges now count once for build, deconstruct, and replace orders.
 
-## 1.6.2
-
-* Fixed the DLC list on the main menu's second tab going un-arrowable after the Aquatic Planet Pack update. The game now builds the DLC logos dynamically, so the mod discovers them live and will pick up future DLCs automatically.
-
 * The new-game Shuffle seed button now announces the applied world traits after rerolling, so players no longer need to open the destination info submenu just to hear the new traits.
 
 * The pause menu now includes the world seed/coordinate copy button, so keyboard-only and screen reader users can copy the current colony coordinates from the ESC menu.
+
+## 1.6.2
+
+* Fixed the DLC list on the main menu's second tab going un-arrowable after the Aquatic Planet Pack update. The game now builds the DLC logos dynamically, so the mod discovers them live and will pick up future DLCs automatically.
 
 ## 1.6.1
 
