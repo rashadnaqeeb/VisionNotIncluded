@@ -1229,6 +1229,11 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.SCANNER_MASS_READOUT"
 msgid "Scanner mass readout"
 msgstr "Leitura de massa do scanner"
 
+#. STRINGS.ONIACCESS.CONFIG.SECTION_INTERFACE
+msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_INTERFACE"
+msgid "Interface"
+msgstr "Interface"
+
 #. STRINGS.ONIACCESS.CONFIG.SECTION_MISC
 msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_MISC"
 msgid "Miscellaneous"
@@ -1267,6 +1272,11 @@ msgstr "Sons de presença de utilidades"
 msgctxt "STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_VOLUME"
 msgid "Utility presence volume"
 msgstr "Volume de presença de utilidades"
+#. STRINGS.ONIACCESS.CONFIG.VERBOSE_UI
+msgctxt "STRINGS.ONIACCESS.CONFIG.VERBOSE_UI"
+msgid "Verbose interface"
+msgstr "Interface detalhada"
+
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN"
 msgid "all forbidden"
@@ -3155,6 +3165,11 @@ msgctxt "STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS"
 msgid "Navigate items"
 msgstr "Navegar pelos itens"
 
+#. STRINGS.ONIACCESS.HELP.NOTHING_TO_REVIEW
+msgctxt "STRINGS.ONIACCESS.HELP.NOTHING_TO_REVIEW"
+msgid "Nothing to review"
+msgstr "Nada para revisar"
+
 #. STRINGS.ONIACCESS.HELP.OPEN_CONFIG
 msgctxt "STRINGS.ONIACCESS.HELP.OPEN_CONFIG"
 msgid "Open settings"
@@ -3184,6 +3199,11 @@ msgstr "Ler detalhes ambientais do ladrilho"
 msgctxt "STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY"
 msgid "Read tooltip summary at cursor"
 msgstr "Ler resumo da dica no cursor"
+
+#. STRINGS.ONIACCESS.HELP.REVIEW_LINES
+msgctxt "STRINGS.ONIACCESS.HELP.REVIEW_LINES"
+msgid "Review current item line by line"
+msgstr "Revisar o item atual linha por linha"
 
 #. STRINGS.ONIACCESS.HELP.SELECT_ENTITY
 msgctxt "STRINGS.ONIACCESS.HELP.SELECT_ENTITY"
@@ -6020,6 +6040,71 @@ msgstr "continuando"
 msgctxt "STRINGS.ONIACCESS.TOOLTIP.NO_TOOLTIP"
 msgid "no tooltip"
 msgstr "sem dica"
+
+#. STRINGS.ONIACCESS.VERBOSE.COLUMN_OF
+msgctxt "STRINGS.ONIACCESS.VERBOSE.COLUMN_OF"
+msgid "column {0} of {1}"
+msgstr "coluna {0} de {1}"
+
+#. STRINGS.ONIACCESS.VERBOSE.GRID
+msgctxt "STRINGS.ONIACCESS.VERBOSE.GRID"
+msgid "grid"
+msgstr "grade"
+
+#. STRINGS.ONIACCESS.VERBOSE.POSITION
+msgctxt "STRINGS.ONIACCESS.VERBOSE.POSITION"
+msgid "{0} of {1}"
+msgstr "{0} de {1}"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROLE_BUTTON
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROLE_BUTTON"
+msgid "button"
+msgstr "botão"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROLE_PICKER
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROLE_PICKER"
+msgid "picker"
+msgstr "seletor"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROLE_RADIO
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROLE_RADIO"
+msgid "radio button"
+msgstr "botão de opção"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROLE_SLIDER
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROLE_SLIDER"
+msgid "slider"
+msgstr "controle deslizante"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROLE_TOGGLE
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROLE_TOGGLE"
+msgid "toggle"
+msgstr "alternador"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROW_OF
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROW_OF"
+msgid "row {0} of {1}"
+msgstr "linha {0} de {1}"
+
+#. STRINGS.ONIACCESS.VERBOSE.SORT_BUTTON
+msgctxt "STRINGS.ONIACCESS.VERBOSE.SORT_BUTTON"
+msgid "sort button"
+msgstr "botão de ordenação"
+
+#. STRINGS.ONIACCESS.VERBOSE.SUBMENU
+msgctxt "STRINGS.ONIACCESS.VERBOSE.SUBMENU"
+msgid "submenu"
+msgstr "submenu"
+
+#. STRINGS.ONIACCESS.VERBOSE.TAB_OF
+msgctxt "STRINGS.ONIACCESS.VERBOSE.TAB_OF"
+msgid "tab {0} of {1}"
+msgstr "aba {0} de {1}"
+
+#. STRINGS.ONIACCESS.VERBOSE.TABLE
+msgctxt "STRINGS.ONIACCESS.VERBOSE.TABLE"
+msgid "table"
+msgstr "tabela"
 
 #. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.AQUATIC_LOOP.CAMP
 msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.AQUATIC_LOOP.CAMP"

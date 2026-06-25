@@ -1229,6 +1229,11 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.SCANNER_MASS_READOUT"
 msgid "Scanner mass readout"
 msgstr "Показание массы сканера"
 
+#. STRINGS.ONIACCESS.CONFIG.SECTION_INTERFACE
+msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_INTERFACE"
+msgid "Interface"
+msgstr "Интерфейс"
+
 #. STRINGS.ONIACCESS.CONFIG.SECTION_MISC
 msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_MISC"
 msgid "Miscellaneous"
@@ -1267,6 +1272,11 @@ msgstr "Звуковые сигналы наличия сетей"
 msgctxt "STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_VOLUME"
 msgid "Utility presence volume"
 msgstr "Громкость наличия сетей"
+#. STRINGS.ONIACCESS.CONFIG.VERBOSE_UI
+msgctxt "STRINGS.ONIACCESS.CONFIG.VERBOSE_UI"
+msgid "Verbose interface"
+msgstr "Подробный интерфейс"
+
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN"
 msgid "all forbidden"
@@ -3156,6 +3166,11 @@ msgctxt "STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS"
 msgid "Navigate items"
 msgstr "Навигация по элементам"
 
+#. STRINGS.ONIACCESS.HELP.NOTHING_TO_REVIEW
+msgctxt "STRINGS.ONIACCESS.HELP.NOTHING_TO_REVIEW"
+msgid "Nothing to review"
+msgstr "Нечего просматривать"
+
 #. STRINGS.ONIACCESS.HELP.OPEN_CONFIG
 msgctxt "STRINGS.ONIACCESS.HELP.OPEN_CONFIG"
 msgid "Open settings"
@@ -3185,6 +3200,11 @@ msgstr "Прочитать параметры окружения клетки"
 msgctxt "STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY"
 msgid "Read tooltip summary at cursor"
 msgstr "Прочитать подсказку на курсоре"
+
+#. STRINGS.ONIACCESS.HELP.REVIEW_LINES
+msgctxt "STRINGS.ONIACCESS.HELP.REVIEW_LINES"
+msgid "Review current item line by line"
+msgstr "Просмотреть текущий элемент построчно"
 
 #. STRINGS.ONIACCESS.HELP.SELECT_ENTITY
 msgctxt "STRINGS.ONIACCESS.HELP.SELECT_ENTITY"
@@ -6025,6 +6045,71 @@ msgstr "продолжение"
 msgctxt "STRINGS.ONIACCESS.TOOLTIP.NO_TOOLTIP"
 msgid "no tooltip"
 msgstr "нет подсказки"
+
+#. STRINGS.ONIACCESS.VERBOSE.COLUMN_OF
+msgctxt "STRINGS.ONIACCESS.VERBOSE.COLUMN_OF"
+msgid "column {0} of {1}"
+msgstr "столбец {0} из {1}"
+
+#. STRINGS.ONIACCESS.VERBOSE.GRID
+msgctxt "STRINGS.ONIACCESS.VERBOSE.GRID"
+msgid "grid"
+msgstr "сетка"
+
+#. STRINGS.ONIACCESS.VERBOSE.POSITION
+msgctxt "STRINGS.ONIACCESS.VERBOSE.POSITION"
+msgid "{0} of {1}"
+msgstr "{0} из {1}"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROLE_BUTTON
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROLE_BUTTON"
+msgid "button"
+msgstr "кнопка"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROLE_PICKER
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROLE_PICKER"
+msgid "picker"
+msgstr "селектор"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROLE_RADIO
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROLE_RADIO"
+msgid "radio button"
+msgstr "переключатель"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROLE_SLIDER
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROLE_SLIDER"
+msgid "slider"
+msgstr "ползунок"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROLE_TOGGLE
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROLE_TOGGLE"
+msgid "toggle"
+msgstr "тумблер"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROW_OF
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROW_OF"
+msgid "row {0} of {1}"
+msgstr "строка {0} из {1}"
+
+#. STRINGS.ONIACCESS.VERBOSE.SORT_BUTTON
+msgctxt "STRINGS.ONIACCESS.VERBOSE.SORT_BUTTON"
+msgid "sort button"
+msgstr "кнопка сортировки"
+
+#. STRINGS.ONIACCESS.VERBOSE.SUBMENU
+msgctxt "STRINGS.ONIACCESS.VERBOSE.SUBMENU"
+msgid "submenu"
+msgstr "подменю"
+
+#. STRINGS.ONIACCESS.VERBOSE.TAB_OF
+msgctxt "STRINGS.ONIACCESS.VERBOSE.TAB_OF"
+msgid "tab {0} of {1}"
+msgstr "вкладка {0} из {1}"
+
+#. STRINGS.ONIACCESS.VERBOSE.TABLE
+msgctxt "STRINGS.ONIACCESS.VERBOSE.TABLE"
+msgid "table"
+msgstr "таблица"
 
 #. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.AQUATIC_LOOP.CAMP
 msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.AQUATIC_LOOP.CAMP"

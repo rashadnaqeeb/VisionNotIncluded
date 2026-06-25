@@ -1229,6 +1229,11 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.SCANNER_MASS_READOUT"
 msgid "Scanner mass readout"
 msgstr "스캐너 질량 표시"
 
+#. STRINGS.ONIACCESS.CONFIG.SECTION_INTERFACE
+msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_INTERFACE"
+msgid "Interface"
+msgstr "인터페이스"
+
 #. STRINGS.ONIACCESS.CONFIG.SECTION_MISC
 msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_MISC"
 msgid "Miscellaneous"
@@ -1267,6 +1272,11 @@ msgstr "유틸리티 존재 이어콘"
 msgctxt "STRINGS.ONIACCESS.CONFIG.UTILITY_PRESENCE_VOLUME"
 msgid "Utility presence volume"
 msgstr "유틸리티 존재 볼륨"
+#. STRINGS.ONIACCESS.CONFIG.VERBOSE_UI
+msgctxt "STRINGS.ONIACCESS.CONFIG.VERBOSE_UI"
+msgid "Verbose interface"
+msgstr "상세 인터페이스"
+
 #. STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN
 msgctxt "STRINGS.ONIACCESS.CONSUMABLES_SCREEN.ALL_FORBIDDEN"
 msgid "all forbidden"
@@ -3156,6 +3166,11 @@ msgctxt "STRINGS.ONIACCESS.HELP.NAVIGATE_ITEMS"
 msgid "Navigate items"
 msgstr "항목 탐색"
 
+#. STRINGS.ONIACCESS.HELP.NOTHING_TO_REVIEW
+msgctxt "STRINGS.ONIACCESS.HELP.NOTHING_TO_REVIEW"
+msgid "Nothing to review"
+msgstr "검토할 내용 없음"
+
 #. STRINGS.ONIACCESS.HELP.OPEN_CONFIG
 msgctxt "STRINGS.ONIACCESS.HELP.OPEN_CONFIG"
 msgid "Open settings"
@@ -3185,6 +3200,11 @@ msgstr "타일 환경 세부 정보 읽기"
 msgctxt "STRINGS.ONIACCESS.HELP.READ_TOOLTIP_SUMMARY"
 msgid "Read tooltip summary at cursor"
 msgstr "커서 위치의 툴팁 요약 읽기"
+
+#. STRINGS.ONIACCESS.HELP.REVIEW_LINES
+msgctxt "STRINGS.ONIACCESS.HELP.REVIEW_LINES"
+msgid "Review current item line by line"
+msgstr "현재 항목을 줄 단위로 검토"
 
 #. STRINGS.ONIACCESS.HELP.SELECT_ENTITY
 msgctxt "STRINGS.ONIACCESS.HELP.SELECT_ENTITY"
@@ -6025,6 +6045,71 @@ msgstr "계속"
 msgctxt "STRINGS.ONIACCESS.TOOLTIP.NO_TOOLTIP"
 msgid "no tooltip"
 msgstr "툴팁 없음"
+
+#. STRINGS.ONIACCESS.VERBOSE.COLUMN_OF
+msgctxt "STRINGS.ONIACCESS.VERBOSE.COLUMN_OF"
+msgid "column {0} of {1}"
+msgstr "{1}열 중 {0}열"
+
+#. STRINGS.ONIACCESS.VERBOSE.GRID
+msgctxt "STRINGS.ONIACCESS.VERBOSE.GRID"
+msgid "grid"
+msgstr "그리드"
+
+#. STRINGS.ONIACCESS.VERBOSE.POSITION
+msgctxt "STRINGS.ONIACCESS.VERBOSE.POSITION"
+msgid "{0} of {1}"
+msgstr "{1} 중 {0}"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROLE_BUTTON
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROLE_BUTTON"
+msgid "button"
+msgstr "버튼"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROLE_PICKER
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROLE_PICKER"
+msgid "picker"
+msgstr "선택기"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROLE_RADIO
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROLE_RADIO"
+msgid "radio button"
+msgstr "라디오 버튼"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROLE_SLIDER
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROLE_SLIDER"
+msgid "slider"
+msgstr "슬라이더"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROLE_TOGGLE
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROLE_TOGGLE"
+msgid "toggle"
+msgstr "토글"
+
+#. STRINGS.ONIACCESS.VERBOSE.ROW_OF
+msgctxt "STRINGS.ONIACCESS.VERBOSE.ROW_OF"
+msgid "row {0} of {1}"
+msgstr "{1}행 중 {0}행"
+
+#. STRINGS.ONIACCESS.VERBOSE.SORT_BUTTON
+msgctxt "STRINGS.ONIACCESS.VERBOSE.SORT_BUTTON"
+msgid "sort button"
+msgstr "정렬 버튼"
+
+#. STRINGS.ONIACCESS.VERBOSE.SUBMENU
+msgctxt "STRINGS.ONIACCESS.VERBOSE.SUBMENU"
+msgid "submenu"
+msgstr "하위 메뉴"
+
+#. STRINGS.ONIACCESS.VERBOSE.TAB_OF
+msgctxt "STRINGS.ONIACCESS.VERBOSE.TAB_OF"
+msgid "tab {0} of {1}"
+msgstr "{1}개 탭 중 {0}"
+
+#. STRINGS.ONIACCESS.VERBOSE.TABLE
+msgctxt "STRINGS.ONIACCESS.VERBOSE.TABLE"
+msgid "table"
+msgstr "표"
 
 #. STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.AQUATIC_LOOP.CAMP
 msgctxt "STRINGS.ONIACCESS.VIDEO.DESCRIPTIONS.AQUATIC_LOOP.CAMP"
