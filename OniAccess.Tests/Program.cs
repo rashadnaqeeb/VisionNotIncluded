@@ -108,6 +108,7 @@ namespace OniAccess.Tests {
 			results.Add(ScannerSearchFilterRemapsCategory());
 			results.Add(ScannerSearchBestMatchAcrossPositions());
 			results.Add(ScannerSearchAccentInsensitive());
+			results.Add(ScannerSearchKoreanQuery());
 			results.Add(ScannerSearchMatcherStripsLinkFormatting());
 
 			// --- TextFilter ---
@@ -1285,6 +1286,12 @@ namespace OniAccess.Tests {
 			int key = ScannerSearch.MatchSortKey("Catégorie", "categ");
 			bool ok = key == 0; // prefix match
 			return Assert("ScannerSearchAccentInsensitive", ok, $"key={key}");
+		}
+
+		private static (string, bool, string) ScannerSearchKoreanQuery() {
+			int key = ScannerSearch.MatchSortKey("오염된 물", "물");
+			bool ok = key == 1;
+			return Assert("ScannerSearchKoreanQuery", ok, $"key={key}");
 		}
 
 		private static (string, bool, string) ScannerSearchMatcherStripsLinkFormatting() {
