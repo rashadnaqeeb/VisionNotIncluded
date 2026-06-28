@@ -2,7 +2,7 @@
 
 ## Unreleased changes since 1.6.4
 
-* Fixed the scanner search prompt so it uses the normal text input path, allowing IME-composed queries such as Korean text.
+* Fixed the scanner search prompt so it accepts IME-composed text such as Korean.
 
 ## 1.6.4
 

@@ -1289,6 +1289,8 @@ namespace OniAccess.Tests {
 		}
 
 		private static (string, bool, string) ScannerSearchKoreanQuery() {
+			// Covers Hangul normalization in the matcher (RemoveDiacritics must not
+			// mangle decomposed jamo), not the IME input path, which needs the game.
 			int key = ScannerSearch.MatchSortKey("오염된 물", "물");
 			bool ok = key == 1;
 			return Assert("ScannerSearchKoreanQuery", ok, $"key={key}");
