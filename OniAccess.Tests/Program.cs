@@ -398,6 +398,10 @@ namespace OniAccess.Tests {
 			foreach (var r in LineReviewTests.All())
 				results.Add(r);
 
+			// --- PrismBackend UTF-8 marshaling ---
+			foreach (var r in PrismMarshalTests.All())
+				results.Add(r);
+
 			int passed = 0, failed = 0;
 			foreach (var (name, ok, detail) in results) {
 				if (ok) {

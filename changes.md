@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.6.5
 
+* Fixed speech dropping any text with accented or non-English characters. Such text was sent to the speech engine in the wrong encoding and silently rejected, so it was never spoken; it now reads correctly.
+
 ## 1.6.5
 
 * Fixed the scanner search prompt so it accepts IME-composed text such as Korean.

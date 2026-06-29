@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 using OniAccess.Util;
 
 namespace OniAccess.Speech {
@@ -27,8 +28,11 @@ namespace OniAccess.Speech {
 		[DllImport("prism", CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr prism_backend_name(IntPtr backend);
 
-		[DllImport("prism", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-		private static extern int prism_backend_speak(IntPtr backend, string text, bool interrupt);
+		// Prism requires UTF-8 and rejects anything else with PRISM_ERROR_INVALID_UTF8.
+		// .NET has no UTF-8 CharSet on Framework, so the text is converted to a
+		// null-terminated UTF-8 byte[] by the caller and marshaled as a raw pointer.
+		[DllImport("prism", CallingConvention = CallingConvention.Cdecl)]
+		private static extern int prism_backend_speak(IntPtr backend, byte[] text, bool interrupt);
 
 		[DllImport("prism", CallingConvention = CallingConvention.Cdecl)]
 		private static extern int prism_backend_stop(IntPtr backend);
@@ -109,11 +113,23 @@ namespace OniAccess.Speech {
 			}
 		}
 
+		/// <summary>
+		/// Encodes text as the null-terminated UTF-8 bytes Prism expects. Prism reads
+		/// to the first null and validates the bytes as UTF-8, so the terminator is
+		/// mandatory and the encoding must be UTF-8 (not the system ANSI code page).
+		/// </summary>
+		internal static byte[] ToUtf8(string text) {
+			int count = Encoding.UTF8.GetByteCount(text);
+			var bytes = new byte[count + 1]; // trailing slot stays 0 = null terminator
+			Encoding.UTF8.GetBytes(text, 0, text.Length, bytes, 0);
+			return bytes;
+		}
+
 		public void Say(string text, bool interrupt) {
 			if (!_available || string.IsNullOrEmpty(text)) return;
 
 			try {
-				int err = prism_backend_speak(_backend, text, interrupt);
+				int err = prism_backend_speak(_backend, ToUtf8(text), interrupt);
 				if (err != PRISM_OK) {
 					IntPtr msgPtr = prism_error_string(err);
 					string msg = msgPtr != IntPtr.Zero
