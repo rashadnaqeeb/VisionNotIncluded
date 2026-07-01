@@ -199,10 +199,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (!building.PlacementCellsContainCell(targetCell)) return;
 			ctx.Claimed.Add(go);
 			var sel = go.GetComponent<KSelectable>();
-			if (sel != null)
-				tokens.Add(string.Format(
+			if (sel != null) {
+				string label = string.Format(
 					(string)STRINGS.ONIACCESS.GLANCE.BRIDGE_MIDDLE,
-					ConstructionName(go, sel)));
+					ConstructionName(go, sel));
+				tokens.Add(BuildingSection.AddOrientationIfImportant(
+					go, building, label));
+			}
 		}
 
 		/// <summary>

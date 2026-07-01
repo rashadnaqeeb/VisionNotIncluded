@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.6.6
 
+* The tile cursor now announces the facing direction for built bridges and suit/checkpoint buildings, so you can confirm their orientation after placement.
+
 ## 1.6.6
 
 * Reading tile details at the cursor now announces "shearable" after a critter's name when its scales are fully grown, so you can tell which Dreckos and other shearable critters are ready without opening each one.
