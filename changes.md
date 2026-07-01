@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.6.5
 
+* The tile cursor now announces the facing direction for built bridges and suit/checkpoint buildings, so you can confirm their orientation after placement.
+
 ## 1.6.5
 
 * Fixed the scanner search prompt so it accepts IME-composed text such as Korean.

@@ -221,6 +221,14 @@ namespace OniAccess.Handlers.Build {
 			}
 		}
 
+		internal static string AppendOrientation(string name, string orientation,
+				PermittedRotations permitted) {
+			if (permitted == PermittedRotations.R90)
+				return name + ", " + orientation;
+			return name + ", " + string.Format(
+				(string)STRINGS.ONIACCESS.BUILD_MENU.FACING, orientation);
+		}
+
 		/// <summary>
 		/// Returns the placement offset with minimum x — the input end of a
 		/// horizontal flow building at Neutral orientation.
@@ -281,10 +289,7 @@ namespace OniAccess.Handlers.Build {
 			if (def.PermittedRotations == PermittedRotations.Unrotatable)
 				return name;
 			string dir = GetOrientationName(GetCurrentOrientation(), def);
-			if (def.PermittedRotations == PermittedRotations.R90)
-				return name + ", " + dir;
-			return name + ", " + string.Format(
-				(string)STRINGS.ONIACCESS.BUILD_MENU.FACING, dir);
+			return AppendOrientation(name, dir, def.PermittedRotations);
 		}
 
 		/// <summary>

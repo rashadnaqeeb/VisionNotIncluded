@@ -250,6 +250,8 @@ namespace OniAccess.Tests {
 			results.Add(OrientationNameCoversAllKnownValues());
 			results.Add(OrientationNameDefaultReturnsUp());
 			results.Add(OrientationNameHorizontalFlowShiftsCW());
+			results.Add(AppendOrientationUsesFacingForDirectionalRotations());
+			results.Add(AppendOrientationLeavesR90AsPlainAxis());
 
 			// --- CleanTooltipEntry ---
 			results.Add(CleanTooltipSingleNewline());
@@ -2743,6 +2745,27 @@ namespace OniAccess.Tests {
 				if (actual != expected)
 					failures.Add($"{label}=\"{actual}\" expected \"{expected}\"");
 			}
+		}
+
+		private static (string, bool, string) AppendOrientationUsesFacingForDirectionalRotations() {
+			string dir = (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_RIGHT;
+			string result = BuildMenuData.AppendOrientation(
+				"Gas Bridge", dir, PermittedRotations.R360);
+			string expected = "Gas Bridge, " + string.Format(
+				(string)STRINGS.ONIACCESS.BUILD_MENU.FACING, dir);
+			bool ok = result == expected;
+			return Assert("AppendOrientationUsesFacingForDirectionalRotations", ok,
+				$"got \"{result}\", expected \"{expected}\"");
+		}
+
+		private static (string, bool, string) AppendOrientationLeavesR90AsPlainAxis() {
+			string axis = (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_HORIZONTAL;
+			string result = BuildMenuData.AppendOrientation(
+				"Transit Tube Crossing", axis, PermittedRotations.R90);
+			string expected = "Transit Tube Crossing, " + axis;
+			bool ok = result == expected;
+			return Assert("AppendOrientationLeavesR90AsPlainAxis", ok,
+				$"got \"{result}\", expected \"{expected}\"");
 		}
 
 		// ========================================

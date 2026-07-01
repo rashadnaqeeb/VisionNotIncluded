@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using OniAccess.Handlers.Build;
 using UnityEngine;
 
 namespace OniAccess.Handlers.Tiles.Sections {
@@ -89,6 +90,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				return;
 			}
 
+			displayName = AddOrientationIfImportant(go, building, displayName);
+
 			var constructable = go.GetComponent<Constructable>();
 			if (constructable != null) {
 				tokens.Add(string.Format(
@@ -128,6 +131,28 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				int origin = Grid.PosToCell(building.transform.GetPosition());
 				ReadCellOfInterest(go, building, origin, cell, tokens);
 			}
+		}
+
+		internal static string AddOrientationIfImportant(
+				GameObject go, Building building, string name) {
+			if (building == null || building.Def == null)
+				return name;
+			if (building.Def.PermittedRotations == PermittedRotations.Unrotatable)
+				return name;
+			if (!ShouldAnnounceOrientation(go))
+				return name;
+
+			string orientation = BuildMenuData.GetOrientationName(
+				building.Orientation, building.Def);
+			return BuildMenuData.AppendOrientation(
+				name, orientation, building.Def.PermittedRotations);
+		}
+
+		private static bool ShouldAnnounceOrientation(GameObject go) {
+			return ConduitSection.IsBridgeEndpoint(go)
+				|| go.GetComponent<TravelTubeBridge>() != null
+				|| go.GetComponent<SuitMarker>() != null
+				|| go.GetComponent<Checkpoint>() != null;
 		}
 
 		private static void ReadReplacement(
@@ -318,7 +343,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (tokens.Count > beforeCount) {
 				var selectable = portGo.GetComponent<KSelectable>();
 				if (selectable != null)
-					tokens.Add(GetBuildingName(portGo, selectable));
+					tokens.Add(AddOrientationIfImportant(portGo, building,
+						GetBuildingName(portGo, selectable)));
 			}
 		}
 
@@ -372,7 +398,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (!ctx.Claimed.Contains(go)) {
 				var selectable = go.GetComponent<KSelectable>();
 				if (selectable != null)
-					tokens.Add(GetBuildingName(go, selectable));
+					tokens.Add(AddOrientationIfImportant(go, building,
+						GetBuildingName(go, selectable)));
 			}
 		}
 
@@ -431,7 +458,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (tokens.Count > beforeCount && !ctx.Claimed.Contains(go)) {
 				var selectable = go.GetComponent<KSelectable>();
 				if (selectable != null)
-					tokens.Add(GetBuildingName(go, selectable));
+					tokens.Add(AddOrientationIfImportant(go, building,
+						GetBuildingName(go, selectable)));
 			}
 		}
 
