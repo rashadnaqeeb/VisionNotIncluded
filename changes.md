@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.6.5
+## Unreleased changes since 1.6.6
+
+## 1.6.6
 
 * Reading tile details at the cursor now announces "shearable" after a critter's name when its scales are fully grown, so you can tell which Dreckos and other shearable critters are ready without opening each one.
 
