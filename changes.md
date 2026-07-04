@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.6.5
 
+* Fixed Alt+Up and Alt+Down not stepping through breakdowns in a few more places: the Research browse tab (where it did nothing), the Skills screen's duplicant morale breakdown, and the Priorities column headers, whose affected-errand list now reads one task per line.
+
 * Fixed speech dropping any text with accented or non-English characters. Such text was sent to the speech engine in the wrong encoding and silently rejected, so it was never spoken; it now reads correctly.
 
 ## 1.6.5

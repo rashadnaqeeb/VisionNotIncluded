@@ -395,7 +395,9 @@ namespace OniAccess.Handlers.Screens.Skills {
 				parts.Add(string.Format(STRINGS.ONIACCESS.SKILLS.MODIFIER_LINE,
 					TextFilter.FilterForSpeech(mod.GetDescription()), sign, $"{val:F0}"));
 			}
-			return string.Join(", ", parts);
+			// ". " so the Alt+Up/Down reviewer breaks each modifier onto its own line;
+			// the total and every contributor step one at a time instead of one long blob.
+			return string.Join(". ", parts);
 		}
 
 		// ========================================

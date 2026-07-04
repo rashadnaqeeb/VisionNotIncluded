@@ -152,8 +152,11 @@ namespace OniAccess.Handlers.Screens {
 				case TableRowKind.ColumnHeader:
 					if (_col >= 0 && _col < _choreGroups.Count) {
 						var group = _choreGroups[_col];
-						var choreNames = string.Join(", ", group.choreTypes.Select(ct => ct.Name));
-						return group.description + ", "
+						// ". " between the errands (and before the list) so the Alt+Up/Down
+						// reviewer steps one task per line rather than reading the whole
+						// category's errand list as a single run-on.
+						var choreNames = string.Join(". ", group.choreTypes.Select(ct => ct.Name));
+						return group.description + ". "
 							+ string.Format(STRINGS.ONIACCESS.PRIORITY_SCREEN.AFFECTED_ERRANDS, choreNames);
 					}
 					return "";

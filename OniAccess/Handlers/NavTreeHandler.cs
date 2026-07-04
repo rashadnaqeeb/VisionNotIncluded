@@ -273,10 +273,14 @@ namespace OniAccess.Handlers {
 			return WidgetSpeech.ComposeReview(item, CurrentContext(), GetTooltip(item));
 		}
 
-		// The focused node itself is the identity. SectionMerger updates matched nodes
-		// in place, so this stays the same object while a value ticks, and only changes
-		// when the cursor actually moves to a different node.
-		internal override object GetReviewFocusKey() => Nav.Current();
+		// The cursor's index path is the identity: it stays fixed while a node's value
+		// ticks and changes only when the cursor moves. The node object cannot serve as
+		// the key -- handlers that build their tree from delegates (Research browse, the
+		// skills dupe-info rows) return a fresh NavItem on every Nav.Current(), so an
+		// object key would never compare equal and the reviewer would rewind to the first
+		// line on every press. A snapshot string (not the live Path list) is compared by
+		// value; SectionMerger keeps matched nodes in order so the path stays stable there.
+		internal override object GetReviewFocusKey() => string.Join(",", Nav.Path);
 
 		/// <summary>
 		/// Verbose context for the cursor's current node: its 1-based rank among the
