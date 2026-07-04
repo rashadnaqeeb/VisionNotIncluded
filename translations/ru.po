@@ -5491,6 +5491,11 @@ msgctxt "STRINGS.ONIACCESS.STATES.QUEUED"
 msgid "queued"
 msgstr "в очереди"
 
+#. STRINGS.ONIACCESS.STATES.READY_TO_SHEAR
+msgctxt "STRINGS.ONIACCESS.STATES.READY_TO_SHEAR"
+msgid "shearable"
+msgstr "можно стричь"
+
 #. STRINGS.ONIACCESS.STATES.SELECTED
 msgctxt "STRINGS.ONIACCESS.STATES.SELECTED"
 msgid "selected"

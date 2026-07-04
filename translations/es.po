@@ -5487,6 +5487,11 @@ msgctxt "STRINGS.ONIACCESS.STATES.QUEUED"
 msgid "queued"
 msgstr "en cola"
 
+#. STRINGS.ONIACCESS.STATES.READY_TO_SHEAR
+msgctxt "STRINGS.ONIACCESS.STATES.READY_TO_SHEAR"
+msgid "shearable"
+msgstr "esquilable"
+
 #. STRINGS.ONIACCESS.STATES.SELECTED
 msgctxt "STRINGS.ONIACCESS.STATES.SELECTED"
 msgid "selected"
