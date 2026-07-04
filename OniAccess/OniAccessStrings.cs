@@ -335,6 +335,8 @@ namespace STRINGS {
 			public static LocString ASSIGNED = "assigned";
 			public static LocString UNASSIGNED = "unassigned";
 			public static LocString QUEUED = "queued";
+			// Critter has fully grown scales and can be sheared at a Shearing Station
+			public static LocString READY_TO_SHEAR = "shearable";
 		}
 
 		// Receptacle (e.g. Display Shelf, Flower Pot) side screen

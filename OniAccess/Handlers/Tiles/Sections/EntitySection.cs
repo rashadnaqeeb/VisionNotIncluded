@@ -36,8 +36,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			while (item != null) {
 				if (item.gameObject.GetComponent<CreatureBrain>() != null) {
 					var selectable = item.gameObject.GetComponent<KSelectable>();
-					if (selectable != null)
-						tokens.Add(selectable.GetName());
+					if (selectable != null) {
+						string name = selectable.GetName();
+						bool readyToShear = item.gameObject.GetSMI<IShearable>()?.IsFullyGrown() ?? false;
+						tokens.Add(readyToShear
+							? $"{name}, {(string)STRINGS.ONIACCESS.STATES.READY_TO_SHEAR}"
+							: name);
+					}
 				}
 				item = item.nextItem;
 			}
