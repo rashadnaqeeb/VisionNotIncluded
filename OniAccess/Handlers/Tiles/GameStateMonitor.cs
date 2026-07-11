@@ -21,7 +21,7 @@ namespace OniAccess.Handlers.Tiles {
 
 			bool paused = speedScreen.IsPaused;
 			int speed = speedScreen.GetSpeed();
-			int cycle = GameClock.Instance.GetCycle();
+			int cycle = GameUtil.GetCurrentCycle();
 
 			bool red = world.IsRedAlert();
 			bool yellow = world.IsYellowAlert();
@@ -79,7 +79,7 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		public void SpeakCycleStatus() {
-			int cycle = GameClock.Instance.GetCycle();
+			int cycle = GameUtil.GetCurrentCycle();
 			int block = ScheduleManager.GetCurrentHour();
 			string msg = string.Format((string)STRINGS.ONIACCESS.GAME_STATE.CYCLE_STATUS, cycle, block);
 			var world = ClusterManager.Instance.activeWorld;
