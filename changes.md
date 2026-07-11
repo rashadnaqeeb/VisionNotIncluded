@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.6.6
+## Unreleased changes since 1.6.7
+
+## 1.6.7
 
 * Fixed the cycle number spoken by Q and by the automatic new-cycle announcement being one lower than the cycle shown on screen.
 
