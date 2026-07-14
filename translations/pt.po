@@ -401,7 +401,7 @@ msgstr "portas"
 
 #. STRINGS.ONIACCESS.BUILD_MENU.HELP_RECT_MODE
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.HELP_RECT_MODE"
-msgid "toggle rectangle mode"
+msgid "cycle rectangle mode"
 msgstr "alternar modo retângulo"
 
 #. STRINGS.ONIACCESS.BUILD_MENU.HELP_ROTATE
@@ -538,6 +538,11 @@ msgstr "{0}, {1}"
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.PREBUILD_ERROR"
 msgid "{0}, {1}"
 msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_HOLLOW
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_HOLLOW"
+msgid "hollow rectangle mode"
+msgstr "modo retângulo oco"
 
 #. STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_OFF
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_OFF"
@@ -1757,10 +1762,25 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.CURRENT_TASK"
 msgid "Current task"
 msgstr "Tarefa atual"
 
+#. STRINGS.ONIACCESS.DETAILS.DELIVERY_OUT_OF_REACH
+msgctxt "STRINGS.ONIACCESS.DETAILS.DELIVERY_OUT_OF_REACH"
+msgid "delivery cell out of reach"
+msgstr "célula de entrega fora de alcance"
+
 #. STRINGS.ONIACCESS.DETAILS.DIRECTION_BOTH
 msgctxt "STRINGS.ONIACCESS.DETAILS.DIRECTION_BOTH"
 msgid "both"
 msgstr "ambos"
+
+#. STRINGS.ONIACCESS.DETAILS.DROPS_TO
+msgctxt "STRINGS.ONIACCESS.DETAILS.DROPS_TO"
+msgid "drops to {0}"
+msgstr "cai em {0}"
+
+#. STRINGS.ONIACCESS.DETAILS.DROPS_TO_BLOCKED
+msgctxt "STRINGS.ONIACCESS.DETAILS.DROPS_TO_BLOCKED"
+msgid "drops to {0}, out of reach"
+msgstr "cai em {0}, fora de alcance"
 
 #. STRINGS.ONIACCESS.DETAILS.DUPE_HAT_SUBTITLE
 msgctxt "STRINGS.ONIACCESS.DETAILS.DUPE_HAT_SUBTITLE"
@@ -1782,6 +1802,16 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.HEADER_ITEM"
 msgid "{0}, {1}"
 msgstr "{0}, {1}"
 
+#. STRINGS.ONIACCESS.DETAILS.IN_RANGE
+msgctxt "STRINGS.ONIACCESS.DETAILS.IN_RANGE"
+msgid "In Range"
+msgstr "Ao alcance"
+
+#. STRINGS.ONIACCESS.DETAILS.MINING_OVERLAP
+msgctxt "STRINGS.ONIACCESS.DETAILS.MINING_OVERLAP"
+msgid "mining area overlaps"
+msgstr "área de mineração sobreposta"
+
 #. STRINGS.ONIACCESS.DETAILS.NO_ACTIONS
 msgctxt "STRINGS.ONIACCESS.DETAILS.NO_ACTIONS"
 msgid "No actions"
@@ -1791,6 +1821,11 @@ msgstr "Sem ações"
 msgctxt "STRINGS.ONIACCESS.DETAILS.NO_ERRANDS"
 msgid "No errands"
 msgstr "Sem tarefas"
+
+#. STRINGS.ONIACCESS.DETAILS.NOTHING_IN_RANGE
+msgctxt "STRINGS.ONIACCESS.DETAILS.NOTHING_IN_RANGE"
+msgid "Nothing in range"
+msgstr "Nada ao alcance"
 
 #. STRINGS.ONIACCESS.DETAILS.PARENT_ITEM
 msgctxt "STRINGS.ONIACCESS.DETAILS.PARENT_ITEM"
@@ -6010,6 +6045,16 @@ msgstr "retângulo limpo"
 msgctxt "STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY"
 msgid "{0}x{1}, {2} valid"
 msgstr "{0}x{1}, {2} válidos"
+
+#. STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY_HOLLOW
+msgctxt "STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY_HOLLOW"
+msgid "hollow {0}x{1}, {2} valid"
+msgstr "oco {0}x{1}, {2} válidos"
+
+#. STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY_HOLLOW_INVALID
+msgctxt "STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY_HOLLOW_INVALID"
+msgid "hollow {0}x{1}, {2} valid, {3} invalid"
+msgstr "oco {0}x{1}, {2} válidos, {3} inválidos"
 
 #. STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY_INVALID
 msgctxt "STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY_INVALID"
