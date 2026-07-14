@@ -2,11 +2,9 @@
 
 ## Unreleased changes since 1.6.7
 
-* Valves, limit valves, and shutoffs now keep the cursor anchored on their input end when rotated, the same way pipe bridges do. Previously the cursor silently switched to the output end when facing down or left. Extent and port announcements follow the same anchor.
-
-* The Properties tab of a selected Auto-Sweeper now has an "In Range" section listing every building the sweeper can service, nearest first, with each building's priority and coordinates. A building only counts when the sweeper can actually interact with it: storage, machine inputs, farm plots, construction sites, conveyor loaders and receptacles, with reach blocked by walls just like the green range box sighted players see. Debris sources count too: a conveyor chute, automatic dispenser, or fabricator whose droppings land within reach is listed with the landing spot, like "Conveyor Chute, 3, 5, drops to 3, 1". When a building's delivery cell and output landing differ, each side reports if it is out of reach, so you can tell a sweeper that can load a refinery from one that can only collect its ingots. A Robo-Miner whose dig area overlaps the range is listed as "mining area overlaps", and buildings with an active material request the sweeper could fill, such as repairs, appear while the request lasts. Pressing Enter on a listed building selects it and moves the details screen to it.
-
-* Ctrl+G during building placement now cycles through three modes: single, rectangle, and hollow rectangle. Hollow rectangle places buildings only along the edges of the selected area, so a 12x4 selection places the 28 edge tiles and leaves the middle open.
+* Valves, limit valves, and shutoffs now keep the cursor anchored on their input end when rotated, the same way pipe bridges do. 
+* The Properties tab of a selected Auto-Sweeper now has an "In Range" section listing every building the sweeper can service or collect from, nearest first.
+* Ctrl+G during building placement now cycles through three modes: single, rectangle, and the new hollow rectangle. Hollow rectangle places buildings only along the edges of the selected area, leaving the middle empty.
 
 ## 1.6.7
 
@@ -15,35 +13,26 @@
 ## 1.6.6
 
 * Reading tile details at the cursor now announces "shearable" after a critter's name when its scales are fully grown, so you can tell which Dreckos and other shearable critters are ready without opening each one.
-
 * Fixed Alt+Up and Alt+Down not stepping through breakdowns in a few more places: the Research browse tab (where it did nothing), the Skills screen's duplicant morale breakdown, and the Priorities column headers, whose affected-errand list now reads one task per line.
-
 * Fixed speech dropping any text with accented or non-English characters. Such text was sent to the speech engine in the wrong encoding and silently rejected, so it was never spoken; it now reads correctly.
 
 ## 1.6.5
 
 * Fixed the scanner search prompt so it accepts IME-composed text such as Korean.
-
 * Fixed Alt+Up and Alt+Down reading a packed item's whole breakdown as one line. Tooltip-backed readouts like the Vitals Endurance or Morale lines now split into one line per field, so you can step through them.
 
 ## 1.6.4
 
 * Added Alt+Up and Alt+Down to step through the item the cursor is on one line at a time, in menus, lists, tables, and detail screens. Useful for packed readouts like the Vitals morale column or a building's status panel, where a single cell or line crams in many values.
-
 * Added a Verbose interface setting (off by default, in Settings under Interface). When on, menus and lists announce each item's control type (button, picker, slider, toggle, radio button, submenu) and its position, like "3 of 9"; tables announce the row count as you change rows and the column count as you change columns, and tag a sortable column header as a sort button; the table or grid name itself is announced, for example "Vitals, table" or "Schedules, grid"; and switching tabs ends with the tab's position, like "tab 2 of 4".
-
 * The tool filter now says which option is currently selected, and the build material and facade pickers mark the current choice as selected.
-
 * Fixed the area scan not counting under-construction pipes, wires, and conduit bridges. It only looked for build orders on regular building layers, so pending utility construction was left out of the order count.
 
 ## 1.6.3
 
 * Fixed the scanner missing build orders for wires, pipes, conduit bridges, and logic wires; it only ever found build orders for regular buildings. It now also reports pipe, wire, and tile replacement tasks.
-
 * Fixed the scanner counting a conduit bridge as two tiles in an order cluster; bridges now count once for build, deconstruct, and replace orders.
-
 * The new-game Shuffle seed button now announces the applied world traits after rerolling, so players no longer need to open the destination info submenu just to hear the new traits.
-
 * The pause menu now includes the world seed/coordinate copy button, so keyboard-only and screen reader users can copy the current colony coordinates from the ESC menu.
 
 ## 1.6.2
