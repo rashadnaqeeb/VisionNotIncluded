@@ -1466,6 +1466,25 @@ namespace STRINGS {
 			public static LocString REACH = "Work reach: A duplicant can work on targets up to 2 tiles above their head, 3 tiles below their feet, and 2 tiles to either side. Storage tasks are an exception, reaching 3 tiles to either side instead of 2. When a target is at a diagonal, digging and tile construction can reach through that corner even if both tiles are solid. Other tasks require at least one of those corner tiles to be open. Otherwise, solid tiles always block work reach. The game recalculates valid work positions whenever terrain changes, for example from digging or construction.";
 			// {0} = raw NavGrid name for unmapped grids
 			public static LocString PATHING_UNKNOWN = "{0} (unknown)";
+			// Auto-Sweeper section header: buildings the arm can service
+			public static LocString IN_RANGE = "In Range";
+			// Spoken as the only item when the sweeper can reach no buildings
+			public static LocString NOTHING_IN_RANGE = "Nothing in range";
+			// Appended to an In Range item whose output lands on a different
+			// cell (conveyor chutes, dispensers, fabricator products).
+			// {0} = coordinates of the landing cell
+			public static LocString DROPS_TO = "drops to {0}";
+			// DROPS_TO variant when the landing cell is not reachable by the
+			// sweeper: it can deliver to this building but not collect the
+			// output. {0} = coordinates of the landing cell
+			public static LocString DROPS_TO_BLOCKED = "drops to {0}, out of reach";
+			// Appended when a building's delivery cell (its pivot) is not
+			// reachable but its output landing is: the sweeper can collect
+			// products but cannot deliver ingredients
+			public static LocString DELIVERY_OUT_OF_REACH = "delivery cell out of reach";
+			// Appended to a Robo-Miner item: its dig area overlaps the
+			// sweeper's range, so mined debris lands where the sweeper works
+			public static LocString MINING_OVERLAP = "mining area overlaps";
 
 			public class PATHING_DESC {
 				public static LocString DUPLICANT = "Is 1 wide by 2 tall. Walks on solid ground and can travel vertically or horizontally on ladders. Can climb ledges up to 2 tiles tall, jump over gaps 1 tile wide, and drop down ledges up to 2 tiles tall. Can also reach a platform 2 tiles away horizontally and 1 tile up, or 1 tile away and 2 tiles up. Falls through larger drops, though will attempt to avoid this.";

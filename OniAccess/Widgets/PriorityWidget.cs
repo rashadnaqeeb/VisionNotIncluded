@@ -66,7 +66,7 @@ namespace OniAccess.Widgets {
 			return -1;
 		}
 
-		private static string FormatPriority(PrioritySetting p) {
+		internal static string FormatPriority(PrioritySetting p) {
 			if (p.priority_class == PriorityScreen.PriorityClass.topPriority)
 				return (string)STRINGS.ONIACCESS.TOOLS.PRIORITY_EMERGENCY;
 			return string.Format(

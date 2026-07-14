@@ -90,6 +90,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			AppendPathingWidget(target, sections);
 			AppendDescriptionWidget(target, sections);
 			AppendReachWidget(target, sections);
+			SweeperRangeSection.Append(target, sections);
 		}
 
 		private static void AppendRangeWidget(GameObject target, List<DetailSection> sections) {
