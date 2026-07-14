@@ -2,6 +2,10 @@
 
 ## Unreleased changes since 1.6.7
 
+* Valves, limit valves, and shutoffs now keep the cursor anchored on their input end when rotated, the same way pipe bridges do. Previously the cursor silently switched to the output end when facing down or left. Extent and port announcements follow the same anchor.
+
+* The Properties tab of a selected Auto-Sweeper now has an "In Range" section listing every building the sweeper can service, nearest first, with each building's priority and coordinates. Buildings behind walls that block the sweeper's reach are excluded, matching the green range box sighted players see.
+
 * Ctrl+G during building placement now cycles through three modes: single, rectangle, and hollow rectangle. Hollow rectangle places buildings only along the edges of the selected area, so a 12x4 selection places the 28 edge tiles and leaves the middle open.
 
 ## 1.6.7

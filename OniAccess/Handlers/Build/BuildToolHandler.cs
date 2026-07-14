@@ -92,17 +92,17 @@ namespace OniAccess.Handlers.Build {
 
 		/// <summary>
 		/// Returns the offset from the rotated input-end cell to the
-		/// placement origin for a horizontal flow building.
+		/// placement origin for a flow building.
 		/// </summary>
 		internal static CellOffset InputEndToOriginOffset(BuildingDef def, Orientation orientation) {
-			var inputEnd = BuildMenuData.InputEndOffset(def);
+			var inputEnd = BuildMenuData.FlowInputOffset(def);
 			var rotated = Rotatable.GetRotatedCellOffset(inputEnd, orientation);
 			return new CellOffset(-rotated.x, -rotated.y);
 		}
 
 		private int GetOriginCell() {
 			var orientation = BuildMenuData.GetCurrentOrientation();
-			var shift = BuildMenuData.IsHorizontalFlowBuilding(_def)
+			var shift = BuildMenuData.IsFlowBuilding(_def)
 				? InputEndToOriginOffset(_def, orientation)
 				: BottomLeftToOriginOffset(_def, orientation);
 			return Grid.OffsetCell(TileCursor.Instance.Cell, shift);
@@ -755,8 +755,8 @@ namespace OniAccess.Handlers.Build {
 		/// <summary>
 		/// Builds an extent description like "extends 2 right, 1 up"
 		/// for buildings larger than 1x1. For normal buildings, extents are
-		/// relative to the bottom-left corner. For horizontal flow buildings,
-		/// extents are relative to the rotated input-end position.
+		/// relative to the bottom-left corner. For flow buildings, extents
+		/// are relative to the rotated input-end position.
 		/// </summary>
 		internal static string BuildExtentText(Orientation orientation) {
 			var handler = Instance;
@@ -764,7 +764,7 @@ namespace OniAccess.Handlers.Build {
 			var offsets = handler._def.PlacementOffsets;
 			if (offsets == null || offsets.Length <= 1) return null;
 
-			bool horizontalFlow = BuildMenuData.IsHorizontalFlowBuilding(handler._def);
+			bool flowBuilding = BuildMenuData.IsFlowBuilding(handler._def);
 
 			int minX = 0, maxX = 0, minY = 0, maxY = 0;
 			foreach (var offset in offsets) {
@@ -777,9 +777,9 @@ namespace OniAccess.Handlers.Build {
 
 			var parts = new List<string>();
 
-			if (horizontalFlow) {
+			if (flowBuilding) {
 				var inputEnd = Rotatable.GetRotatedCellOffset(
-					BuildMenuData.InputEndOffset(handler._def), orientation);
+					BuildMenuData.FlowInputOffset(handler._def), orientation);
 				int right = maxX - inputEnd.x;
 				int left = inputEnd.x - minX;
 				int up = maxY - inputEnd.y;
@@ -1069,11 +1069,11 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			// Reference point for offset descriptions: input end for
-			// horizontal flow buildings, bottom-left otherwise
+			// flow buildings, bottom-left otherwise
 			CellOffset refPoint;
-			if (BuildMenuData.IsHorizontalFlowBuilding(_def)) {
+			if (BuildMenuData.IsFlowBuilding(_def)) {
 				refPoint = Rotatable.GetRotatedCellOffset(
-					BuildMenuData.InputEndOffset(_def), orientation);
+					BuildMenuData.FlowInputOffset(_def), orientation);
 			} else {
 				int minX = 0, minY = 0;
 				foreach (var offset in _def.PlacementOffsets) {

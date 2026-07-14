@@ -253,6 +253,39 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		/// <summary>
+		/// A vertical flow-through building: taller than wide, fully
+		/// rotatable, with conduit input and output at opposite ends.
+		/// Matches the valve family (valves, limit valves, shutoffs)
+		/// and no other game buildings.
+		/// </summary>
+		internal static bool IsVerticalFlowBuilding(BuildingDef def) {
+			return def.WidthInCells < def.HeightInCells
+				&& def.InputConduitType != ConduitType.None
+				&& def.OutputConduitType != ConduitType.None
+				&& def.PermittedRotations == PermittedRotations.R360;
+		}
+
+		/// <summary>
+		/// Flow buildings anchor the cursor, extents, and port descriptions
+		/// on their input-end cell instead of the bottom-left corner.
+		/// </summary>
+		internal static bool IsFlowBuilding(BuildingDef def) {
+			return IsHorizontalFlowBuilding(def) || IsVerticalFlowBuilding(def);
+		}
+
+		/// <summary>
+		/// Unrotated input-end cell of a flow building. Vertical flow
+		/// buildings always declare their input via UtilityInputOffset;
+		/// horizontal flow includes logic gates and wire bridges, which
+		/// do not, so their input end is the leftmost placement offset.
+		/// </summary>
+		internal static CellOffset FlowInputOffset(BuildingDef def) {
+			return IsVerticalFlowBuilding(def)
+				? def.UtilityInputOffset
+				: InputEndOffset(def);
+		}
+
+		/// <summary>
 		/// Builds a brief material summary for the building's auto-selected
 		/// materials. Returns e.g. "copper, 25 kg".
 		/// </summary>
