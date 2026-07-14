@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.6.7
+## Unreleased changes since 1.6.8
+
+## 1.6.8
 
 * Valves, limit valves, and shutoffs now keep the cursor anchored on their input end when rotated, the same way pipe bridges do. 
 * The Properties tab of a selected Auto-Sweeper now has an "In Range" section listing every building the sweeper can service or collect from, nearest first.
