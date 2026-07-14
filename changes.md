@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.6.7
 
+* Ctrl+G during building placement now cycles through three modes: single, rectangle, and hollow rectangle. Hollow rectangle places buildings only along the edges of the selected area, so a 12x4 selection places the 28 edge tiles and leaves the middle open.
+
 ## 1.6.7
 
 * Fixed the cycle number spoken by Q and by the automatic new-cycle announcement being one lower than the cycle shown on screen.

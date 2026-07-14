@@ -12,6 +12,7 @@ namespace OniAccess.Handlers {
 		public struct RectCorners {
 			public int Cell1;
 			public int Cell2;
+			public bool Hollow;
 
 			public void GetBounds(out int minX, out int maxX, out int minY, out int maxY) {
 				minX = Math.Min(Grid.CellColumn(Cell1), Grid.CellColumn(Cell2));
@@ -20,11 +21,27 @@ namespace OniAccess.Handlers {
 				maxY = Math.Max(Grid.CellRow(Cell1), Grid.CellRow(Cell2));
 			}
 
+			/// <summary>
+			/// Bounding-box containment, ignoring hollowness.
+			/// </summary>
 			public bool Contains(int cell) {
 				GetBounds(out int minX, out int maxX, out int minY, out int maxY);
 				int cx = Grid.CellColumn(cell);
 				int cy = Grid.CellRow(cell);
 				return cx >= minX && cx <= maxX && cy >= minY && cy <= maxY;
+			}
+
+			/// <summary>
+			/// Whether the cell is part of the selection the tool will act
+			/// on: full box for filled rects, edges only for hollow rects.
+			/// </summary>
+			public bool IsSelected(int cell) {
+				GetBounds(out int minX, out int maxX, out int minY, out int maxY);
+				int cx = Grid.CellColumn(cell);
+				int cy = Grid.CellRow(cell);
+				if (cx < minX || cx > maxX || cy < minY || cy > maxY)
+					return false;
+				return !Hollow || cx == minX || cx == maxX || cy == minY || cy == maxY;
 			}
 		}
 
@@ -47,7 +64,7 @@ namespace OniAccess.Handlers {
 		/// second call completes a rectangle and adds it to the list.
 		/// Returns the result and (for RectangleComplete) the new rect.
 		/// </summary>
-		public SetCornerResult SetCorner(int cell, out RectCorners rect) {
+		public SetCornerResult SetCorner(int cell, out RectCorners rect, bool hollow = false) {
 			rect = default;
 			if (_pendingFirstCorner == Grid.InvalidCell) {
 				_pendingFirstCorner = cell;
@@ -55,7 +72,7 @@ namespace OniAccess.Handlers {
 				return SetCornerResult.FirstCornerSet;
 			}
 
-			rect = new RectCorners { Cell1 = _pendingFirstCorner, Cell2 = cell };
+			rect = new RectCorners { Cell1 = _pendingFirstCorner, Cell2 = cell, Hollow = hollow };
 			_rectangles.Add(rect);
 			_pendingFirstCorner = Grid.InvalidCell;
 			return SetCornerResult.RectangleComplete;
@@ -78,7 +95,7 @@ namespace OniAccess.Handlers {
 
 		public bool IsCellSelected(int cell) {
 			for (int i = 0; i < _rectangles.Count; i++) {
-				if (_rectangles[i].Contains(cell))
+				if (_rectangles[i].IsSelected(cell))
 					return true;
 			}
 			return false;
@@ -123,15 +140,31 @@ namespace OniAccess.Handlers {
 		}
 
 		/// <summary>
-		/// Removes the last rectangle containing the given cell.
+		/// Removes the last rectangle whose selection includes the given
+		/// cell. The open middle of a hollow rectangle does not match, so
+		/// a filled rectangle placed inside a hollow one can be cleared
+		/// without touching the hollow frame.
 		/// Returns true if a rectangle was removed.
 		/// </summary>
 		public bool ClearRectAtCursor(int cell) {
 			for (int i = _rectangles.Count - 1; i >= 0; i--) {
-				if (_rectangles[i].Contains(cell)) {
+				if (_rectangles[i].IsSelected(cell)) {
 					_rectangles.RemoveAt(i);
 					return true;
 				}
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// True if the cell falls within any rectangle's bounding box,
+		/// selected or not. Distinguishes the open middle of a hollow
+		/// rectangle from cells outside every rectangle.
+		/// </summary>
+		public bool IsCellWithinBounds(int cell) {
+			for (int i = 0; i < _rectangles.Count; i++) {
+				if (_rectangles[i].Contains(cell))
+					return true;
 			}
 			return false;
 		}
@@ -154,6 +187,18 @@ namespace OniAccess.Handlers {
 			return width * height;
 		}
 
+		/// <summary>
+		/// Number of cells on the edges of the rectangle spanned by the
+		/// two corners. When either dimension is 1, every cell is an edge.
+		/// </summary>
+		public static int ComputePerimeter(int cell1, int cell2) {
+			int width = Math.Abs(Grid.CellColumn(cell2) - Grid.CellColumn(cell1)) + 1;
+			int height = Math.Abs(Grid.CellRow(cell2) - Grid.CellRow(cell1)) + 1;
+			if (width == 1 || height == 1)
+				return width * height;
+			return 2 * width + 2 * height - 4;
+		}
+
 		public static int TileCountBetween(int cell1, int cell2) {
 			int width = Math.Abs(Grid.CellColumn(cell2) - Grid.CellColumn(cell1)) + 1;
 			int height = Math.Abs(Grid.CellRow(cell2) - Grid.CellRow(cell1)) + 1;
@@ -161,7 +206,7 @@ namespace OniAccess.Handlers {
 		}
 
 		public static string BuildRectSummary(int cell1, int cell2, Func<int, int> countTargets,
-			bool allowUnexplored = false) {
+			bool allowUnexplored = false, bool hollow = false) {
 			int minX = Math.Min(Grid.CellColumn(cell1), Grid.CellColumn(cell2));
 			int maxX = Math.Max(Grid.CellColumn(cell1), Grid.CellColumn(cell2));
 			int minY = Math.Min(Grid.CellRow(cell1), Grid.CellRow(cell2));
@@ -173,6 +218,8 @@ namespace OniAccess.Handlers {
 
 			for (int y = minY; y <= maxY; y++) {
 				for (int x = minX; x <= maxX; x++) {
+					if (hollow && x != minX && x != maxX && y != minY && y != maxY)
+						continue;
 					int cell = Grid.XYToCell(x, y);
 					if (!Grid.IsValidCell(cell) || (!allowUnexplored && !Grid.IsVisible(cell))) {
 						invalid++;
@@ -190,9 +237,15 @@ namespace OniAccess.Handlers {
 				}
 			}
 
-			string format = invalid > 0
-				? (string)STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY_INVALID
-				: (string)STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY;
+			string format;
+			if (hollow)
+				format = invalid > 0
+					? (string)STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY_HOLLOW_INVALID
+					: (string)STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY_HOLLOW;
+			else
+				format = invalid > 0
+					? (string)STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY_INVALID
+					: (string)STRINGS.ONIACCESS.TOOLS.RECT_SUMMARY;
 			return string.Format(format, width, height, valid, invalid);
 		}
 

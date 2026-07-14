@@ -925,6 +925,11 @@ namespace STRINGS {
 			public static LocString RECT_SUMMARY = "{0}x{1}, {2} valid";
 			// {0} = width (int), {1} = height (int), {2} = valid cell count (int), {3} = invalid cell count (int)
 			public static LocString RECT_SUMMARY_INVALID = "{0}x{1}, {2} valid, {3} invalid";
+			// Hollow rectangle variants: only edge cells are counted
+			// {0} = width (int), {1} = height (int), {2} = valid cell count (int)
+			public static LocString RECT_SUMMARY_HOLLOW = "hollow {0}x{1}, {2} valid";
+			// {0} = width (int), {1} = height (int), {2} = valid cell count (int), {3} = invalid cell count (int)
+			public static LocString RECT_SUMMARY_HOLLOW_INVALID = "hollow {0}x{1}, {2} valid, {3} invalid";
 			public static LocString CANCELED = "canceled";
 			public static LocString NO_VALID_CELLS = "no valid cells";
 			// Tool confirmation messages after applying a tool to a selection.
@@ -2014,11 +2019,12 @@ namespace STRINGS {
 			// {0} = port name, {1} = offset description
 			public static LocString PORT_AT = "{0}, {1}";
 			public static LocString RECT_MODE_ON = "rectangle mode";
+			public static LocString RECT_MODE_HOLLOW = "hollow rectangle mode";
 			public static LocString RECT_MODE_OFF = "single mode";
 			public static LocString RECT_MODE_UNAVAILABLE = "rectangle mode not available";
 			// {0} = number placed (int), {1} = priority level (int or "emergency")
 			public static LocString CONFIRM_BUILD_RECT = "placed {0}, priority {1}";
-			public static LocString HELP_RECT_MODE = "toggle rectangle mode";
+			public static LocString HELP_RECT_MODE = "cycle rectangle mode";
 		}
 
 		// Cursor skip (jump to next tile change)

@@ -34,8 +34,9 @@ namespace OniAccess.Handlers.Build {
 		internal int UtilityStartCell => _utilityStartCell;
 
 		// Rectangle mode state (1x1 non-utility buildings only)
+		private enum RectMode { Off, Filled, Hollow }
 		private readonly RectangleSelection _rectSelection = new RectangleSelection();
-		private bool _rectMode;
+		private RectMode _rectMode;
 		private bool CanUseRectMode => _def.PlacementOffsets.Length == 1 && !_isUtility;
 		private ToolProfile _rectProfile;
 
@@ -147,7 +148,7 @@ namespace OniAccess.Handlers.Build {
 		}.AsReadOnly();
 
 		public override IReadOnlyList<HelpEntry> HelpEntries =>
-			_rectMode ? _rectModeHelp
+			_rectMode != RectMode.Off ? _rectModeHelp
 			: CanUseRectMode ? _singleModeHelp
 			: _singleModeNoRectHelp;
 
@@ -216,7 +217,7 @@ namespace OniAccess.Handlers.Build {
 				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
 
 			_utilityStartCell = Grid.InvalidCell;
-			_rectMode = false;
+			_rectMode = RectMode.Off;
 			_rectSelection.ClearAll();
 		}
 
@@ -296,7 +297,7 @@ namespace OniAccess.Handlers.Build {
 					if (IsValidDragTarget(cell))
 						PlayDragSound(Grid.GetCellDistance(cell, _utilityStartCell) + 1);
 				}
-			} else if (_rectMode && _rectSelection.PendingFirstCorner != Grid.InvalidCell) {
+			} else if (_rectMode != RectMode.Off && _rectSelection.PendingFirstCorner != Grid.InvalidCell) {
 				int cell = TileCursor.Instance.Cell;
 				if (cell != _rectSelection.LastDragCell) {
 					_rectSelection.LastDragCell = cell;
@@ -314,7 +315,7 @@ namespace OniAccess.Handlers.Build {
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Space)) {
 				if (InputUtil.ShiftHeld()) {
-					if (_rectMode) {
+					if (_rectMode != RectMode.Off) {
 						RectShiftSpace();
 					} else if (_isUtility && UtilityStartSet) {
 						_utilityStartCell = Grid.InvalidCell;
@@ -325,7 +326,7 @@ namespace OniAccess.Handlers.Build {
 						QuickCancel();
 				} else if (!InputUtil.AnyModifierHeld()) {
 					if (HandlePrebuildError()) {
-					} else if (_rectMode)
+					} else if (_rectMode != RectMode.Off)
 						RectSetCorner();
 					else if (_isUtility)
 						UtilityPlacement();
@@ -338,7 +339,7 @@ namespace OniAccess.Handlers.Build {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Return)
 				&& !InputUtil.AnyModifierHeld()) {
 				if (HandlePrebuildError()) {
-				} else if (_rectMode)
+				} else if (_rectMode != RectMode.Off)
 					RectConfirm();
 				else if (_isUtility)
 					UtilityPlaceAndExit();
@@ -817,7 +818,7 @@ namespace OniAccess.Handlers.Build {
 		// ========================================
 
 		public bool IsCellSelected(int cell) =>
-			_rectMode && _rectSelection.IsCellSelected(cell);
+			_rectMode != RectMode.Off && _rectSelection.IsCellSelected(cell);
 
 		private void ToggleRectMode() {
 			if (!CanUseRectMode) {
@@ -826,17 +827,26 @@ namespace OniAccess.Handlers.Build {
 				return;
 			}
 
-			_rectMode = !_rectMode;
-			if (_rectMode) {
-				if (TileCursor.Instance != null)
-					TileCursor.Instance.ActiveToolProfile = _rectProfile;
-				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_ON);
-			} else {
-				_rectSelection.ClearAll();
-				SetupBuildMode();
-				SpeechPipeline.SpeakInterrupt(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_OFF);
+			switch (_rectMode) {
+				case RectMode.Off:
+					_rectMode = RectMode.Filled;
+					if (TileCursor.Instance != null)
+						TileCursor.Instance.ActiveToolProfile = _rectProfile;
+					SpeechPipeline.SpeakInterrupt(
+						(string)STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_ON);
+					break;
+				case RectMode.Filled:
+					_rectMode = RectMode.Hollow;
+					SpeechPipeline.SpeakInterrupt(
+						(string)STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_HOLLOW);
+					break;
+				default:
+					_rectMode = RectMode.Off;
+					_rectSelection.ClearAll();
+					SetupBuildMode();
+					SpeechPipeline.SpeakInterrupt(
+						(string)STRINGS.ONIACCESS.BUILD_MENU.RECT_MODE_OFF);
+					break;
 			}
 		}
 
@@ -849,17 +859,20 @@ namespace OniAccess.Handlers.Build {
 				return;
 			}
 
-			var result = _rectSelection.SetCorner(cell, out var rect);
+			bool hollow = _rectMode == RectMode.Hollow;
+			var result = _rectSelection.SetCorner(cell, out var rect, hollow);
 			if (result == RectangleSelection.SetCornerResult.FirstCornerSet) {
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.TOOLS.CORNER_SET);
 				PlayDragSound(1);
 			} else {
-				int area = RectangleSelection.ComputeArea(rect.Cell1, rect.Cell2);
-				PlayDragSound(area);
+				int tileCount = hollow
+					? RectangleSelection.ComputePerimeter(rect.Cell1, rect.Cell2)
+					: RectangleSelection.ComputeArea(rect.Cell1, rect.Cell2);
+				PlayDragSound(tileCount);
 				SpeechPipeline.SpeakInterrupt(
 					RectangleSelection.BuildRectSummary(
-						rect.Cell1, rect.Cell2, CountValidPlacements));
+						rect.Cell1, rect.Cell2, CountValidPlacements, hollow: hollow));
 			}
 		}
 
@@ -872,7 +885,9 @@ namespace OniAccess.Handlers.Build {
 				_rectSelection.ClearAll();
 				SpeechPipeline.SpeakInterrupt(
 					(string)STRINGS.ONIACCESS.TOOLS.SELECTION_CLEARED);
-			} else {
+			} else if (!_rectSelection.IsCellWithinBounds(cell)) {
+				// The open middle of a hollow rectangle does nothing;
+				// quick cancel only fires outside every rectangle
 				QuickCancel();
 			}
 		}
@@ -892,7 +907,7 @@ namespace OniAccess.Handlers.Build {
 						(string)STRINGS.ONIACCESS.TILE_CURSOR.UNEXPLORED);
 					return;
 				}
-				_rectSelection.SetCorner(cell, out _);
+				_rectSelection.SetCorner(cell, out _, _rectMode == RectMode.Hollow);
 			}
 
 			SubmitBuildRectangles();
@@ -914,6 +929,8 @@ namespace OniAccess.Handlers.Build {
 					rect.GetBounds(out int minX, out int maxX, out int minY, out int maxY);
 					for (int y = minY; y <= maxY; y++) {
 						for (int x = minX; x <= maxX; x++) {
+							if (rect.Hollow && x != minX && x != maxX && y != minY && y != maxY)
+								continue;
 							int cell = Grid.XYToCell(x, y);
 							if (!Grid.IsValidCell(cell) || !Grid.IsVisible(cell))
 								continue;

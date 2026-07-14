@@ -354,6 +354,12 @@ namespace OniAccess.Tests {
 			results.Add(RectSelectionAddRectangleDirect());
 			results.Add(RectSelectionComputeArea());
 			results.Add(RectSelectionTileCountBetween());
+			results.Add(RectSelectionComputePerimeter());
+			results.Add(RectSelectionComputePerimeterThinRect());
+			results.Add(RectSelectionHollowEdgesSelectedInteriorNot());
+			results.Add(RectSelectionHollowClearInteriorNoOp());
+			results.Add(RectSelectionFilledInsideHollowClearsInnerOnly());
+			results.Add(RectSelectionIsCellWithinBounds());
 
 			// --- CursorBookmarks.DigitKeyToIndex ---
 			results.Add(DigitKeyAlpha1Through9());
@@ -3838,6 +3844,83 @@ namespace OniAccess.Tests {
 			// 4 wide + 4 tall - 1 = 7
 			bool ok = count == 7;
 			return Assert("RectSelectionTileCountBetween", ok, $"count={count}");
+		}
+
+		private static (string, bool, string) RectSelectionComputePerimeter() {
+			SetupGrid(100);
+			int c1 = Grid.XYToCell(0, 0);
+			int c2 = Grid.XYToCell(11, 3);
+			int count = RectangleSelection.ComputePerimeter(c1, c2);
+			// 12 wide x 4 tall: 2*12 + 2*4 - 4 = 28
+			bool ok = count == 28;
+			return Assert("RectSelectionComputePerimeter", ok, $"count={count}");
+		}
+
+		private static (string, bool, string) RectSelectionComputePerimeterThinRect() {
+			SetupGrid(100);
+			int c1 = Grid.XYToCell(3, 2);
+			int c2 = Grid.XYToCell(3, 6);
+			int count = RectangleSelection.ComputePerimeter(c1, c2);
+			// 1 wide x 5 tall: every cell is an edge
+			bool ok = count == 5;
+			return Assert("RectSelectionComputePerimeterThinRect", ok, $"count={count}");
+		}
+
+		private static (string, bool, string) RectSelectionHollowEdgesSelectedInteriorNot() {
+			SetupGrid(100);
+			var sel = new RectangleSelection();
+			sel.SetCorner(Grid.XYToCell(1, 1), out _, hollow: true);
+			sel.SetCorner(Grid.XYToCell(4, 4), out var rect, hollow: true);
+			bool ok = rect.Hollow
+				&& sel.IsCellSelected(Grid.XYToCell(1, 1))
+				&& sel.IsCellSelected(Grid.XYToCell(4, 1))
+				&& sel.IsCellSelected(Grid.XYToCell(2, 4))
+				&& !sel.IsCellSelected(Grid.XYToCell(2, 2))
+				&& !sel.IsCellSelected(Grid.XYToCell(3, 3));
+			return Assert("RectSelectionHollowEdgesSelectedInteriorNot", ok,
+				$"hollow={rect.Hollow}");
+		}
+
+		private static (string, bool, string) RectSelectionHollowClearInteriorNoOp() {
+			SetupGrid(100);
+			var sel = new RectangleSelection();
+			sel.SetCorner(Grid.XYToCell(0, 0), out _, hollow: true);
+			sel.SetCorner(Grid.XYToCell(4, 4), out _, hollow: true);
+			// The open middle is not selected, so clearing there must not
+			// remove the hollow frame; the edge still clears it
+			bool interiorRemoved = sel.ClearRectAtCursor(Grid.XYToCell(2, 2));
+			bool edgeRemoved = sel.ClearRectAtCursor(Grid.XYToCell(0, 2));
+			bool ok = !interiorRemoved && edgeRemoved && sel.RectangleCount == 0;
+			return Assert("RectSelectionHollowClearInteriorNoOp", ok,
+				$"interiorRemoved={interiorRemoved}, edgeRemoved={edgeRemoved}, rects={sel.RectangleCount}");
+		}
+
+		private static (string, bool, string) RectSelectionFilledInsideHollowClearsInnerOnly() {
+			SetupGrid(100);
+			var sel = new RectangleSelection();
+			sel.SetCorner(Grid.XYToCell(0, 0), out _, hollow: true);
+			sel.SetCorner(Grid.XYToCell(6, 6), out _, hollow: true);
+			sel.SetCorner(Grid.XYToCell(2, 2), out _);
+			sel.SetCorner(Grid.XYToCell(4, 4), out _);
+			bool removed = sel.ClearRectAtCursor(Grid.XYToCell(3, 3));
+			// Inner filled rect removed, hollow frame still selected
+			bool ok = removed && sel.RectangleCount == 1
+				&& sel.IsCellSelected(Grid.XYToCell(0, 3))
+				&& !sel.IsCellSelected(Grid.XYToCell(3, 3));
+			return Assert("RectSelectionFilledInsideHollowClearsInnerOnly", ok,
+				$"removed={removed}, rects={sel.RectangleCount}");
+		}
+
+		private static (string, bool, string) RectSelectionIsCellWithinBounds() {
+			SetupGrid(100);
+			var sel = new RectangleSelection();
+			sel.SetCorner(Grid.XYToCell(0, 0), out _, hollow: true);
+			sel.SetCorner(Grid.XYToCell(4, 4), out _, hollow: true);
+			// The open middle is within bounds; cells outside are not
+			bool ok = sel.IsCellWithinBounds(Grid.XYToCell(2, 2))
+				&& sel.IsCellWithinBounds(Grid.XYToCell(0, 0))
+				&& !sel.IsCellWithinBounds(Grid.XYToCell(5, 5));
+			return Assert("RectSelectionIsCellWithinBounds", ok, "bounds check wrong");
 		}
 
 		// ========================================

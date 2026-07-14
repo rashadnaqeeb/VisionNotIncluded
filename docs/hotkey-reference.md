@@ -163,7 +163,7 @@ Camera pan (WASD) and build category keys (Plan1-14) are globally blocked by `Mo
 | Tab | Return to building list | CycleSpeed | Speed cycling not useful during placement |
 | I | Open info panel | Disinfect tool | Tool activation irrelevant during build |
 | Shift+P | Announce ports | Prioritize tool | Tool activation irrelevant during build |
-| Ctrl+G | Toggle rectangle mode (1x1) | Dig tool activation | Tool activation irrelevant during build |
+| Ctrl+G | Cycle rectangle mode: single, filled, hollow (1x1) | Dig tool activation | Tool activation irrelevant during build |
 | 0-9 | Set build priority | Build categories | Build submenu not open during placement |
 
 ### Tool Handler (ToolHandler -- dig, mop, etc.)
