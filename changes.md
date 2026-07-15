@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.6.8
 
+* Fixed the Auto-Sweeper In Range section missing several buildings: Sweepy Docks, the Plastic Press, buildings whose output drops away from their center (Water Sieve, Rust Deoxidizer, Compost, Fertilizer Synthesizer, Oxylite Refinery, Ethanol Distiller), and the Power Control Station, Oxidizer Tank, and Remote Worker Dock.
+
 ## 1.6.8
 
 * Valves, limit valves, and shutoffs now keep the cursor anchored on their input end when rotated, the same way pipe bridges do. 

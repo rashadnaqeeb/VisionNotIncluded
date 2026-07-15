@@ -18,11 +18,14 @@ namespace OniAccess.Handlers.Screens.Details {
 	///    chores at that cell, so a building whose edge is in range but
 	///    whose pivot is not cannot be serviced.
 	/// 2. Debris source whose droppings land in reach: conveyor chutes,
-	///    automatic dispensers, and fabricator product drop-offs. The drop
-	///    cell comes from the same game data the buildings use to spawn
+	///    automatic dispensers, element droppers (Water Sieve, Compost,
+	///    and kin), the Polymerizer, Oxylite Refinery, and Ethanol
+	///    Distiller, and fabricator product drop-offs. The drop cell
+	///    comes from the same game data the buildings use to spawn
 	///    items, then falls straight down to the first floor. Droppers
 	///    above the range box are found by scanning each column upward
-	///    until a solid tile.
+	///    until a solid tile, and the scans run DropReach columns wider
+	///    than the box so sideways drops from outside it are seen.
 	/// 3. Robo-Miner whose mining area overlaps the arm's reach: its mined
 	///    debris drops where it digs, so the arm collects it.
 	/// 4. Any building with a live fetch chore the arm could carry
@@ -46,6 +49,15 @@ namespace OniAccess.Handlers.Screens.Details {
 		/// </summary>
 		private const int MinerReach = 8;
 
+		/// <summary>
+		/// Furthest horizontal distance a dropper's debris can land from
+		/// the dropper's own cells: the dispenser drops 1 cell sideways,
+		/// the Ethanol Distiller 2, and the Polymerizer up to 2 with its
+		/// shift-away-from-solid fallback. Widens the candidate scans so
+		/// droppers just outside the arm's box are still tested.
+		/// </summary>
+		private const int DropReach = 2;
+
 		public static void Append(GameObject target, List<DetailSection> sections) {
 			var arm = target.GetComponent<SolidTransferArm>();
 			if (arm == null) return;
@@ -66,10 +78,12 @@ namespace OniAccess.Handlers.Screens.Details {
 
 			// Candidates: every building in the box (a dropper on an
 			// unreachable cell can still land debris on a reachable one),
-			// plus droppers above the box found by column scan.
+			// widened by DropReach columns because a dropper just outside
+			// the box can drop sideways into it, plus droppers above the
+			// box found by column scan.
 			var candidates = new HashSet<GameObject>();
 			for (int y = ay - range; y <= ay + range; y++) {
-				for (int x = ax - range; x <= ax + range; x++) {
+				for (int x = ax - range - DropReach; x <= ax + range + DropReach; x++) {
 					int cell = Grid.XYToCell(x, y);
 					if (!Grid.IsValidCell(cell)) continue;
 					foreach (int layer in BuildingLayers) {
@@ -79,9 +93,7 @@ namespace OniAccess.Handlers.Screens.Details {
 					}
 				}
 			}
-			// One column wider than the box on each side: a dispenser just
-			// outside it can drop sideways into a box column.
-			for (int x = ax - range - 1; x <= ax + range + 1; x++) {
+			for (int x = ax - range - DropReach; x <= ax + range + DropReach; x++) {
 				int cell = Grid.XYToCell(x, ay + range);
 				while (true) {
 					cell = Grid.CellAbove(cell);
@@ -220,12 +232,20 @@ namespace OniAccess.Handlers.Screens.Details {
 		/// </summary>
 		private static bool IsArmCarryable(FetchChore chore) {
 			if (chore.tags == null) return false;
-			foreach (var tag in chore.tags) {
-				if (Assets.IsTagSolidTransferArmConveyable(tag)) return true;
-				foreach (var category in
-						TUNING.STORAGEFILTERS.SOLID_TRANSFER_ARM_CONVEYABLE)
-					if (category == tag) return true;
-			}
+			foreach (var tag in chore.tags)
+				if (IsArmConveyableTag(tag)) return true;
+			return false;
+		}
+
+		/// <summary>
+		/// Whether a tag names something the arm can carry: a conveyable
+		/// prefab or one of the conveyable storage-filter categories.
+		/// </summary>
+		private static bool IsArmConveyableTag(Tag tag) {
+			if (Assets.IsTagSolidTransferArmConveyable(tag)) return true;
+			foreach (var category in
+					TUNING.STORAGEFILTERS.SOLID_TRANSFER_ARM_CONVEYABLE)
+				if (category == tag) return true;
 			return false;
 		}
 
@@ -268,8 +288,14 @@ namespace OniAccess.Handlers.Screens.Details {
 		///   Constructable      - construction material delivery
 		///   ObjectDispenser    - automatic dispenser
 		///   SuitLocker         - suit delivery to docks
-		/// Pickup source:
+		///   TinkerStation      - tinker materials: Power Control Station
+		///   OxidizerTank       - solid oxidizer loading
+		///   RemoteWorkerDock   - steel to rebuild its remote worker
+		/// Pickup sources:
 		///   SolidConduitOutbox - conveyor receptacle
+		///   arm-accessible Storage - plain storages the arm can steal
+		///                        conveyable items from, e.g. the Sweepy
+		///                        dock's collected-debris storage
 		/// Excludes internal buffers the arm can never touch (pumps,
 		/// reservoirs, valves). Transient chores (repair, tinker) are
 		/// handled by AppendLiveChoreTargets instead.
@@ -284,15 +310,45 @@ namespace OniAccess.Handlers.Screens.Details {
 				|| go.GetComponent<Constructable>() != null
 				|| go.GetComponent<ObjectDispenser>() != null
 				|| go.GetComponent<SuitLocker>() != null
-				|| go.GetComponent<SolidConduitOutbox>() != null;
+				|| go.GetComponent<TinkerStation>() != null
+				|| go.GetComponent<OxidizerTank>() != null
+				|| go.GetComponent<RemoteWorkerDock>() != null
+				|| go.GetComponent<SolidConduitOutbox>() != null
+				|| HasArmAccessibleStorage(go);
+		}
+
+		/// <summary>
+		/// Whether the building has a Storage the arm can pick up from.
+		/// Mirrors the game's fetch rules: stored items stay fetchable only
+		/// when their storage allows item removal (FetchableMonitor tags
+		/// them StoredPrivate otherwise), and the arm only takes conveyable
+		/// items, approximated here by the storage's declared filters.
+		/// The filter check keeps out buildings whose removable contents
+		/// the arm can never carry: critter traps (live critters) and the
+		/// pitcher pump and bottlers (liquid bottles) declare no filters.
+		/// In practice this admits the Sweepy dock's debris storage.
+		/// </summary>
+		private static bool HasArmAccessibleStorage(GameObject go) {
+			foreach (var storage in go.GetComponents<Storage>()) {
+				if (!storage.allowItemRemoval || storage.storageFilters == null)
+					continue;
+				foreach (var tag in storage.storageFilters)
+					if (IsArmConveyableTag(tag)) return true;
+			}
+			return false;
 		}
 
 		/// <summary>
 		/// The cell where this building spawns dropped items, mirroring each
 		/// component's own drop code, or Grid.InvalidCell for buildings that
 		/// drop nothing. Conveyor chutes drop at their own cell, automatic
-		/// dispensers at their rotated dropOffset, fabricators at
-		/// outputOffset from their pivot.
+		/// dispensers at their rotated dropOffset, element droppers (Water
+		/// Sieve, Rust Deoxidizer, Compost, Fertilizer Synthesizer, Air
+		/// Filter) at their unrotated emitOffset, the Oxylite Refinery and
+		/// Ethanol Distiller at their components' unrotated offsets, the
+		/// Polymerizer at its rotated emitOffset shifted away from a solid
+		/// target cell, and fabricators at outputOffset from their pivot.
+		/// All offsets are read from the live component.
 		/// </summary>
 		private static int GetDropCell(GameObject go) {
 			int pivot = Grid.PosToCell(go);
@@ -305,6 +361,28 @@ namespace OniAccess.Handlers.Screens.Details {
 					? rot.GetRotatedCellOffset(dispenser.dropOffset)
 					: dispenser.dropOffset;
 				return Grid.OffsetCell(pivot, offset);
+			}
+			var dropper = go.GetComponent<ElementDropper>();
+			if (dropper != null)
+				return Grid.PosToCell(
+					Grid.CellToPosCCC(pivot, Grid.SceneLayer.Ore)
+					+ dropper.emitOffset);
+			var refinery = go.GetComponent<OxyliteRefinery>();
+			if (refinery != null)
+				return Grid.PosToCell(
+					go.transform.GetPosition() + refinery.dropOffset);
+			var distillery = go.GetComponent<AlgaeDistillery>();
+			if (distillery != null)
+				return Grid.PosToCell(
+					go.transform.GetPosition() + distillery.emitOffset);
+			var polymerizer = go.GetComponent<Polymerizer>();
+			if (polymerizer != null) {
+				var rot = go.GetComponent<Rotatable>();
+				var pos = go.transform.GetPosition()
+					+ rot.GetRotatedOffset(polymerizer.emitOffset);
+				if (Grid.Solid[Grid.PosToCell(pos)])
+					pos += rot.GetRotatedOffset(Vector3.left);
+				return Grid.PosToCell(pos);
 			}
 			var fabricator = go.GetComponent<ComplexFabricator>();
 			if (fabricator != null)
