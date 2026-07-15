@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.6.8
+## Unreleased changes since 1.6.9
+
+## 1.6.9
 
 * Fixed the Auto-Sweeper In Range section missing several buildings: Sweepy Docks, the Plastic Press, buildings whose output drops away from their center (Water Sieve, Rust Deoxidizer, Compost, Fertilizer Synthesizer, Oxylite Refinery, Ethanol Distiller), and the Power Control Station, Oxidizer Tank, and Remote Worker Dock.
 
