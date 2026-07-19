@@ -139,7 +139,7 @@ namespace OniAccess.Handlers.Screens {
 						var miA = (MinionIdentity)a;
 						var miB = (MinionIdentity)b;
 						int cmp = colDef.GetSortValue(miA).CompareTo(colDef.GetSortValue(miB));
-						if (_sortAscending) cmp = -cmp;
+						if (!_sortAscending) cmp = -cmp;
 						if (cmp != 0) return cmp;
 						return a.GetProperName().CompareTo(b.GetProperName());
 					});
