@@ -219,6 +219,10 @@ namespace OniAccess.Tests {
 			results.Add(CustomKeywordPrunePropagates());
 			results.Add(CustomSameNameDistinctSubcategoriesNotMerged());
 			results.Add(CustomKeywordCrossCategoryNotMerged());
+			results.Add(DuplicantsHiddenFromBuiltInHierarchy());
+			results.Add(CustomDuplicantSelectorSurfacesDupes());
+			results.Add(CustomLifeAllSelectorIncludesDupes());
+			results.Add(CustomKeywordMatchesDuplicantName());
 			results.Add(StoreSetAllSupersedesSubs());
 			results.Add(StoreToggleSubWhileAllExpands());
 			results.Add(StoreToggleSubIndividual());
@@ -2370,6 +2374,73 @@ namespace OniAccess.Tests {
 				&& selSub.Items[0].Instances[0].Cell == 0;
 			return Assert("CustomKeywordCrossCategoryNotMerged", ok,
 				$"kw={(kwSub == null ? -1 : kwSub.Items.Count)}, selInst={(selSub == null || selSub.Items.Count == 0 ? -1 : selSub.Items[0].Instances.Count)}");
+		}
+
+		private static (string, bool, string) DuplicantsHiddenFromBuiltInHierarchy() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Life", "Duplicants", "Meep", 0),
+				CustomEntry("Life", "Tame Critters", "Hatch", 1),
+			};
+			var snap = new ScannerSnapshot(entries, 0);
+			var life = FindCat(snap, "Life");
+			bool ok = life != null
+				&& FindSub(life, "Duplicants") == null
+				&& FindSub(life, "all")?.Items.Count == 1;
+			return Assert("DuplicantsHiddenFromBuiltInHierarchy", ok,
+				$"dupeSub={(FindSub(life, "Duplicants") != null)}, all={(FindSub(life, "all")?.Items.Count ?? -1)}");
+		}
+
+		private static (string, bool, string) CustomDuplicantSelectorSurfacesDupes() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Life", "Duplicants", "Meep", 0),
+			};
+			var snap = new ScannerSnapshot(entries, 0,
+				OneDef("c1", "My Dupes", Sel("Life", "Duplicants")));
+			var sub = FindSub(FindCat(snap, "c1"), "Duplicants");
+			// The explicit selector surfaces the dupe; the built-in hierarchy
+			// still hides it, so with no other entries no Life category exists.
+			bool ok = sub != null && sub.Items.Count == 1 && sub.Items[0].ItemName == "Meep"
+				&& FindCat(snap, "Life") == null;
+			return Assert("CustomDuplicantSelectorSurfacesDupes", ok,
+				$"sub={(sub == null ? -1 : sub.Items.Count)}, life={(FindCat(snap, "Life") != null)}");
+		}
+
+		private static (string, bool, string) CustomLifeAllSelectorIncludesDupes() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Life", "Duplicants", "Meep", 0),
+				CustomEntry("Life", "Tame Critters", "Hatch", 1),
+			};
+			var snap = new ScannerSnapshot(entries, 0,
+				OneDef("c1", "Life Copy", Sel("Life", "all")));
+			// The editor reads every sub, Duplicants included, as checked while
+			// "all" is on, so the selector must deliver what the editor announces.
+			var sub = FindSub(FindCat(snap, "c1"), "Life");
+			bool hasDupe = false, hasHatch = false;
+			if (sub != null)
+				foreach (var item in sub.Items) {
+					if (item.ItemName == "Meep") hasDupe = true;
+					if (item.ItemName == "Hatch") hasHatch = true;
+				}
+			bool ok = sub != null && sub.Items.Count == 2 && hasDupe && hasHatch;
+			return Assert("CustomLifeAllSelectorIncludesDupes", ok,
+				sub == null ? "no sub" : $"items={sub.Items.Count},dupe={hasDupe},hatch={hasHatch}");
+		}
+
+		private static (string, bool, string) CustomKeywordMatchesDuplicantName() {
+			SetupGrid(100);
+			var entries = new List<ScanEntry> {
+				CustomEntry("Life", "Duplicants", "Meep", 0),
+			};
+			var snap = new ScannerSnapshot(entries, 0, DefKw("c1", "Meep", new[] { "meep" }));
+			// A keyword is a saved direct search, and direct search includes
+			// duplicants.
+			var sub = FindSub(FindCat(snap, "c1"), "meep");
+			bool ok = sub != null && sub.Items.Count == 1 && sub.Items[0].ItemName == "Meep";
+			return Assert("CustomKeywordMatchesDuplicantName", ok,
+				$"items={(sub == null ? -1 : sub.Items.Count)}");
 		}
 
 		// ========================================

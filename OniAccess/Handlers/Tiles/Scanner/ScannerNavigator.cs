@@ -97,7 +97,6 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				return;
 			}
 
-			allEntries.RemoveAll(e => e.Subcategory == ScannerTaxonomy.Subcategories.Duplicants);
 			// Item sorting measures distance to entry.Cell, which backends seed
 			// with the cluster's first-scanned (bottom-left) cell. Validate every
 			// entry against the cursor now so each points at its nearest cell and

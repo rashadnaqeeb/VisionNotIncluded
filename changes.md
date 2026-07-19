@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.6.9
 
+* Custom scanner categories can now include duplicants: selecting all of Life, the Duplicants subcategory, or a keyword matching a duplicant's name surfaces them in that category. The built-in Life category still hides them.
+
 ## 1.6.9
 
 * Fixed the Auto-Sweeper In Range section missing several buildings: Sweepy Docks, the Plastic Press, buildings whose output drops away from their center (Water Sieve, Rust Deoxidizer, Compost, Fertilizer Synthesizer, Oxylite Refinery, Ethanol Distiller), and the Power Control Station, Oxidizer Tank, and Remote Worker Dock.

@@ -72,6 +72,11 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				Dictionary<string, Dictionary<string, List<ScanEntry>>>>();
 
 			foreach (var entry in entries) {
+				// Duplicants stay out of the browsable hierarchy: they move
+				// constantly and would clutter every Life pass. They surface only
+				// through search and custom-category selection.
+				if (entry.Subcategory == ScannerTaxonomy.Subcategories.Duplicants)
+					continue;
 				if (!grouped.TryGetValue(entry.Category, out var byCat))
 					grouped[entry.Category] = byCat =
 						new Dictionary<string, Dictionary<string, List<ScanEntry>>>();
@@ -154,7 +159,8 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		/// Each keyword and each selector becomes a named subcategory; keyword
 		/// subcategories sort ahead of the taxonomy selector subcategories. A
 		/// keyword gathers every entry whose item name matches it; an "all"
-		/// selector gathers every entry in its source category, a named
+		/// selector gathers every entry in its source category (including
+		/// duplicants, which the editor reads as checked under "all"), a named
 		/// selector only its own subcategory.
 		///
 		/// Items get their own ScannerItem objects (distinct from the real
