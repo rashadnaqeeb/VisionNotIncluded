@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.6.9
+## Unreleased changes since 1.6.10
+
+## 1.6.10
 
 * Fixed Vitals screen column sorting going the opposite direction of what was announced.
 * Custom scanner categories can now include duplicants: selecting all of Life, the Duplicants subcategory, or a keyword matching a duplicant's name surfaces them in that category. The built-in Life category still hides them.
