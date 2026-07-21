@@ -28,28 +28,33 @@ namespace OniAccess.Handlers.Tiles.Skip {
 
 			registry.Register(OverlayModes.Power.ID,
 				new UtilitySkipStrategy(
-					new[] { (int)ObjectLayer.Wire, (int)ObjectLayer.WireConnectors },
-					cell => Game.Instance.electricalConduitSystem.GetNetworkForCell(cell)));
+					() => Game.Instance.electricalConduitSystem,
+					ObjectLayer.ReplacementWire,
+					new[] { (int)ObjectLayer.Wire, (int)ObjectLayer.WireConnectors }));
 
 			registry.Register(OverlayModes.LiquidConduits.ID,
 				new UtilitySkipStrategy(
-					new[] { (int)ObjectLayer.LiquidConduit, (int)ObjectLayer.LiquidConduitConnection },
-					cell => Game.Instance.liquidConduitSystem.GetNetworkForCell(cell)));
+					() => Game.Instance.liquidConduitSystem,
+					ObjectLayer.ReplacementLiquidConduit,
+					new[] { (int)ObjectLayer.LiquidConduit, (int)ObjectLayer.LiquidConduitConnection }));
 
 			registry.Register(OverlayModes.GasConduits.ID,
 				new UtilitySkipStrategy(
-					new[] { (int)ObjectLayer.GasConduit, (int)ObjectLayer.GasConduitConnection },
-					cell => Game.Instance.gasConduitSystem.GetNetworkForCell(cell)));
+					() => Game.Instance.gasConduitSystem,
+					ObjectLayer.ReplacementGasConduit,
+					new[] { (int)ObjectLayer.GasConduit, (int)ObjectLayer.GasConduitConnection }));
 
 			registry.Register(OverlayModes.SolidConveyor.ID,
 				new UtilitySkipStrategy(
-					new[] { (int)ObjectLayer.SolidConduit, (int)ObjectLayer.SolidConduitConnection },
-					cell => Game.Instance.solidConduitSystem.GetNetworkForCell(cell)));
+					() => Game.Instance.solidConduitSystem,
+					ObjectLayer.ReplacementSolidConduit,
+					new[] { (int)ObjectLayer.SolidConduit, (int)ObjectLayer.SolidConduitConnection }));
 
 			registry.Register(OverlayModes.Logic.ID,
 				new UtilitySkipStrategy(
-					new[] { (int)ObjectLayer.LogicWire, (int)ObjectLayer.LogicGate },
-					cell => Game.Instance.logicCircuitSystem.GetNetworkForCell(cell)));
+					() => Game.Instance.logicCircuitSystem,
+					ObjectLayer.ReplacementLogicWire,
+					new[] { (int)ObjectLayer.LogicWire, (int)ObjectLayer.LogicGate }));
 
 			registry.Register(OverlayModes.Rooms.ID,
 				new RoomSkipStrategy());

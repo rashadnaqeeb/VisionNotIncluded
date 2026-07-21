@@ -2,6 +2,7 @@
 
 ## Unreleased changes since 1.6.10
 
+* Cursor skipping in the utility overlays now stops at planned wires, pipes, rails, and automation wire. Blueprints form their own skip zones per conduit type, separate from built networks and empty space, with junction stops based on planned connections. Runs of built conduit marked for replacement are also their own zone, so skipping finds where a replacement stretch begins and ends.
 * Fixed pipe, conveyor, and wire bridge blueprints not announcing their input and output ports in the utility overlays. Under-construction bridges now read the same port labels as finished ones, followed by the building name marked as under construction.
 
 ## 1.6.10

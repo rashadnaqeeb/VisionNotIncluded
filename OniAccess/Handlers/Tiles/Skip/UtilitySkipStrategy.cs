@@ -2,19 +2,25 @@ namespace OniAccess.Handlers.Tiles.Skip {
 	/// <summary>
 	/// Skips along utility networks (power, plumbing, ventilation,
 	/// conveyor, automation). Stops at junctions, network boundaries,
-	/// and transitions between utility and non-utility cells.
-	/// Parameterized by object layers and a cell-to-network accessor.
+	/// transitions between utility and non-utility cells, blueprint
+	/// boundaries, and the edges of runs marked for replacement.
+	/// Blueprints have no physical network, so they are signed by
+	/// prefab type with junctions read from the visual connection grid.
+	/// Parameterized by object layers, a network manager accessor,
+	/// and the overlay's replacement layer.
 	/// </summary>
 	public class UtilitySkipStrategy: ISkipStrategy {
 		private static readonly object Empty = new object();
 
 		private readonly int[] _layers;
-		private readonly System.Func<int, UtilityNetwork> _getNetwork;
+		private readonly int _replacementLayer;
+		private readonly System.Func<IUtilityNetworkMgr> _getManager;
 
-		public UtilitySkipStrategy(int[] layers,
-				System.Func<int, UtilityNetwork> getNetwork) {
+		public UtilitySkipStrategy(System.Func<IUtilityNetworkMgr> getManager,
+				ObjectLayer replacementLayer, int[] layers) {
+			_getManager = getManager;
+			_replacementLayer = (int)replacementLayer;
 			_layers = layers;
-			_getNetwork = getNetwork;
 		}
 
 		public object GetSignature(int cell) {
@@ -25,10 +31,19 @@ namespace OniAccess.Handlers.Tiles.Skip {
 			if (building == null || !building.Def.isUtility)
 				return Empty;
 
-			int networkId = _getNetwork(cell)?.id ?? -1;
+			if (go.GetComponent<Constructable>() != null) {
+				var connections = _getManager().GetConnections(cell, false);
+				return (go.PrefabID(), CountDirections(connections) >= 3);
+			}
+
+			int networkId = _getManager().GetNetworkForCell(cell)?.id ?? -1;
 			if (networkId == -1) return Empty;
 			bool isJunction = CountSameNetworkNeighbors(cell, networkId) >= 3;
-			return (networkId, isJunction);
+
+			var replacement = Grid.Objects[cell, _replacementLayer];
+			Tag replacementId = replacement != null
+				? replacement.PrefabID() : default;
+			return (networkId, isJunction, replacementId);
 		}
 
 		private UnityEngine.GameObject FindObject(int cell) {
@@ -39,6 +54,15 @@ namespace OniAccess.Handlers.Tiles.Skip {
 					return go;
 			}
 			return null;
+		}
+
+		private static int CountDirections(UtilityConnections connections) {
+			int count = 0;
+			if ((connections & UtilityConnections.Up) != 0) count++;
+			if ((connections & UtilityConnections.Down) != 0) count++;
+			if ((connections & UtilityConnections.Left) != 0) count++;
+			if ((connections & UtilityConnections.Right) != 0) count++;
+			return count;
 		}
 
 		private int CountSameNetworkNeighbors(int cell, int networkId) {
@@ -52,7 +76,7 @@ namespace OniAccess.Handlers.Tiles.Skip {
 
 		private bool HasSameNetwork(int neighbor, int networkId) {
 			if (!Grid.IsValidCell(neighbor)) return false;
-			var net = _getNetwork(neighbor);
+			var net = _getManager().GetNetworkForCell(neighbor);
 			return net != null && net.id == networkId;
 		}
 	}
