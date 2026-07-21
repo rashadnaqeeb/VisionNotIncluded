@@ -44,14 +44,11 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				if (go == null || ctx.Claimed.Contains(go)) continue;
 				if (IsPortRegistration(go, layer)) continue;
 				if (IsBridgeEndpoint(go)) {
-					if (go.GetComponent<Constructable>() != null) {
-						ctx.Claimed.Add(go);
-						var bsel = go.GetComponent<KSelectable>();
-						if (bsel != null)
-							tokens.Add(ConstructionName(go, bsel));
-					} else {
+					// Blueprints are not part of the network yet, so they
+					// contribute no direction to the pipe shape. Ports and
+					// name come from BuildingSection either way.
+					if (go.GetComponent<Constructable>() == null)
 						bridgeConnections |= GetBridgeDirection(go, cell);
-					}
 					continue;
 				}
 				ctx.Claimed.Add(go);

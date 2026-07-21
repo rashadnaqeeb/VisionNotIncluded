@@ -317,8 +317,14 @@ namespace OniAccess.Handlers.Tiles.Sections {
 
 			if (tokens.Count > beforeCount) {
 				var selectable = portGo.GetComponent<KSelectable>();
-				if (selectable != null)
-					tokens.Add(GetBuildingName(portGo, selectable));
+				if (selectable != null) {
+					string name = GetBuildingName(portGo, selectable);
+					if (portGo.GetComponent<Constructable>() != null)
+						name = string.Format(
+							(string)STRINGS.ONIACCESS.GLANCE.UNDER_CONSTRUCTION,
+							name);
+					tokens.Add(name);
+				}
 			}
 		}
 

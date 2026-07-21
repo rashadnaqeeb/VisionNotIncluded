@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.6.10
 
+* Fixed pipe, conveyor, and wire bridge blueprints not announcing their input and output ports in the utility overlays. Under-construction bridges now read the same port labels as finished ones, followed by the building name marked as under construction.
+
 ## 1.6.10
 
 * Fixed Vitals screen column sorting going the opposite direction of what was announced.
