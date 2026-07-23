@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.6.11
+## Unreleased changes since 1.6.12
+
+## 1.6.12
 
 * Fixed logic gate blueprints not announcing their input, output, and control ports in the automation overlay. Under-construction gates now read the same port labels as finished ones.
 * Fixed cursor skip stopping repeatedly inside runs of identical-sounding tiles near ruins: worldgen-placed tiles are now treated as the same skip zone as player-built tiles.
