@@ -691,10 +691,52 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				return;
 			}
 
-			var gate = building.GetComponent<LogicGate>();
+			// Under-construction gates carry LogicGateVisualizer instead of
+			// LogicGate; both extend LogicGateBase, which resolves port cells.
+			var gate = building.GetComponent<LogicGateBase>();
 			if (gate != null && gate.TryGetPortAtCell(cell, out var portId)) {
-				var desc = gate.GetPortDescription(portId);
-				tokens.Add(desc.name);
+				var completeGate = gate as LogicGate;
+				if (completeGate != null)
+					tokens.Add(completeGate.GetPortDescription(portId).name);
+				else
+					tokens.Add(DefaultGatePortName(gate, portId));
+			}
+		}
+
+		/// <summary>
+		/// Port names for gates without a LogicGate component (blueprints).
+		/// Mirrors the defaults in LogicGate.GetPortDescription, which is
+		/// what built gates speak since no gate config names its ports.
+		/// </summary>
+		private static string DefaultGatePortName(
+				LogicGateBase gate, LogicGateBase.PortId port) {
+			switch (port) {
+				case LogicGateBase.PortId.InputOne:
+					return gate.RequiresTwoInputs || gate.RequiresFourInputs
+						? (string)STRINGS.UI.LOGIC_PORTS.GATE_MULTI_INPUT_ONE_NAME
+						: (string)STRINGS.UI.LOGIC_PORTS.GATE_SINGLE_INPUT_ONE_NAME;
+				case LogicGateBase.PortId.InputTwo:
+					return STRINGS.UI.LOGIC_PORTS.GATE_MULTI_INPUT_TWO_NAME;
+				case LogicGateBase.PortId.InputThree:
+					return STRINGS.UI.LOGIC_PORTS.GATE_MULTI_INPUT_THREE_NAME;
+				case LogicGateBase.PortId.InputFour:
+					return STRINGS.UI.LOGIC_PORTS.GATE_MULTI_INPUT_FOUR_NAME;
+				case LogicGateBase.PortId.OutputOne:
+					return gate.RequiresFourOutputs
+						? (string)STRINGS.UI.LOGIC_PORTS.GATE_MULTI_OUTPUT_ONE_NAME
+						: (string)STRINGS.UI.LOGIC_PORTS.GATE_SINGLE_OUTPUT_ONE_NAME;
+				case LogicGateBase.PortId.OutputTwo:
+					return STRINGS.UI.LOGIC_PORTS.GATE_MULTI_OUTPUT_TWO_NAME;
+				case LogicGateBase.PortId.OutputThree:
+					return STRINGS.UI.LOGIC_PORTS.GATE_MULTI_OUTPUT_THREE_NAME;
+				case LogicGateBase.PortId.OutputFour:
+					return STRINGS.UI.LOGIC_PORTS.GATE_MULTI_OUTPUT_FOUR_NAME;
+				case LogicGateBase.PortId.ControlOne:
+					return STRINGS.UI.LOGIC_PORTS.GATE_MULTIPLEXER_CONTROL_ONE_NAME;
+				case LogicGateBase.PortId.ControlTwo:
+					return STRINGS.UI.LOGIC_PORTS.GATE_MULTIPLEXER_CONTROL_TWO_NAME;
+				default:
+					return null;
 			}
 		}
 
