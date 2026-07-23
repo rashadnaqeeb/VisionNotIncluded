@@ -8,11 +8,16 @@ namespace OniAccess.Handlers.Tiles.Skip {
 	/// Used for alt+arrow coarse skipping.
 	/// </summary>
 	public class CoarseSkipStrategy: ISkipStrategy {
+		// Worldgen POI tiles carry no FloorTiles tag but play identically
+		// to built tiles, so they join the tile zone.
+		private static readonly Tag PoiTileTag = new Tag(TilePOIConfig.ID);
+
 		public object GetSignature(int cell) {
 			var building = Grid.Objects[cell, (int)ObjectLayer.Building];
 			if (building != null) {
 				var kpid = building.GetComponent<KPrefabID>();
-				if (kpid.HasTag(GameTags.FloorTiles))
+				if (kpid.HasTag(GameTags.FloorTiles)
+					|| kpid.PrefabID() == PoiTileTag)
 					return new Tag("tile");
 				if (kpid.HasTag(GameTags.Ladders))
 					return new Tag("ladder");
@@ -26,7 +31,8 @@ namespace OniAccess.Handlers.Tiles.Skip {
 			var tile = Grid.Objects[cell, (int)ObjectLayer.FoundationTile];
 			if (tile != null) {
 				var kpid = tile.GetComponent<KPrefabID>();
-				if (kpid.HasTag(GameTags.FloorTiles))
+				if (kpid.HasTag(GameTags.FloorTiles)
+					|| kpid.PrefabID() == PoiTileTag)
 					return new Tag("tile");
 				if (kpid.HasTag(GameTags.Ladders))
 					return new Tag("ladder");

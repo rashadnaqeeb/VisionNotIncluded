@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.6.11
 
+* Fixed cursor skip stopping repeatedly inside runs of identical-sounding tiles near ruins: worldgen-placed tiles are now treated as the same skip zone as player-built tiles.
+
 ## 1.6.11
 
 * Cursor skipping in the utility overlays now stops at planned wires, pipes, rails, and automation wire. Blueprints form their own skip zones per conduit type, separate from built networks and empty space, with junction stops based on planned connections. Runs of built conduit marked for replacement are also their own zone, so skipping finds where a replacement stretch begins and ends.
