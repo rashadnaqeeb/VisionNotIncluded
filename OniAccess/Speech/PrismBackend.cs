@@ -1,18 +1,45 @@
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using OniAccess.Util;
 
 namespace OniAccess.Speech {
 	public class PrismBackend: ISpeechBackend, IVoiceControl {
+		/// <summary>
+		/// PrismConfig as of PRISM_CONFIG_VERSION 3 (Prism 0.18). Only the version and
+		/// the registry are set: prism_config_init leaves every other field zero, and
+		/// a null availability callback makes the polling fields inert. A null registry
+		/// means Prism's global one. The layout must match prism.h field for field or
+		/// prism_init reads the registry pointer from the wrong offset; the test suite
+		/// pins the size and that offset.
+		/// </summary>
 		[StructLayout(LayoutKind.Sequential)]
-		private struct PrismConfig {
+		internal struct PrismConfig {
 			public byte version;
+			public IntPtr registry;
+			public IntPtr availability_callback;
+			public IntPtr availability_userdata;
+			public uint availability_poll_interval_ms;
+			public uint availability_debounce_samples;
+			public uint availability_backoff_max_ms;
+			[MarshalAs(UnmanagedType.I1)] public bool availability_auto_power_manage;
 		}
+
+		const byte PRISM_CONFIG_VERSION = 3;
 
 		const int PRISM_OK = 0;
 		const int PRISM_ERROR_NOT_SPEAKING = 10;
 		const int PRISM_ERROR_ALREADY_INITIALIZED = 15;
+
+		/// <summary>
+		/// Where Macaw, a macOS screen reader, links its Prism plugin at every launch
+		/// (macaw docs/speech-api.md). The plugin adds a backend named "Macaw" ranked
+		/// above VoiceOver that reports itself supported only while the reader runs,
+		/// so acquire_best lands on it exactly when Macaw is up. The path exists only
+		/// where Macaw is installed.
+		/// </summary>
+		internal const string MacawPluginRelativePath = "Library/Application Support/Macaw/prism/libMacawPrismPlugin.dylib";
 
 		/// <summary>Registry ids from prism.h. Zero asks Prism for whichever backend it ranks best.</summary>
 		public const ulong BACKEND_BEST = 0;
@@ -31,13 +58,31 @@ namespace OniAccess.Speech {
 			| FEATURE_COUNT_VOICES | FEATURE_GET_VOICE_NAME | FEATURE_SET_VOICE;
 
 		[DllImport("prism", CallingConvention = CallingConvention.Cdecl)]
-		private static extern PrismConfig prism_config_init();
-
-		[DllImport("prism", CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr prism_init(ref PrismConfig cfg);
 
 		[DllImport("prism", CallingConvention = CallingConvention.Cdecl)]
 		private static extern void prism_shutdown(IntPtr ctx);
+
+		// A new builder already holds Prism's compiled-in backends; add_library joins
+		// a plugin's backends to them and leaves the builder unchanged when the file
+		// is missing or unloadable. Freezing spends the builder without freeing it, and
+		// the context created from the registry takes its own reference, so the
+		// registry can be released as soon as prism_init returns.
+		[DllImport("prism", CallingConvention = CallingConvention.Cdecl)]
+		private static extern IntPtr prism_registry_builder_new();
+
+		// The path is null-terminated UTF-8; -1 keeps the plugin's own priority.
+		[DllImport("prism", CallingConvention = CallingConvention.Cdecl)]
+		private static extern int prism_registry_builder_add_library(IntPtr builder, byte[] path, int priorityOverride, out UIntPtr count);
+
+		[DllImport("prism", CallingConvention = CallingConvention.Cdecl)]
+		private static extern IntPtr prism_registry_freeze(IntPtr builder);
+
+		[DllImport("prism", CallingConvention = CallingConvention.Cdecl)]
+		private static extern void prism_registry_builder_free(IntPtr builder);
+
+		[DllImport("prism", CallingConvention = CallingConvention.Cdecl)]
+		private static extern void prism_registry_release(IntPtr registry);
 
 		[DllImport("prism", CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr prism_registry_acquire_best(IntPtr ctx);
@@ -60,7 +105,7 @@ namespace OniAccess.Speech {
 		// .NET has no UTF-8 CharSet on Framework, so the text is converted to a
 		// null-terminated UTF-8 byte[] by the caller and marshaled as a raw pointer.
 		[DllImport("prism", CallingConvention = CallingConvention.Cdecl)]
-		private static extern int prism_backend_speak(IntPtr backend, byte[] text, bool interrupt);
+		private static extern int prism_backend_speak(IntPtr backend, byte[] text, [MarshalAs(UnmanagedType.I1)] bool interrupt);
 
 		[DllImport("prism", CallingConvention = CallingConvention.Cdecl)]
 		private static extern int prism_backend_stop(IntPtr backend);
@@ -99,6 +144,7 @@ namespace OniAccess.Speech {
 		private static extern int prism_backend_get_voice(IntPtr backend, out UIntPtr voiceId);
 
 		private readonly ulong _requested;
+		private readonly string _pluginLibrary;
 		private IntPtr _context = IntPtr.Zero;
 		private IntPtr _backend = IntPtr.Zero;
 		private bool _initialized = false;
@@ -113,10 +159,13 @@ namespace OniAccess.Speech {
 		/// <summary>
 		/// Create a backend bound to a specific Prism registry id (a BACKEND_* constant).
 		/// When that backend cannot be acquired or initialized, Initialize falls back to
-		/// Prism's best-ranked one and logs the fallback.
+		/// Prism's best-ranked one and logs the fallback. <paramref name="pluginLibrary"/>
+		/// names a Prism plugin whose backends join the compiled-in ones (the Macaw
+		/// plugin on macOS); null offers only the compiled-in backends.
 		/// </summary>
-		public PrismBackend(ulong backendId) {
+		public PrismBackend(ulong backendId, string pluginLibrary = null) {
 			_requested = backendId;
+			_pluginLibrary = pluginLibrary;
 		}
 
 		/// <summary>Prism's name for the running backend, such as "AVSpeech" or "NVDA". Null when unavailable.</summary>
@@ -152,8 +201,12 @@ namespace OniAccess.Speech {
 			if (_initialized) return _available;
 
 			try {
-				var config = prism_config_init();
+				var config = new PrismConfig { version = PRISM_CONFIG_VERSION };
+				if (_pluginLibrary != null)
+					config.registry = BuildRegistryWithPlugin(_pluginLibrary);
 				_context = prism_init(ref config);
+				if (config.registry != IntPtr.Zero)
+					prism_registry_release(config.registry);
 				if (_context == IntPtr.Zero) {
 					Log.Error("prism_init returned null");
 					_initialized = true;
@@ -187,6 +240,46 @@ namespace OniAccess.Speech {
 				_initialized = true;
 				_available = false;
 				return false;
+			}
+		}
+
+		/// <summary>The Macaw plugin's path under the current user's home.</summary>
+		internal static string MacawPluginPath() {
+			string home = Environment.GetEnvironmentVariable("HOME");
+			if (string.IsNullOrEmpty(home))
+				home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+			return Path.Combine(home, MacawPluginRelativePath);
+		}
+
+		/// <summary>
+		/// A registry of Prism's compiled-in backends plus the plugin's, or IntPtr.Zero
+		/// (Prism's global registry) when the plugin is not installed or the registry
+		/// cannot be built. A plugin that is present but fails to load is an error: the
+		/// player installed the screen reader it speaks to and would get another output
+		/// in its place.
+		/// </summary>
+		private static IntPtr BuildRegistryWithPlugin(string path) {
+			if (!File.Exists(path)) {
+				Log.Info($"No Prism plugin at {path}, using Prism's built-in backends");
+				return IntPtr.Zero;
+			}
+			IntPtr builder = prism_registry_builder_new();
+			if (builder == IntPtr.Zero) {
+				Log.Error($"Prism registry builder unavailable, the plugin at {path} cannot be offered");
+				return IntPtr.Zero;
+			}
+			try {
+				int err = prism_registry_builder_add_library(builder, ToUtf8(path), -1, out UIntPtr count);
+				if (err == PRISM_OK)
+					Log.Info($"Prism plugin loaded from {path} ({count.ToUInt64()} backend(s))");
+				else
+					Log.Error($"Prism plugin at {path} failed to load: {ErrorText(err)}");
+				IntPtr registry = prism_registry_freeze(builder);
+				if (registry == IntPtr.Zero)
+					Log.Error("Prism registry could not be frozen, using Prism's built-in backends");
+				return registry;
+			} finally {
+				prism_registry_builder_free(builder);
 			}
 		}
 

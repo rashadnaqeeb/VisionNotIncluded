@@ -60,7 +60,10 @@ namespace OniAccess.Speech {
 				Log.Error("Mac system voice unavailable, falling back to Prism's best backend");
 			}
 			ulong id = systemVoice ? PlatformSystemVoice() : PrismBackend.BACKEND_BEST;
-			var backend = new PrismBackend(id);
+			// On a Mac the Macaw screen reader's Prism plugin joins the registry, so
+			// BEST is Macaw while it runs and VoiceOver or AVSpeech otherwise.
+			string plugin = Application.platform == RuntimePlatform.OSXPlayer ? PrismBackend.MacawPluginPath() : null;
+			var backend = new PrismBackend(id, plugin);
 			SpeechEngine.Initialize(backend);
 			if (backend.SupportsVoiceControl)
 				ApplySettings(backend);

@@ -1,18 +1,21 @@
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 using OniAccess.Speech;
 
 namespace OniAccess.Tests {
 	/// <summary>
-	/// Offline tests for PrismBackend.ToUtf8, the boundary that hands text to the
-	/// native Prism library. Prism reads to the first null byte and validates the
+	/// Offline tests for the boundaries that hand data to the native Prism library.
+	/// PrismBackend.ToUtf8: Prism reads to the first null byte and validates the
 	/// result as UTF-8, rejecting anything else with PRISM_ERROR_INVALID_UTF8 — a
 	/// silent failure where nothing is spoken. The original code marshaled with
 	/// CharSet.Ansi, which encodes non-ASCII through the system code page (e.g. "é"
 	/// became the single byte 0xE9 on CP1252), and Prism correctly rejected those
 	/// bytes as invalid UTF-8. These tests pin the bytes that actually cross the
-	/// boundary: valid UTF-8, null-terminated.
+	/// boundary: valid UTF-8, null-terminated. PrismConfig: prism_init reads the
+	/// registry pointer at the offset prism.h gives it, so a field out of place
+	/// means the Macaw plugin's registry is silently never used, or a crash.
 	/// </summary>
 	static class PrismMarshalTests {
 		public static IEnumerable<(string, bool, string)> All() {
@@ -22,6 +25,33 @@ namespace OniAccess.Tests {
 			yield return NullTerminated();
 			yield return MultiByteGlyphEncoded();
 			yield return EmptyStringIsJustTerminator();
+			yield return ConfigMatchesPrismHeaderLayout();
+			yield return MacawPluginPathIsUnderHome();
+		}
+
+		private static (string, bool, string) ConfigMatchesPrismHeaderLayout() {
+			// prism.h (0.18): uint8_t version, then three pointers, three uint32_t and a
+			// bool. On 64-bit that is 48 bytes with the registry pointer at offset 8.
+			int size = Marshal.SizeOf(typeof(PrismBackend.PrismConfig));
+			int registry = (int)Marshal.OffsetOf(typeof(PrismBackend.PrismConfig), "registry");
+			int flag = (int)Marshal.OffsetOf(typeof(PrismBackend.PrismConfig), "availability_auto_power_manage");
+			bool ok = size == 48 && registry == 8 && flag == 44;
+			return Assert("ConfigMatchesPrismHeaderLayout", ok, $"size {size}, registry at {registry}, flag at {flag}");
+		}
+
+		private static (string, bool, string) MacawPluginPathIsUnderHome() {
+			// The plugin lives in the current user's home. A hardcoded user, or a
+			// relative path with a leading separator (which makes Path.Combine drop the
+			// home entirely), would look in the wrong place and never find Macaw.
+			string path = PrismBackend.MacawPluginPath();
+			string home = System.Environment.GetEnvironmentVariable("HOME");
+			if (string.IsNullOrEmpty(home))
+				home = System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile);
+			bool ok = !string.IsNullOrEmpty(home)
+				&& path.StartsWith(home)
+				&& path.Length > home.Length + PrismBackend.MacawPluginRelativePath.Length
+				&& path.EndsWith("libMacawPrismPlugin.dylib");
+			return Assert("MacawPluginPathIsUnderHome", ok, path);
 		}
 
 		private static (string, bool, string) Assert(string name, bool ok, string detail)
