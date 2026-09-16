@@ -326,6 +326,8 @@ namespace OniAccess.Handlers.Tiles {
 			if (profile != null) {
 				if (profile.IsOverride)
 					composer = profile.Composer;
+				else if (profile.AppendSections != null)
+					composer = composer.WithAppended(profile.AppendSections);
 				else
 					composer = composer.WithPrepended(profile.PrependSections);
 			}

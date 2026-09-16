@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using HarmonyLib;
 using OniAccess.Handlers.Tiles;
+using OniAccess.Handlers.Tiles.ToolProfiles;
+using OniAccess.Handlers.Tiles.ToolProfiles.Sections;
 using OniAccess.Input;
 using OniAccess.Speech;
 
@@ -24,6 +26,10 @@ namespace OniAccess.Handlers.Sandbox {
 		internal readonly RectangleSelection Selection = new RectangleSelection();
 		private bool _skipFirstTick;
 		private bool _isRectangleTool;
+		private ToolProfile _floodProfile;
+
+		private static readonly IReadOnlyList<ICellSection> FloodSections =
+			new List<ICellSection> { new FloodFillSection() }.AsReadOnly();
 
 		private static readonly HashSet<Type> RectangleToolTypes = new HashSet<Type> {
 			typeof(SandboxBrushTool),
@@ -95,6 +101,19 @@ namespace OniAccess.Handlers.Sandbox {
 			}
 
 			_skipFirstTick = true;
+
+			// The Fill tool replaces a whole connected region of one element. Its
+			// extent ends every cursor readout and the activation announcement,
+			// the same slot the build extent takes for multi-cell buildings.
+			if (activeTool is SandboxFloodTool flood) {
+				_floodProfile = ToolProfile.Appending(DisplayName, FloodSections);
+				TileCursor.Instance.ActiveToolProfile = _floodProfile;
+				int cell = TileCursor.Instance.Cell;
+				if (Grid.IsVisible(cell)) {
+					SpeechPipeline.SpeakInterrupt(DisplayName + ", " + FloodFillSection.Describe(flood, cell));
+					return;
+				}
+			}
 			SpeechPipeline.SpeakInterrupt(DisplayName);
 		}
 
@@ -103,6 +122,11 @@ namespace OniAccess.Handlers.Sandbox {
 
 			if (Game.Instance != null)
 				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+
+			if (_floodProfile != null && TileCursor.Instance != null
+				&& TileCursor.Instance.ActiveToolProfile == _floodProfile)
+				TileCursor.Instance.ActiveToolProfile = null;
+			_floodProfile = null;
 
 			Selection.ClearAll();
 		}
@@ -325,12 +349,17 @@ namespace OniAccess.Handlers.Sandbox {
 				}
 			}
 
+			// FillCount also syncs the flood tool's mouse cell to the cursor, so
+			// the fill starts where the announced extent was computed.
+			int count = tool is SandboxFloodTool flood ? FloodFillSection.FillCount(flood, cell) : 1;
 			try {
 				tool.OnLeftClickDown(pos);
 			} catch (Exception ex) {
 				Util.Log.Error($"SandboxToolHandler.ApplySingleCell: {ex}");
 			}
-			SpeechPipeline.SpeakInterrupt((string)STRINGS.ONIACCESS.SANDBOX.APPLIED_ONE);
+			SpeechPipeline.SpeakInterrupt(count == 1
+				? (string)STRINGS.ONIACCESS.SANDBOX.APPLIED_ONE
+				: string.Format((string)STRINGS.ONIACCESS.SANDBOX.APPLIED, count));
 		}
 
 		/// <summary>

@@ -2,6 +2,9 @@
 
 ## Unreleased changes since 1.7.5
 
+* The sandbox Fill tool now ends the cursor readout with its extent, like the build extent ("fills 5 cells of Sandstone"), both when you pick it and on every cursor move, and reports the count it applied. Filling on a built tile replaces every connected tile of that material, which the game only ever showed as a highlight.
+* A tile whose cell has lost its solid material (for example after a sandbox fill) no longer reads as a tile; the cell reads its element instead.
+
 ## 1.7.5
 
 * Fixed wires, pipes, rails, and automation wire vanishing from the tile cursor readout while placing a sensor, valve, pump, powered machine, or any other building that is not itself a conduit.

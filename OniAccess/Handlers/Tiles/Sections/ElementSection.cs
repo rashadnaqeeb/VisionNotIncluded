@@ -6,6 +6,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 	/// Suppressed when a foundation tile is present (the tile IS the solid
 	/// element, so announcing both is redundant), or when a foreground
 	/// building is present and the element is gas. Exceptions:
+	/// - A hollow tile (BuildingSection.IsHollowTile): nothing is read for
+	///   the tile, so the element is what the cell holds.
 	/// - Oxygen overlay: always speak the element.
 	/// - Liquid on a building: submersion, gameplay-critical.
 	/// - Solid on a building (not foundation tile): entombment, gameplay-critical.
@@ -20,10 +22,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var element = Grid.Element[cell];
 			string backwall = BackwallToken(cell);
 			if (OverlayScreen.Instance.GetMode() != OverlayModes.Oxygen.ID && !element.IsLiquid) {
-				if (Grid.Objects[cell, (int)ObjectLayer.FoundationTile] != null)
+				var foundation = Grid.Objects[cell, (int)ObjectLayer.FoundationTile];
+				if (foundation != null) {
+					if (!BuildingSection.IsHollowTile(foundation, cell))
+						return Tokens(null, backwall);
+				} else if (!element.IsSolid && Grid.Objects[cell, (int)ObjectLayer.Building] != null) {
 					return Tokens(null, backwall);
-				if (!element.IsSolid && Grid.Objects[cell, (int)ObjectLayer.Building] != null)
-					return Tokens(null, backwall);
+				}
 			}
 			if (element == null) return Tokens(null, backwall);
 			if (element.IsVacuum)

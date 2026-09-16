@@ -94,6 +94,19 @@ namespace OniAccess.Handlers.Tiles {
 		}
 
 		/// <summary>
+		/// Return a new GlanceComposer with the given sections appended
+		/// after this composer's section list.
+		/// </summary>
+		public GlanceComposer WithAppended(IReadOnlyList<ICellSection> sections) {
+			var combined = new List<ICellSection>(_sections.Count + sections.Count);
+			for (int i = 0; i < _sections.Count; i++)
+				combined.Add(_sections[i]);
+			for (int i = 0; i < sections.Count; i++)
+				combined.Add(sections[i]);
+			return new GlanceComposer(combined.AsReadOnly());
+		}
+
+		/// <summary>
 		/// Create the default (no-overlay) glance composer with all
 		/// five standard sections in speech order.
 		/// </summary>

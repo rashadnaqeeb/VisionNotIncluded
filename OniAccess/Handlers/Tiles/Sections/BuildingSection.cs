@@ -68,12 +68,24 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			return tokens;
 		}
 
+		/// <summary>
+		/// A finished tile whose cell is no longer solid. Its material was
+		/// replaced under it (the sandbox Fill tool does this), so nothing
+		/// stands there any more: it is not read as a tile, and the element
+		/// is read instead.
+		/// </summary>
+		internal static bool IsHollowTile(GameObject go, int cell) {
+			var occupier = go.GetComponent<SimCellOccupier>();
+			return occupier != null && occupier.doReplaceElement && !Grid.Solid[cell];
+		}
+
 		private static void ReadBuilding(GameObject go, int cell, List<string> tokens) {
 			var selectable = go.GetComponent<KSelectable>();
 			if (selectable == null) return;
 
 			var uncoverable = go.GetComponent<Uncoverable>();
 			if (uncoverable != null && !uncoverable.IsUncovered) return;
+			if (IsHollowTile(go, cell)) return;
 
 			var building = go.GetComponent<Building>();
 			bool isExtension = building != null

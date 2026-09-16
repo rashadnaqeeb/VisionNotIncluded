@@ -2346,6 +2346,11 @@ namespace STRINGS {
 			// {0} = cell count (int)
 			public static LocString APPLIED = "applied to {0} cells";
 			public static LocString APPLIED_ONE = "applied";
+			// Fill tool extent, appended last to the cursor readout like the build extent.
+			// {0} = cell count (int), {1} = element name
+			public static LocString FILL_PREVIEW = "fills {0} cells of {1}";
+			// {0} = element name
+			public static LocString FILL_PREVIEW_ONE = "fills 1 cell of {0}";
 
 			public class HELP {
 				public static LocString SET_CORNER = "Set rectangle corner or place";
