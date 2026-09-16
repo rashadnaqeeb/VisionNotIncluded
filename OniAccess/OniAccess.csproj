@@ -1,5 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- HOST/MODULE SPLIT (hot reload). This project builds the permanent HOST
+       (OniAccess.dll): the entry point, native preload, dev-server core, and the
+       module loader. Everything else compiles into the byte-loaded MODULE
+       (OniAccess.Module/OniAccess.Module.csproj, which references this project),
+       hot-swapped at runtime via POST /reload. Host changes need a game restart;
+       keep the compile list below minimal. -->
+
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <OutputType>Library</OutputType>
@@ -8,7 +15,19 @@
     <LangVersion>latest</LangVersion>
     <Version>1.7.5</Version>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Mod.cs" />
+    <Compile Include="Modularity\**\*.cs" />
+    <Compile Include="Util\LogHelper.cs" />
+    <Compile Include="Util\LogUnityBackend.cs" />
+    <Compile Include="Dev\DevServer.cs" />
+    <Compile Include="Dev\DevHttpServer.cs" />
+    <Compile Include="Dev\CSharpEvaluator.cs" />
+    <Compile Include="Dev\SpeechLog.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
@@ -36,32 +55,19 @@
       <HintPath>$(ONI_MANAGED)\UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>$(ONI_MANAGED)\UnityEngine.InputLegacyModule.dll</HintPath>
+  </ItemGroup>
+
+  <!-- The DEBUG-only dev server: Mono.CSharp (the /eval REPL compiler, vendored;
+       build.sh deploys it to the mod root, where the game's loader probes for the
+       host's dependencies) and ScreenCapture for /screenshot. All dev code is
+       #if DEBUG, so a Release build neither compiles against nor ships these. -->
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <Reference Include="Mono.CSharp">
+      <HintPath>$(MSBuildProjectDirectory)\..\vendor\Mono.CSharp.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>$(ONI_MANAGED)\UnityEngine.IMGUIModule.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>$(ONI_MANAGED)\Unity.TextMeshPro.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>$(ONI_MANAGED)\UnityEngine.UI.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.UIModule">
-      <HintPath>$(ONI_MANAGED)\UnityEngine.UIModule.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.VideoModule">
-      <HintPath>$(ONI_MANAGED)\UnityEngine.VideoModule.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="FMODUnity">
-      <HintPath>$(ONI_MANAGED)\FMODUnity.dll</HintPath>
+    <Reference Include="UnityEngine.ScreenCaptureModule">
+      <HintPath>$(ONI_MANAGED)\UnityEngine.ScreenCaptureModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

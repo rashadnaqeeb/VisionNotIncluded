@@ -1,0 +1,97 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The reloadable MODULE: every feature of the mod (see the host project's
+       split note). The host byte-loads the deployed Module/OniAccess.Module.dll
+       and hot-swaps it via POST /reload without a game restart.
+
+       ASSEMBLY IDENTITY IS TIMESTAMPED (do not "fix" this): Mono binds
+       non-strong-named assemblies by SIMPLE NAME, so byte-loading a rebuilt dll
+       under an unchanged name silently returns the OLD image and the reload
+       no-ops. The deployed FILE name stays stable; GET /module shows the loaded
+       assembly name to verify a swap. The test project pins the name with
+       -p:OniModuleName=OniAccess.Module so it can reference the output. -->
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <OutputType>Library</OutputType>
+    <OniModuleName Condition="'$(OniModuleName)' == ''">OniAccess.Module_$([System.DateTime]::UtcNow.ToString(yyyyMMddHHmmss))</OniModuleName>
+    <AssemblyName>$(OniModuleName)</AssemblyName>
+    <RootNamespace>OniAccess</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <!-- Everything under OniAccess/ EXCEPT the host's files (which compile into OniAccess.dll). -->
+  <ItemGroup>
+    <Compile Include="..\OniAccess\**\*.cs"
+             Exclude="..\OniAccess\obj\**;..\OniAccess\bin\**;..\OniAccess\Mod.cs;..\OniAccess\Modularity\**\*.cs;..\OniAccess\Util\LogHelper.cs;..\OniAccess\Util\LogUnityBackend.cs;..\OniAccess\Dev\DevServer.cs;..\OniAccess\Dev\DevHttpServer.cs;..\OniAccess\Dev\CSharpEvaluator.cs;..\OniAccess\Dev\SpeechLog.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <!-- The HOST: Mod statics, Log, the module loader, the dev server surface. -->
+    <ProjectReference Include="..\OniAccess\OniAccess.csproj" />
+  </ItemGroup>
+
+  <!-- Game DLL references via ONI_MANAGED environment variable -->
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(ONI_MANAGED)\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>$(ONI_MANAGED)\Assembly-CSharp-firstpass.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(ONI_MANAGED)\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(ONI_MANAGED)\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(ONI_MANAGED)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(ONI_MANAGED)\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(ONI_MANAGED)\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>$(ONI_MANAGED)\Unity.TextMeshPro.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(ONI_MANAGED)\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(ONI_MANAGED)\UnityEngine.UIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.VideoModule">
+      <HintPath>$(ONI_MANAGED)\UnityEngine.VideoModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="FMODUnity">
+      <HintPath>$(ONI_MANAGED)\FMODUnity.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Each build writes a new timestamped dll; drop the previous ones so the
+       output folder holds exactly one module and build.sh can pick it up. -->
+  <Target Name="PruneOldModules" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <OldModule Include="$(OutDir)OniAccess.Module_*.dll;$(OutDir)OniAccess.Module_*.pdb" Exclude="$(OutDir)$(AssemblyName).dll;$(OutDir)$(AssemblyName).pdb" />
+    </ItemGroup>
+    <Delete Files="@(OldModule)" />
+  </Target>
+
+</Project>

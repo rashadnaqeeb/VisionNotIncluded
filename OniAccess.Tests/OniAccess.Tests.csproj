@@ -8,7 +8,15 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
-    <ProjectReference Include="..\OniAccess\OniAccess.csproj" />
+    <!-- The module (and, through it, the host). The module's assembly name is
+         timestamped per build for hot reload; the tests pin it so the reference
+         resolves. -->
+    <ProjectReference Include="..\OniAccess.Module\OniAccess.Module.csproj" AdditionalProperties="OniModuleName=OniAccess.Module" />
+    <!-- The dev server's REPL compiler, exercised by the evaluator tests. -->
+    <Reference Include="Mono.CSharp">
+      <HintPath>$(MSBuildProjectDirectory)\..\vendor\Mono.CSharp.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
   </ItemGroup>
 
   <!-- Game DLL references for type resolution (KButtonEvent, etc.) -->

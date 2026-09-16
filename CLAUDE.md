@@ -7,10 +7,47 @@ OniAccess is an accessibility mod for Oxygen Not Included that makes the game pl
 Development is Mac-first. Always use the build script, never `dotnet build` directly.
 
 ```
-./build.sh
+./build.sh            # Debug: host + module, deploy, patch mods.json (needs a game restart)
+./build.sh --module   # rebuild the module only and hot-reload it into the running game
+./build.sh --release  # the shipping build, no dev server
 ```
 
-The script builds the DLL, deploys it to the game's local mods directory, and patches mods.json to keep the mod enabled. `scripts/oni-env.sh` (sourced by `build.sh` and `test.sh`) finds the game's `Managed` folder and exports `ONI_MANAGED`; set it yourself if the game is somewhere unusual. `EnableMod/mac/package.sh` rebuilds `EnableMod.app.zip` from `EnableMod/mac/EnableMod.js`.
+The script deploys to the game's local mods directory and patches mods.json to keep the mod enabled (it also clears `mod_load_in_progress`: a crash while mods load leaves that set, and the next boot then enters mod safe mode and disables every mod). `scripts/oni-env.sh` (sourced by `build.sh` and `test.sh`) finds the game's `Managed` folder and exports `ONI_MANAGED`; set it yourself if the game is somewhere unusual. `EnableMod/mac/package.sh` rebuilds `EnableMod.app.zip` from `EnableMod/mac/EnableMod.js`.
+
+Debug is the default and is what the player build on this machine runs: the dev server is compiled in but stays inert without its marker file. Release strips every `#if DEBUG` file and the Mono.CSharp reference; `release.sh` uses it.
+
+### Host/module split (hot reload)
+
+The mod is two assemblies:
+
+- **HOST** (`OniAccess/OniAccess.csproj`, `OniAccess.dll` at the mod root; loaded and locked by ONI's `DLLLoader`; changing it needs a full `./build.sh` and a game restart, so keep it minimal): `Mod.cs` (the `UserMod2` entry point, native Prism preload, the dev server's per-frame `Ticker`), `Modularity/` (`IModModule` + `ModuleLoader`), `Util/LogHelper.cs`, `Util/LogUnityBackend.cs`, and the dev server core (`Dev/DevServer.cs`, `DevHttpServer.cs`, `CSharpEvaluator.cs`, `SpeechLog.cs`). The host carries no Harmony patches. Its dependency `Mono.CSharp.dll` (vendored in `vendor/`) must sit at the mod root: the loader calls `GetTypes` on the host before any mod code runs, so nothing we install can redirect that lookup.
+- **MODULE** (`OniAccess.Module/OniAccess.Module.csproj`, compiled from everything else under `OniAccess/`; deployed as `Module/OniAccess.Module.dll`, a subfolder the loader never scans; **byte-loaded, never file-locked**): `ModuleMain.cs` is its `IModModule` (`Load` = the boot sequence, `Dispose` = teardown). **Day-to-day feature work goes here and hot-reloads with no restart**: `./build.sh --module` deploys it and POSTs `/reload` (`GET /module` shows the live generation). The module references the host dll directly (`Mod.DataDir`, `Log`, `DevServer.Instance`); the host knows the module only through `IModModule`.
+
+Rules that keep the reload honest:
+- The module's `AssemblyName` is TIMESTAMPED per build (`OniAccess.Module_yyyyMMddHHmmss`). Mono binds non-strong-named assemblies by simple name, so an unchanged name would silently reload the OLD image; do not "fix" this. The deployed file name stays stable. The test project pins the name with `OniModuleName=OniAccess.Module` so it can reference the output.
+- `ModuleMain.Dispose` must undo every persistent hook `Load` created: Harmony patches (per-generation id `OniAccess.gen<N>`, unpatched by id), handler game-event subscriptions (`HandlerStack.DeactivateAll`), `ModInputRouter` in the game's input tree, the mod's GameObjects, the speech backend, the `Localization` registration, dev routes. A missed one shows up as doubled speech after a reload. Anything new that hooks into the game or the host needs its undo step there.
+- One-shot game events (`InputInit.Awake`, `Localization.Initialize`) do not fire again after a reload; `ModuleMain.Reattach` redoes their work and rebuilds the handler stack with `ContextDetector.DetectAndActivate`. A new one-shot patch needs the same treatment.
+- Old generations leak (net48 has no collectible load contexts); fine for a dev loop, and players never reload.
+- `Log.Error` still ends the session, so a failed module load or a failed dispose step shows the crash dialog. That is the intended signal; restart with `scripts/run-game.sh`.
+
+## Dev server
+
+A Debug build carries a loopback HTTP server (`OniAccess/Dev/`, all `#if DEBUG`; a Release build has none of it) that lets Claude introspect and drive the live game without hearing the screen reader. It is inert unless `mods/OniAccess/devserver.enable` exists in the game's data folder or `ONIACCESS_DEV=1` is set. `scripts/run-game.sh` drops the marker, builds and deploys, launches the game through Steam (a direct launch of the binary never gets Steam initialized and the game quits during boot, so the env var cannot reach it; the marker is the gate that matters), waits for `/health`, and blocks until the game exits, removing the marker. Run it as a background task: the task finishing is the "game exited" signal, and cancelling it kills the game. Port 8772, override with `ONIACCESS_DEV_PORT`.
+
+```
+curl -s 127.0.0.1:8772/health                          # ok
+curl -s --data-binary @probe.cs 127.0.0.1:8772/eval    # C# on the main thread; REPL state persists; the last expression's value is on the "=> " line
+curl -s 127.0.0.1:8772/speech?since=0                  # "cursor: N" then "index: text" lines; pass the cursor back to get only new lines
+curl -s 127.0.0.1:8772/gui                             # game state, handler stack (top first), KScreen stack, hotkeys
+curl -s -d 'key DownArrow' 127.0.0.1:8772/input        # raw Unity key for one frame; modifiers +ctrl +shift +alt are the mod's logical ones (ctrl = Option on Mac)
+curl -s -d 'action Escape' 127.0.0.1:8772/input        # a game Action through the game's input tree; empty body lists both forms and every Action
+curl -s -X POST 127.0.0.1:8772/loadsave                # from the main menu: load the newest save and block until the colony is interactive (or pass a save path)
+curl -s 127.0.0.1:8772/screenshot                      # PNG path
+curl -s -X POST 127.0.0.1:8772/reload                  # hot-swap the module (build.sh --module does this)
+python3 tools/gamewait.py health|menu|ingame|loadsave  # poll until a state is reached; exits early if the game died
+```
+
+Eval sees only PUBLIC members. `OniAccess.Dev.DevApi` exposes the module assembly (`DevApi.Asm`, reflect into internals from there), `DevApi.Say(text)`, and `DevApi.Screen()`; any new helper meant for eval must be public. Eval sessions reset on reload. The REPL reads `a * b` as a pointer declaration; write the multiplication another way. Speech reaches `/speech` through the tap in `SpeechPipeline`, right before the backend call, so the log holds exactly what the engine was handed. Key injection works by a DEBUG-only Harmony prefix on `UnityEngine.Input.GetKeyDown`/`GetKey`, applied only when the server is up.
 
 Mac prerequisites beyond the .NET SDK: `brew install mono powershell` (Mono runs the tests, PowerShell runs `validate-reflection.ps1`).
 
@@ -28,7 +65,12 @@ When a build fails on a type or method signature, look it up in `ONI-Decompiled/
 
 ## Project Structure
 
-- `OniAccess/` - mod source code (C#, .NET Framework 4.8, Harmony patches)
+- `OniAccess/` - mod source code (C#, .NET Framework 4.8, Harmony patches); its csproj builds only the host files listed in the Build section
+- `OniAccess.Module/` - the module project; compiles everything else under `OniAccess/` into the hot-reloadable module
+- `OniAccess/Dev/` - the dev server (host core + module routes), all `#if DEBUG`
+- `vendor/` - `Mono.CSharp.dll`, the dev server's REPL compiler (Debug only)
+- `scripts/` - `oni-env.sh`, `run-game.sh` (launch with the dev server on)
+- `tools/` - `gamewait.py`, the dev-server wait helper
 - `ONI-Decompiled/` - decompiled game source for reference (read-only, not part of build)
 - `docs/` - design documentation
 - `docs/game-mechanics/` - game mechanics reference (topic files, wiki articles, strategy guides). See its CLAUDE.md for details.
@@ -51,7 +93,7 @@ When committing a new feature or bug fix, add an entry to `changes.md`. Keep ent
 ./test.sh
 ```
 
-Builds and runs the offline test suite (`OniAccess.Tests`) under Mono. Tests run without the game. All new tests must work offline — never add tests that require launching the game. Don't test individual screen handlers.
+Builds and runs the offline test suite (`OniAccess.Tests`) under Mono. Tests run without the game. The test project references the module project with a pinned assembly name (`OniModuleName=OniAccess.Module`) and gets the host through it. All new tests must work offline — never add tests that require launching the game. Don't test individual screen handlers.
 
 - Every test should have a plausible failure mode not covered by another test — don't test the same invariant twice
 - Always test real code paths; never test local helpers that simulate production behavior

@@ -132,14 +132,19 @@ if ! grep -q "<Version>$VERSION</Version>" "$CSPROJ" || ! grep -q "^version: \"$
 	exit 1
 fi
 
-# --- Build and deploy the local copy ---
-./build.sh
+# --- Build and deploy the local copy (Release: no dev server) ---
+./build.sh --release
 
 # --- Fill release/ for the Workshop uploader ---
 echo "Packaging release/..."
 rm -rf "$RELEASE_DIR"
 mkdir -p "$RELEASE_DIR"
 cp "OniAccess/bin/Release/net48/OniAccess.dll" "$MOD_INFO" "OniAccess/mod.yaml" "$RELEASE_DIR/"
+# The feature module the host byte-loads; its build output name is timestamped,
+# the deployed file name is fixed (see OniAccess.Module/OniAccess.Module.csproj).
+MODULE_DLL="$(ls -t OniAccess.Module/bin/Release/net48/OniAccess.Module_*.dll | head -1)"
+mkdir -p "$RELEASE_DIR/Module"
+cp "$MODULE_DLL" "$RELEASE_DIR/Module/OniAccess.Module.dll"
 for entry in win-x64/prism.dll linux-x64/libprism.so osx/libprism.dylib; do
 	src="prism/native/$entry"
 	if [ ! -f "$src" ]; then

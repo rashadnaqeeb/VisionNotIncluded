@@ -32,8 +32,31 @@ namespace OniAccess.Input {
 		public string handlerName => "OniAccess";
 		public KInputHandler inputHandler { get; set; }
 
-		public ModInputRouter() {
+		private KInputController _controller;
+
+		private ModInputRouter() {
 			Instance = this;
+		}
+
+		/// <summary>
+		/// Register the router in ONI's input handler tree at priority 50, on the
+		/// current controller (the same pattern InputInit.Awake uses for
+		/// KScreenManager). Idempotent.
+		/// </summary>
+		public static void Register() {
+			if (Instance != null) return;
+			var router = new ModInputRouter();
+			router._controller = KInputManager.currentController
+				?? Global.GetInputManager().GetDefaultController();
+			KInputHandler.Add(router._controller, router, 50);
+			Util.Log.Info("ModInputRouter registered at priority 50");
+		}
+
+		/// <summary>Take the router back out of the game's input tree (module reload).</summary>
+		public static void Unregister() {
+			if (Instance == null) return;
+			KInputHandler.Remove(Instance._controller, Instance);
+			Instance = null;
 		}
 
 		public void OnKeyDown(KButtonEvent e) {

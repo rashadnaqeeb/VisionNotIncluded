@@ -59,6 +59,9 @@ function enableMod(path) {
 	mod.enabledForDlc = ['', 'EXPANSION1_ID'];
 	mod.crash_count = 0;
 	mod.status = 1; // Status.Installed
+	// A crash while mods were loading leaves this set, and the next boot then
+	// enters mod safe mode and disables every mod again.
+	root.mod_load_in_progress = false;
 
 	writeFile(path, JSON.stringify(root));
 	return true;

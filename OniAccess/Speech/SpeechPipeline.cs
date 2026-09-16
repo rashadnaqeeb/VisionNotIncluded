@@ -30,6 +30,18 @@ namespace OniAccess.Speech {
 		/// </summary>
 		internal static System.Action<string, bool> SpeakAction = SpeechEngine.Say;
 
+#if DEBUG
+		/// <summary>
+		/// Dev-only tap: every line handed to the backend is mirrored here so the
+		/// dev server's /speech log can read back what was said. Null in a normal
+		/// run; the module's dev routes set it.
+		/// </summary>
+		internal static System.Action<string> Observer;
+		private static void Tap(string text) => Observer?.Invoke(text);
+#else
+		private static void Tap(string text) { }
+#endif
+
 		/// <summary>
 		/// Whether the pipeline is active. When false (mod toggled off),
 		/// all methods return immediately.
@@ -68,6 +80,7 @@ namespace OniAccess.Speech {
 				return;
 			_lastInterruptText = filtered;
 			_lastInterruptTime = now;
+			Tap(filtered);
 			SpeakAction(filtered, true);
 		}
 
@@ -82,6 +95,7 @@ namespace OniAccess.Speech {
 
 			string filtered = TextFilter.FilterForSpeech(text);
 			if (string.IsNullOrEmpty(filtered)) return;
+			Tap(filtered);
 			SpeakAction(filtered, false);
 		}
 
