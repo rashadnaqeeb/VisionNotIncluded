@@ -172,11 +172,17 @@ namespace OniAccess.Handlers.Tiles {
 			return result;
 		}
 
+		// Buildings, then tiles and utilities, then dupes, critters, debris
+		// and props, then backwalls (drywall, Gravitas lab walls), then the
+		// element. Backwalls sit behind everything, as in the game's hover card.
 		private static int EntitySortKey(KSelectable ks) {
 			var building = ks.GetComponent<Building>();
-			if (building != null)
-				return building.Def.ObjectLayer == ObjectLayer.Building ? 0 : 1;
-			if (ks.GetComponent<CellSelectionObject>() != null) return 3;
+			if (building != null) {
+				if (building.Def.ObjectLayer == ObjectLayer.Building) return 0;
+				if (building.Def.ObjectLayer == ObjectLayer.Backwall) return 3;
+				return 1;
+			}
+			if (ks.GetComponent<CellSelectionObject>() != null) return 4;
 			return 2;
 		}
 
