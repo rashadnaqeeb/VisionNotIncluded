@@ -1190,6 +1190,11 @@ namespace STRINGS {
 			public static LocString LURE = "{0} lure";
 			// Bridge middle cell (between the two endpoints): {0} = building name
 			public static LocString BRIDGE_MIDDLE = "{0} middle";
+			// Bridge with its orientation. {0} = flow direction (up/down/left/right)
+			// for liquid, gas, and conveyor bridges, or axis (horizontal/vertical)
+			// for wire and automation bridges and joint plates; {1} = building name.
+			// e.g. "right Liquid Bridge", "vertical Wire Bridge"
+			public static LocString BRIDGE_ORIENTATION = "{0} {1}";
 			// Wire bridge endpoint where wires attach. Spoken before the building
 			// name, e.g. "connection port, Heavy-Watt Joint Plate".
 			public static LocString CONNECTION = "connection port";

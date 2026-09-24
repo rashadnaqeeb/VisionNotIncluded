@@ -3,6 +3,7 @@
 ## Unreleased changes since 1.7.6
 
 * In the Enter selection menu, backwalls such as drywall and Gravitas lab walls are now listed after duplicants, critters, and debris, just above the element, instead of near the top.
+* Bridges now read their orientation: liquid, gas, and conveyor bridges say which way they flow, in the same words as when rotating one for placement ("right Liquid Bridge"), and wire and automation bridges and joint plates say horizontal or vertical.
 
 ## 1.7.6
 

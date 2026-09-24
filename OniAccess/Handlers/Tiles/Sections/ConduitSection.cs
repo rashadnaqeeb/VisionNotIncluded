@@ -216,9 +216,46 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				|| rule == BuildLocationRule.HighWattBridgeTile;
 		}
 
+		/// <summary>
+		/// Prefixes a bridge's name with its orientation. Liquid, gas, and
+		/// conveyor bridges get their flow direction in the words placement
+		/// uses for their rotation. Wire and automation bridges and joint
+		/// plates carry nothing one way, so they get their axis. Other
+		/// buildings keep their name.
+		/// </summary>
+		internal static string WithBridgeOrientation(
+				UnityEngine.GameObject go, string name) {
+			var building = go.GetComponent<Building>();
+			if (building == null) return name;
+			var def = building.Def;
+			string orientation;
+			switch (def.BuildLocationRule) {
+				case BuildLocationRule.Conduit:
+					if (!Build.BuildMenuData.IsHorizontalFlowBuilding(def))
+						return name;
+					orientation = Build.BuildMenuData.GetOrientationName(
+						building.Orientation, def);
+					break;
+				case BuildLocationRule.WireBridge:
+				case BuildLocationRule.LogicBridge:
+				case BuildLocationRule.HighWattBridgeTile:
+					// Unrotated, all of these link the cells left and right
+					orientation = building.Orientation == Orientation.R90
+						|| building.Orientation == Orientation.R270
+						? (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_VERTICAL
+						: (string)STRINGS.ONIACCESS.BUILD_MENU.ORIENT_HORIZONTAL;
+					break;
+				default:
+					return name;
+			}
+			return string.Format(
+				(string)STRINGS.ONIACCESS.GLANCE.BRIDGE_ORIENTATION,
+				orientation, name);
+		}
+
 		internal static string ConstructionName(
 				UnityEngine.GameObject go, KSelectable sel) {
-			string name = sel.GetName();
+			string name = WithBridgeOrientation(go, sel.GetName());
 			if (go.GetComponent<Constructable>() != null)
 				return string.Format(
 					(string)STRINGS.ONIACCESS.GLANCE.UNDER_CONSTRUCTION, name);

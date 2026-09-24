@@ -887,7 +887,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (kpid != null && kpid.HasTag(GameTags.PlantBranch))
 				name = string.Format(
 					(string)STRINGS.ONIACCESS.GLANCE.PLANT_BRANCH, name);
-			return name;
+			return ConduitSection.WithBridgeOrientation(go, name);
 		}
 
 		private static void ReadPixelPack(
