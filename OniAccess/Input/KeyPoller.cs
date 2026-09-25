@@ -33,7 +33,7 @@ namespace OniAccess.Input {
 			if (!ModToggle.IsEnabled) return;
 
 			// Control silences the system voice, as it silences a screen reader.
-			// Not consumed: on Windows the same key starts the mod's Ctrl combos.
+			// Not consumed: the same key starts the mod's Ctrl combos.
 			// Screen reader backends stop themselves, so only a voice-controlled
 			// backend gets the call.
 			if ((UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftControl)
@@ -65,7 +65,7 @@ namespace OniAccess.Input {
 
 			// F12 (bare): open config screen
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F12)
-				&& !InputUtil.ShiftHeld() && !InputUtil.CtrlHeld() && !InputUtil.AltHeld()
+				&& !InputUtil.AnyModifierHeld()
 				&& !(HandlerStack.ActiveHandler is ConfigHandler)) {
 				HandlerStack.Push(new ConfigHandler());
 				return;
@@ -75,7 +75,7 @@ namespace OniAccess.Input {
 			// Centralized here to prevent double-push when layered non-capturing
 			// handlers both detect the key in the same frame.
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Slash)
-				&& InputUtil.ShiftHeld() && !InputUtil.CtrlHeld()
+				&& InputUtil.ShiftHeld() && !InputUtil.AnyCtrlHeld()
 				&& !(HandlerStack.ActiveHandler is HelpHandler)) {
 				var entries = HandlerStack.CollectHelpEntries();
 				HandlerStack.Push(new HelpHandler(entries));

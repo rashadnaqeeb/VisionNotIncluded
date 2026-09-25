@@ -161,11 +161,11 @@ namespace OniAccess.Handlers.Sandbox {
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Space)) {
-				if (InputUtil.CtrlHeld() && !InputUtil.ShiftHeld() && !InputUtil.AltHeld()) {
+				if (InputUtil.CtrlOptionHeld() && !InputUtil.ShiftHeld() && !InputUtil.AltHeld()) {
 					SampleAtCursor();
 					return true;
 				}
-				if (InputUtil.ShiftHeld() && !InputUtil.CtrlHeld()) {
+				if (InputUtil.ShiftHeld() && !InputUtil.AnyCtrlHeld()) {
 					ClearRectAtCursor();
 					return true;
 				}

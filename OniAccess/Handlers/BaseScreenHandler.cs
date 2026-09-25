@@ -115,7 +115,7 @@ namespace OniAccess.Handlers {
 		/// consumes the key.
 		/// </summary>
 		protected bool TryLineReview() {
-			if (!Input.InputUtil.AltHeld() || Input.InputUtil.CtrlHeld())
+			if (!Input.InputUtil.AltHeld() || Input.InputUtil.AnyCtrlHeld())
 				return false;
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)) {
 				Speech.LineReview.Step(GetReviewContent(), GetReviewFocusKey(), 1);

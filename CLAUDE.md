@@ -39,7 +39,7 @@ curl -s 127.0.0.1:8772/health                          # ok
 curl -s --data-binary @probe.cs 127.0.0.1:8772/eval    # C# on the main thread; REPL state persists; the last expression's value is on the "=> " line
 curl -s 127.0.0.1:8772/speech?since=0                  # "cursor: N" then "index: text" lines; pass the cursor back to get only new lines
 curl -s 127.0.0.1:8772/gui                             # game state, handler stack (top first), KScreen stack, hotkeys
-curl -s -d 'key DownArrow' 127.0.0.1:8772/input        # raw Unity key for one frame; +ctrl +alt are the mod's logical modifiers (ctrl = Option on Mac), +control +option +cmd the physical keys, +shift either
+curl -s -d 'key DownArrow' 127.0.0.1:8772/input        # raw Unity key for one frame; +ctrl +alt are the mod's logical modifiers (alt = Command on Mac), +control +option +cmd the physical keys, +shift either
 curl -s -d 'action Escape' 127.0.0.1:8772/input        # a game Action through the game's input tree; empty body lists both forms and every Action
 curl -s -X POST 127.0.0.1:8772/loadsave                # from the main menu: load the newest save and block until the colony is interactive (or pass a save path)
 curl -s 127.0.0.1:8772/screenshot                      # PNG path

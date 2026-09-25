@@ -67,7 +67,7 @@ namespace OniAccess.Handlers.Screens.Inventory {
 			if (_filterMode)
 				return HandleFilterInput();
 
-			if (InputUtil.CtrlHeld() && UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F)) {
+			if (InputUtil.CtrlCmdHeld() && UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F)) {
 				EnterFilterMode();
 				return true;
 			}

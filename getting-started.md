@@ -8,7 +8,7 @@ An accessibility mod for Oxygen Not Included that makes the game playable for bl
 - Oxygen Not Included on Steam
 - A screen reader. If none is running, the mod falls back to the OS built-in speech engine.
 
-On Mac, press Option wherever the documentation says Ctrl, and Command wherever it says Alt.
+On Mac, Ctrl is Control, except with an arrow key or Space, where it is Option. Alt is Command. Mac conventions are respected: for example, Ctrl+F is Command+F, and text fields use Mac navigation keys.
 
 ## Install (Steam Workshop)
 

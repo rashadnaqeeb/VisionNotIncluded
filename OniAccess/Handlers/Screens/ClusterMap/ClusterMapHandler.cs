@@ -231,7 +231,7 @@ namespace OniAccess.Handlers.Screens.ClusterMap {
 
 			// --- Scanner keys ---
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F)
-				&& InputUtil.CtrlHeld()) {
+				&& InputUtil.CtrlCmdHeld()) {
 				HandlerStack.Push(new SearchInputHandler(
 					q => _scanner.SearchRefresh(q, _cursorLocation)));
 				return true;

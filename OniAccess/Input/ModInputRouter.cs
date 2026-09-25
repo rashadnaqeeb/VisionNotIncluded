@@ -29,6 +29,9 @@ namespace OniAccess.Input {
 			Action.Find,
 		};
 
+		// Actions whose key went down with Command held; their release is swallowed too.
+		private static readonly HashSet<Action> _commandSwallowed = new HashSet<Action>();
+
 		public string handlerName => "OniAccess";
 		public KInputHandler inputHandler { get; set; }
 
@@ -61,6 +64,11 @@ namespace OniAccess.Input {
 
 		public void OnKeyDown(KButtonEvent e) {
 			if (e.Consumed || !ModToggle.IsEnabled) return;
+			if (IsCommandCombo(e)) {
+				_commandSwallowed.Add(e.GetAction());
+				e.Consumed = true;
+				return;
+			}
 			if (IsGloballyBlocked(e)) {
 				e.Consumed = true;
 				return;
@@ -84,6 +92,10 @@ namespace OniAccess.Input {
 
 		public void OnKeyUp(KButtonEvent e) {
 			if (e.Consumed || !ModToggle.IsEnabled) return;
+			if (_commandSwallowed.Remove(e.GetAction()) || IsCommandCombo(e)) {
+				e.Consumed = true;
+				return;
+			}
 			if (IsGloballyBlocked(e)) {
 				e.Consumed = true;
 				return;
@@ -117,24 +129,23 @@ namespace OniAccess.Input {
 			if (keys.Count == 0) return false;
 			var bindings = GameInputMapping.KeyBindings;
 			for (int i = 0; i < keys.Count; i++) {
-				var origMod = keys[i].Modifier;
-				var mod = origMod;
-				if (InputUtil.IsMac) {
-					bool hasCtrl = (mod & Modifier.Ctrl) != 0;
-					bool hasAlt = (mod & Modifier.Alt) != 0;
-					mod = (mod & ~(Modifier.Ctrl | Modifier.Alt))
-						| (hasCtrl ? Modifier.Alt : Modifier.None)
-						| (hasAlt ? Modifier.Ctrl : Modifier.None);
-				}
 				for (int j = 0; j < bindings.Length; j++) {
 					if (bindings[j].mKeyCode == keys[i].KeyCode
-						&& (bindings[j].mModifier == mod
-							|| (InputUtil.IsMac && bindings[j].mModifier == origMod))
+						&& bindings[j].mModifier == keys[i].Modifier
 						&& e.IsAction(bindings[j].mAction))
 						return true;
 				}
 			}
 			return false;
+		}
+
+		/// <summary>
+		/// A key pressed with Command on Mac. The game cannot see Command, so the
+		/// combo would reach it as the bare key (Command+F would open Consumables).
+		/// Every Command combo belongs to the mod or to macOS, so none reach the game.
+		/// </summary>
+		private static bool IsCommandCombo(KButtonEvent e) {
+			return InputUtil.IsMac && InputUtil.CommandHeld() && !IsPassThroughAction(e);
 		}
 
 		/// <summary>

@@ -181,7 +181,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry("Shift+I", (string)STRINGS.ONIACCESS.RESOURCES.HELP_OPEN),
 			new HelpEntry("Shift+P", (string)STRINGS.ONIACCESS.RESOURCES.HELP_READ_PINNED),
 			new HelpEntry("H", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_HOME),
-			new HelpEntry("Alt+H", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_ORIENT_HOME),
+			new HelpEntry("Alt+H", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_ORIENT_HOME, onMac: false),
 			new HelpEntry("Ctrl+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_SET_BOOKMARK),
 			new HelpEntry("Shift+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_GOTO_BOOKMARK),
 			new HelpEntry("Alt+1-0", (string)STRINGS.ONIACCESS.BOOKMARKS.HELP_ORIENT_BOOKMARK),
@@ -362,7 +362,7 @@ namespace OniAccess.Handlers.Tiles {
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)
-				&& InputUtil.ShiftHeld() && InputUtil.CtrlHeld()) {
+				&& InputUtil.ShiftHeld() && InputUtil.CtrlOptionHeld()) {
 				string result = TileCursor.Instance.ResetRadius();
 				if (result != null) {
 					PlaySound("HUD_Click_Deselect");
@@ -371,7 +371,7 @@ namespace OniAccess.Handlers.Tiles {
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)
-				&& InputUtil.ShiftHeld() && !InputUtil.CtrlHeld()) {
+				&& InputUtil.ShiftHeld() && !InputUtil.AnyCtrlHeld()) {
 				string result = TileCursor.Instance.IncreaseRadius();
 				if (result != null) {
 					PlaySound("HUD_Click_Deselect");
@@ -380,7 +380,7 @@ namespace OniAccess.Handlers.Tiles {
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)
-				&& InputUtil.ShiftHeld() && !InputUtil.CtrlHeld()) {
+				&& InputUtil.ShiftHeld() && !InputUtil.AnyCtrlHeld()) {
 				string result = TileCursor.Instance.DecreaseRadius();
 				if (result != null) {
 					PlaySound("HUD_Click_Deselect");
@@ -389,49 +389,49 @@ namespace OniAccess.Handlers.Tiles {
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)
-				&& InputUtil.AltHeld() && !InputUtil.CtrlHeld()) {
+				&& InputUtil.AltHeld() && !InputUtil.AnyCtrlHeld()) {
 				SpeechPipeline.SpeakInterrupt(_skipEngine.SkipDefault(Direction.Up));
 				UpdateAudioForCell();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)
-				&& InputUtil.AltHeld() && !InputUtil.CtrlHeld()) {
+				&& InputUtil.AltHeld() && !InputUtil.AnyCtrlHeld()) {
 				SpeechPipeline.SpeakInterrupt(_skipEngine.SkipDefault(Direction.Down));
 				UpdateAudioForCell();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)
-				&& InputUtil.AltHeld() && !InputUtil.CtrlHeld()) {
+				&& InputUtil.AltHeld() && !InputUtil.AnyCtrlHeld()) {
 				SpeechPipeline.SpeakInterrupt(_skipEngine.SkipDefault(Direction.Left));
 				UpdateAudioForCell();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow)
-				&& InputUtil.AltHeld() && !InputUtil.CtrlHeld()) {
+				&& InputUtil.AltHeld() && !InputUtil.AnyCtrlHeld()) {
 				SpeechPipeline.SpeakInterrupt(_skipEngine.SkipDefault(Direction.Right));
 				UpdateAudioForCell();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)
-				&& InputUtil.CtrlHeld()) {
+				&& InputUtil.CtrlOptionHeld()) {
 				SpeechPipeline.SpeakInterrupt(_skipEngine.Skip(Direction.Up));
 				UpdateAudioForCell();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)
-				&& InputUtil.CtrlHeld()) {
+				&& InputUtil.CtrlOptionHeld()) {
 				SpeechPipeline.SpeakInterrupt(_skipEngine.Skip(Direction.Down));
 				UpdateAudioForCell();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.LeftArrow)
-				&& InputUtil.CtrlHeld()) {
+				&& InputUtil.CtrlOptionHeld()) {
 				SpeechPipeline.SpeakInterrupt(_skipEngine.Skip(Direction.Left));
 				UpdateAudioForCell();
 				return true;
 			}
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.RightArrow)
-				&& InputUtil.CtrlHeld()) {
+				&& InputUtil.CtrlOptionHeld()) {
 				SpeechPipeline.SpeakInterrupt(_skipEngine.Skip(Direction.Right));
 				UpdateAudioForCell();
 				return true;
@@ -600,7 +600,7 @@ namespace OniAccess.Handlers.Tiles {
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.V)
-				&& InputUtil.ShiftHeld() && !InputUtil.CtrlHeld() && !InputUtil.AltHeld()) {
+				&& InputUtil.ShiftHeld() && !InputUtil.AnyCtrlHeld() && !InputUtil.AltHeld()) {
 				OpenFastTravelMenu();
 				return true;
 			}
@@ -626,7 +626,9 @@ namespace OniAccess.Handlers.Tiles {
 			// Bookmark keybinds
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.H)) {
 				if (InputUtil.AltHeld()) {
-					SpeechPipeline.SpeakInterrupt(CursorBookmarks.OrientHome());
+					// Command+H hides the app on Mac, so it orients only elsewhere.
+					if (!InputUtil.IsMac)
+						SpeechPipeline.SpeakInterrupt(CursorBookmarks.OrientHome());
 					return true;
 				}
 				if (!InputUtil.AnyModifierHeld()) {
@@ -663,7 +665,7 @@ namespace OniAccess.Handlers.Tiles {
 
 			// Scanner keybinds
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F)
-				&& InputUtil.CtrlHeld()) {
+				&& InputUtil.CtrlCmdHeld()) {
 				HandlerStack.Push(new SearchInputHandler(q => _scanner.SearchRefresh(q)));
 				return true;
 			}

@@ -17,7 +17,8 @@ namespace OniAccess.Dev {
 	///       frame after; without the release the game's controller keeps the
 	///       key marked down and ignores every later press of it. ctrl and alt are the mod's logical
 	///       modifiers (whatever InputUtil.CtrlHeld/AltHeld check on this
-	///       platform); control, option and cmd are the physical keys.
+	///       platform: Control, and Command on Mac); control, option and cmd
+	///       are the physical keys.
 	///   action &lt;Action&gt;  a game action (Escape, Plan1...) as a KButtonEvent,
 	///       dispatched through the game's own input tree exactly as the
 	///       controller does, so it reaches ModInputRouter and the game's screens.
@@ -75,7 +76,7 @@ namespace OniAccess.Dev {
 			_up.Add(key);
 			for (int i = 1; i < parts.Length; i++) {
 				switch (parts[i].Trim().ToLowerInvariant()) {
-					case "ctrl": _held.Add(InputUtil.IsMac ? KeyCode.LeftAlt : KeyCode.LeftControl); break;
+					case "ctrl": _held.Add(KeyCode.LeftControl); break;
 					case "shift": _held.Add(KeyCode.LeftShift); break;
 					case "alt": _held.Add(InputUtil.IsMac ? KeyCode.LeftCommand : KeyCode.LeftAlt); break;
 					case "control": _held.Add(KeyCode.LeftControl); break;

@@ -2,7 +2,7 @@
 
 Vision Not Included is an accessibility mod that makes Oxygen Not Included playable for blind users through screen reader speech output. This is the full feature reference. For install instructions and getting started, see [getting-started.md](getting-started.md). For recent changes, see [changes.md](changes.md).
 
-On Mac, press Option wherever this reference says Ctrl, and Command wherever it says Alt. See [getting-started.md](getting-started.md) for why.
+On Mac, Ctrl is Control, except with an arrow key or Space, where it is Option. Alt is Command. Mac conventions are respected: for example, Ctrl+F is Command+F, and text fields use Mac navigation keys.
 
 ## Context help and mod toggle
 

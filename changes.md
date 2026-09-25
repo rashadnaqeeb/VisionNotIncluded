@@ -2,6 +2,9 @@
 
 ## Unreleased changes since 1.7.6
 
+* On Mac, most Ctrl commands are now Control, as on Windows. Option replaces Ctrl only with arrow keys and Space, which macOS claims for Mission Control, Spaces, and input switching. Ctrl+F is Command+F, and Alt is still Command. Alt+H is gone on Mac because Command+H hides the game.
+* On Mac, text fields follow Mac keys: Option+Left/Right move by word, Command+Left/Right and Command+Up/Down jump to the start or end, and Command+C and Command+V copy and paste.
+* On Mac, keys pressed with Command no longer also reach the game, so Command+F no longer opens the Consumables screen.
 * In the Enter selection menu, backwalls such as drywall and Gravitas lab walls are now listed after duplicants, critters, and debris, just above the element, instead of near the top.
 * Ctrl+Arrow in the utility overlays now follows a pipe or wire straight across a bridge, instead of stopping on the bridge's middle and again at its far end.
 * A bridge that ends partway along a pipe or wire now makes that spot a junction, so Ctrl+Arrow along the line stops there instead of passing it.

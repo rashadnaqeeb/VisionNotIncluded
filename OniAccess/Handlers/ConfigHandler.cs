@@ -128,7 +128,7 @@ namespace OniAccess.Handlers {
 
 		public override bool Tick() {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F12)
-				&& !InputUtil.ShiftHeld() && !InputUtil.CtrlHeld() && !InputUtil.AltHeld()) {
+				&& !InputUtil.AnyModifierHeld()) {
 				Close();
 				return true;
 			}

@@ -274,7 +274,7 @@ namespace OniAccess.Handlers {
 				var handler = _stack[i];
 				if (handler.HelpEntries != null) {
 					foreach (var entry in handler.HelpEntries) {
-						if (seenKeys.Add(entry.KeyName))
+						if (entry.Available && seenKeys.Add(entry.KeyName))
 							entries.Add(entry);
 					}
 				}

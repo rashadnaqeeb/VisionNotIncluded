@@ -534,7 +534,7 @@ namespace OniAccess.Handlers {
 			if (TryLineReview())
 				return true;
 
-			bool ctrlHeld = InputUtil.CtrlHeld();
+			bool ctrlHeld = InputUtil.CtrlOptionHeld();
 			bool altHeld = InputUtil.AltHeld();
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Tab)) {
@@ -543,7 +543,7 @@ namespace OniAccess.Handlers {
 				return true;
 			}
 
-			if (TryRouteToSearch(ctrlHeld, altHeld))
+			if (TryRouteToSearch(InputUtil.AnyCtrlHeld(), altHeld))
 				return true;
 
 			if (_search.HasBuffer && UnityEngine.Input.anyKeyDown)

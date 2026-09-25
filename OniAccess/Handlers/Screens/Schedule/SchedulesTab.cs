@@ -375,7 +375,7 @@ namespace OniAccess.Handlers.Screens.Schedule {
 		// ========================================
 
 		private bool HandleGridInput() {
-			bool ctrlHeld = InputUtil.CtrlHeld();
+			bool ctrlHeld = InputUtil.CtrlOptionHeld();
 			bool shiftHeld = InputUtil.ShiftHeld();
 
 			// Number keys: select brush

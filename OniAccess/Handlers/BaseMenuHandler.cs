@@ -334,10 +334,10 @@ namespace OniAccess.Handlers {
 			if (TryLineReview())
 				return true;
 
-			bool ctrlHeld = InputUtil.CtrlHeld();
+			bool ctrlHeld = InputUtil.CtrlOptionHeld();
 			bool altHeld = InputUtil.AltHeld();
 
-			if (TryRouteToSearch(ctrlHeld, altHeld))
+			if (TryRouteToSearch(InputUtil.AnyCtrlHeld(), altHeld))
 				return true;
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow)) {

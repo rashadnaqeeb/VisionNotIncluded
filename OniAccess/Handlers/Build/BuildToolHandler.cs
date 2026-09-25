@@ -379,7 +379,7 @@ namespace OniAccess.Handlers.Build {
 			}
 
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.P)
-				&& InputUtil.ShiftHeld() && !InputUtil.CtrlHeld() && !InputUtil.AltHeld()) {
+				&& InputUtil.ShiftHeld() && !InputUtil.AnyCtrlHeld() && !InputUtil.AltHeld()) {
 				AnnouncePortLayout();
 				return true;
 			}

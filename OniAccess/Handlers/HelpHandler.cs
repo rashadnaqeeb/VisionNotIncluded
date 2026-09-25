@@ -71,7 +71,7 @@ namespace OniAccess.Handlers {
 
 		public override bool Tick() {
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Slash)
-			&& InputUtil.ShiftHeld() && !InputUtil.CtrlHeld()) {
+			&& InputUtil.ShiftHeld() && !InputUtil.AnyCtrlHeld()) {
 				Close();
 				return true;
 			}

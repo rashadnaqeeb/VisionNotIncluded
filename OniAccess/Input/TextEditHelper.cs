@@ -49,7 +49,7 @@ namespace OniAccess.Input {
 
 		/// <summary>
 		/// Call from the owner's Tick(). Returns true while editing (caller should
-		/// block further input). Handles Enter to confirm, Ctrl+C/V, Up/Down to
+		/// block further input). Handles Enter to confirm, Ctrl+C/V (Command on Mac), Up/Down to
 		/// re-read, and observes caret/text/selection changes to announce them.
 		/// </summary>
 		public bool HandleTick() {
@@ -57,9 +57,9 @@ namespace OniAccess.Input {
 			var field = _fieldAccessor?.Invoke();
 			if (field == null) return true;
 
-			bool ctrlHeld = InputUtil.CtrlHeld();
+			bool clipboardHeld = InputUtil.CtrlCmdHeld();
 
-			if (ctrlHeld && UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.C)) {
+			if (clipboardHeld && UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.C)) {
 				int anchor = field.selectionAnchorPosition;
 				int caret = field.caretPosition;
 				string text = field.text;
@@ -74,7 +74,7 @@ namespace OniAccess.Input {
 				return true;
 			}
 
-			if (ctrlHeld && UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.V)) {
+			if (clipboardHeld && UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.V)) {
 				field.text = UnityEngine.GUIUtility.systemCopyBuffer;
 				Speech.SpeechPipeline.SpeakInterrupt($"{STRINGS.ONIACCESS.TEXT_EDIT.PASTED}, {field.text}");
 				ResetBaseline(field);
@@ -87,7 +87,9 @@ namespace OniAccess.Input {
 				return true;
 			}
 
-			if (!ctrlHeld && (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)
+			// Modified Up/Down belong to the field (Command+Up/Down jump to start and end on Mac).
+			if (!InputUtil.AnyCtrlHeld() && !clipboardHeld
+				&& (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.UpArrow)
 					|| UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.DownArrow))) {
 				string text = field.text;
 				if (string.IsNullOrEmpty(text)) {
@@ -107,7 +109,8 @@ namespace OniAccess.Input {
 				return true;
 			}
 
-			DiffAndAnnounce(field, ctrlHeld);
+			// Ctrl+Left/Right (Option on Mac, see TMP_InputField_KeyPressed_Patch) move by word.
+			DiffAndAnnounce(field, InputUtil.CtrlOptionHeld());
 			return true;
 		}
 
