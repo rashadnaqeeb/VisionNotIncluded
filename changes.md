@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.7.6
+## Unreleased changes since 1.7.7
+
+## 1.7.7
 
 * On Mac, most Ctrl commands are now Control, as on Windows. Option replaces Ctrl only with arrow keys and Space, which macOS claims for Mission Control, Spaces, and input switching. Ctrl+F is Command+F, and Alt is still Command. Alt+H is gone on Mac because Command+H hides the game.
 * On Mac, text fields follow Mac keys: Option+Left/Right move by word, Command+Left/Right and Command+Up/Down jump to the start or end, and Command+C and Command+V copy and paste.

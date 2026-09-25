@@ -13,7 +13,7 @@
     <AssemblyName>OniAccess</AssemblyName>
     <RootNamespace>OniAccess</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>1.7.6</Version>
+    <Version>1.7.7</Version>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
