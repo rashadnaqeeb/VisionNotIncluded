@@ -5,14 +5,8 @@ using UnityEngine;
 namespace OniAccess.Patches {
 	[HarmonyPatch(typeof(Game), "OnPrefabInit")]
 	internal static class Game_OnPrefabInit_FlowTracker_Patch {
-		private static void Postfix() {
-			FlowTracker.Initialize();
-			Game.Instance.gasConduitFlow.onConduitsRebuilt +=
-				FlowTracker.Gas.Clear;
-			Game.Instance.liquidConduitFlow.onConduitsRebuilt +=
-				FlowTracker.Liquid.Clear;
-			Game.Instance.solidConduitFlow.onConduitsRebuilt +=
-				FlowTracker.Solid.Clear;
+		private static void Postfix(Game __instance) {
+			FlowTracker.Attach(__instance);
 		}
 	}
 

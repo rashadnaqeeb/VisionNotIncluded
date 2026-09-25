@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using OniAccess.Audio;
+using OniAccess.ConduitTracking;
 using OniAccess.Handlers;
 using OniAccess.Handlers.Tiles.Sections;
 using OniAccess.Input;
@@ -82,11 +83,13 @@ namespace OniAccess {
 		}
 
 		// A reload lands mid-session: the one-shot game events the first generation
-		// hooked (InputInit.Awake, Localization.Initialize) will not fire again, so
-		// their work is redone here, then the handler stack is rebuilt for whatever
-		// is on screen.
+		// hooked (InputInit.Awake, Localization.Initialize, Game.OnPrefabInit) will
+		// not fire again, so their work is redone here, then the handler stack is
+		// rebuilt for whatever is on screen.
 		private static void Reattach() {
 			ModInputRouter.Register();
+			if (Game.Instance != null)
+				FlowTracker.Attach(Game.Instance);
 			TranslationLoader.LoadModTranslations();
 			LocString.CreateLocStringKeys(typeof(STRINGS.ONIACCESS), "STRINGS.");
 			ContextDetector.DetectAndActivate();
@@ -103,6 +106,7 @@ namespace OniAccess {
 			Step("harmony", () => _harmony.UnpatchAll(_harmony.Id));
 			Step("handlers", HandlerStack.DeactivateAll); // OnDeactivate drops the handlers' game event subscriptions
 			Step("input router", ModInputRouter.Unregister);
+			Step("flow trackers", FlowTracker.Detach);
 			Step("input object", () => UnityEngine.Object.Destroy(_inputGo));
 			Step("audio object", () => UnityEngine.Object.Destroy(_audioGo));
 			Step("footsteps", FootstepPlayer.Destroy);

@@ -29,10 +29,30 @@ namespace OniAccess.ConduitTracking {
 		public static FlowTracker Liquid { get; private set; }
 		public static FlowTracker Solid { get; private set; }
 
-		public static void Initialize() {
+		/// <summary>
+		/// Creates the trackers for a game and clears each when its conduits
+		/// rebuild. Runs from Game.OnPrefabInit, and from ModuleMain.Reattach
+		/// when a reload lands mid-game.
+		/// </summary>
+		public static void Attach(Game game) {
 			Gas = new FlowTracker();
 			Liquid = new FlowTracker();
 			Solid = new FlowTracker();
+			game.gasConduitFlow.onConduitsRebuilt += Gas.Clear;
+			game.liquidConduitFlow.onConduitsRebuilt += Liquid.Clear;
+			game.solidConduitFlow.onConduitsRebuilt += Solid.Clear;
+		}
+
+		/// <summary>
+		/// Drops the rebuild subscriptions Attach made on the live game, if
+		/// there is one; a game that has ended took them with it.
+		/// </summary>
+		public static void Detach() {
+			var game = Game.Instance;
+			if (game == null || Gas == null) return;
+			game.gasConduitFlow.onConduitsRebuilt -= Gas.Clear;
+			game.liquidConduitFlow.onConduitsRebuilt -= Liquid.Clear;
+			game.solidConduitFlow.onConduitsRebuilt -= Solid.Clear;
 		}
 
 		public void Clear() {
