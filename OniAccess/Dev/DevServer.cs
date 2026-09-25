@@ -22,6 +22,11 @@ namespace OniAccess.Dev {
 	/// The module registers its own routes on Load (/gui, /input, /loadsave) and
 	/// removes them on Dispose, so a reload swaps the handlers with the code they call.
 	///
+	/// The driver's actions stay silent for the player: any request other than
+	/// /speech, /health and /module sets <see cref="DriverQuiet"/>, which mutes the
+	/// mod's speech output (the /speech log still gets every line), and a physical
+	/// key press or click clears it. It starts set, since the driver launched the game.
+	///
 	/// Eval and every module route run on the Unity main thread: HTTP requests
 	/// enqueue a job and block until <see cref="Pump"/> (called once per frame from
 	/// the host Ticker) executes it. /speech reads a thread-safe buffer directly.
@@ -60,6 +65,12 @@ namespace OniAccess.Dev {
 		/// <summary>True once the server is listening. Module code uses it to skip
 		/// dev-only hooks (input injection patches) in a normal Debug run.</summary>
 		public bool Enabled { get; private set; }
+
+		private volatile bool _driverQuiet = true;
+
+		/// <summary>True while the driver has the game; the module mutes speech output
+		/// while it holds. Set by driving requests, cleared by physical input.</summary>
+		public bool DriverQuiet => _driverQuiet;
 
 		public void RegisterRoute(string route, Func<string, string, string, string> handler) {
 			lock (_routeLock) _moduleRoutes[route] = handler;
@@ -130,6 +141,8 @@ namespace OniAccess.Dev {
 		public void Pump() {
 			if (!Enabled) return;
 			UnityEngine.Application.runInBackground = true;
+			// Injection patches GetKeyDown/GetKey only, so anyKeyDown is the hardware.
+			if (_driverQuiet && UnityEngine.Input.anyKeyDown) _driverQuiet = false;
 			// Only the jobs queued before this frame run now; one enqueued during
 			// the pump waits for the next frame, which lets a route let one frame
 			// pass between two steps (key injection relies on it).
@@ -154,6 +167,9 @@ namespace OniAccess.Dev {
 				route = path.Substring(0, q);
 				query = path.Substring(q + 1);
 			}
+
+			if (route != "/speech" && route != "/health" && route != "/" && route != "/module")
+				_driverQuiet = true;
 
 			if (route == "/eval" && method == "POST") {
 				if (string.IsNullOrWhiteSpace(body)) return "[empty] POST C# source as the request body\n";

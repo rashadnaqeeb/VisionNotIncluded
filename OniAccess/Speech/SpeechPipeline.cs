@@ -37,9 +37,18 @@ namespace OniAccess.Speech {
 		/// run; the module's dev routes set it.
 		/// </summary>
 		internal static System.Action<string> Observer;
+
+		/// <summary>
+		/// Dev-only gate: true while the dev driver is acting, so what its actions
+		/// make the mod say reaches the tap but not the player's speech output.
+		/// Null in a normal run; the module's dev routes set it.
+		/// </summary>
+		internal static System.Func<bool> Muted;
 		private static void Tap(string text) => Observer?.Invoke(text);
+		private static bool IsMuted() => Muted != null && Muted();
 #else
 		private static void Tap(string text) { }
+		private static bool IsMuted() => false;
 #endif
 
 		/// <summary>
@@ -81,7 +90,7 @@ namespace OniAccess.Speech {
 			_lastInterruptText = filtered;
 			_lastInterruptTime = now;
 			Tap(filtered);
-			SpeakAction(filtered, true);
+			if (!IsMuted()) SpeakAction(filtered, true);
 		}
 
 		/// <summary>
@@ -96,7 +105,7 @@ namespace OniAccess.Speech {
 			string filtered = TextFilter.FilterForSpeech(text);
 			if (string.IsNullOrEmpty(filtered)) return;
 			Tap(filtered);
-			SpeakAction(filtered, false);
+			if (!IsMuted()) SpeakAction(filtered, false);
 		}
 
 	}

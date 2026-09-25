@@ -18,6 +18,7 @@ namespace OniAccess.Dev {
 			var s = DevServer.Instance;
 			if (!s.Enabled) return;
 			SpeechPipeline.Observer = s.TapSpeech;
+			SpeechPipeline.Muted = () => s.DriverQuiet;
 			DevInput.Patch(harmony);
 			s.RegisterRoute("/gui", (method, body, query) => s.OnMain(GuiInspector.Dump));
 			s.RegisterRoute("/input", (method, body, query) => Input(body));
@@ -28,12 +29,13 @@ namespace OniAccess.Dev {
 			var s = DevServer.Instance;
 			if (!s.Enabled) return;
 			SpeechPipeline.Observer = null;
+			SpeechPipeline.Muted = null;
 			s.UnregisterRoute("/gui");
 			s.UnregisterRoute("/input");
 			s.UnregisterRoute("/loadsave");
 		}
 
-		// body = "key <KeyCode>[+ctrl][+shift][+alt]" | "action <Action>"; anything else lists the forms.
+		// body = "key <KeyCode>[+modifier...]" | "action <Action>"; anything else lists the forms.
 		private static string Input(string body) {
 			var s = DevServer.Instance;
 			string spec = (body ?? "").Trim();
