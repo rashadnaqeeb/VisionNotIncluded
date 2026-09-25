@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OniAccess\n"
-"PO-Revision-Date: 2026-09-16\n"
+"PO-Revision-Date: 2026-09-25\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -1264,6 +1264,11 @@ msgctxt "STRINGS.ONIACCESS.CONFIG.SCANNER_MASS_READOUT"
 msgid "Scanner mass readout"
 msgstr "扫描器质量读数"
 
+#. STRINGS.ONIACCESS.CONFIG.SECTION_CURSOR_SKIP
+msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_CURSOR_SKIP"
+msgid "Cursor Skip Settings"
+msgstr "光标跳跃设置"
+
 #. STRINGS.ONIACCESS.CONFIG.SECTION_INTERFACE
 msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_INTERFACE"
 msgid "Interface"
@@ -1293,6 +1298,16 @@ msgstr "方块光标设置"
 msgctxt "STRINGS.ONIACCESS.CONFIG.SECTION_UTILITY"
 msgid "Utility Readouts"
 msgstr "设施读数"
+
+#. STRINGS.ONIACCESS.CONFIG.SKIP_STOPS_AT_BRIDGE_MIDDLES
+msgctxt "STRINGS.ONIACCESS.CONFIG.SKIP_STOPS_AT_BRIDGE_MIDDLES"
+msgid "Stop skips at bridge middles"
+msgstr "跳跃时在桥梁中间停下"
+
+#. STRINGS.ONIACCESS.CONFIG.SKIP_STOPS_AT_PORTS
+msgctxt "STRINGS.ONIACCESS.CONFIG.SKIP_STOPS_AT_PORTS"
+msgid "Stop skips at building ports"
+msgstr "跳跃时在建筑端口停下"
 
 #. STRINGS.ONIACCESS.CONFIG.SPEECH_OUTPUT
 msgctxt "STRINGS.ONIACCESS.CONFIG.SPEECH_OUTPUT"
@@ -2738,6 +2753,11 @@ msgstr "机械臂关闭"
 msgctxt "STRINGS.ONIACCESS.GLANCE.BRIDGE_MIDDLE"
 msgid "{0} middle"
 msgstr "{0} 中段"
+
+#. STRINGS.ONIACCESS.GLANCE.BRIDGE_ORIENTATION
+msgctxt "STRINGS.ONIACCESS.GLANCE.BRIDGE_ORIENTATION"
+msgid "{0} {1}"
+msgstr "{0} {1}"
 
 #. STRINGS.ONIACCESS.GLANCE.CONDUIT_GAS
 msgctxt "STRINGS.ONIACCESS.GLANCE.CONDUIT_GAS"

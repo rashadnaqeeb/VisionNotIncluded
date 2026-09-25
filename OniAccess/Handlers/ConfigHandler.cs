@@ -318,16 +318,22 @@ namespace OniAccess.Handlers {
 							value => ConfigManager.Config.TemperatureBandVolume = value,
 							0f, 2f
 						),
+					}
+				},
+
+				// --- Cursor Skip Settings ---
+				new ConfigSection {
+					Title = (string)STRINGS.ONIACCESS.CONFIG.SECTION_CURSOR_SKIP,
+					Items = new List<ConfigItem> {
 						new BoolConfigItem(
-							(string)STRINGS.ONIACCESS.CONFIG.SWEEPER_PICKUP_EARCONS,
-							() => ConfigManager.Config.SweeperPickupEarcons,
-							value => ConfigManager.Config.SweeperPickupEarcons = value
+							(string)STRINGS.ONIACCESS.CONFIG.SKIP_STOPS_AT_BRIDGE_MIDDLES,
+							() => ConfigManager.Config.SkipStopsAtBridgeMiddles,
+							value => ConfigManager.Config.SkipStopsAtBridgeMiddles = value
 						),
-						new FloatConfigItem(
-							(string)STRINGS.ONIACCESS.CONFIG.SWEEPER_PICKUP_VOLUME,
-							() => ConfigManager.Config.SweeperPickupVolume,
-							value => ConfigManager.Config.SweeperPickupVolume = value,
-							0f, 2f
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.SKIP_STOPS_AT_PORTS,
+							() => ConfigManager.Config.SkipStopsAtPorts,
+							value => ConfigManager.Config.SkipStopsAtPorts = value
 						),
 					}
 				},
@@ -432,6 +438,17 @@ namespace OniAccess.Handlers {
 							(string)STRINGS.ONIACCESS.CONFIG.SWEEPER_ACTIVITY_READOUT,
 							() => ConfigManager.Config.SweeperActivityReadout,
 							value => ConfigManager.Config.SweeperActivityReadout = value
+						),
+						new BoolConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.SWEEPER_PICKUP_EARCONS,
+							() => ConfigManager.Config.SweeperPickupEarcons,
+							value => ConfigManager.Config.SweeperPickupEarcons = value
+						),
+						new FloatConfigItem(
+							(string)STRINGS.ONIACCESS.CONFIG.SWEEPER_PICKUP_VOLUME,
+							() => ConfigManager.Config.SweeperPickupVolume,
+							value => ConfigManager.Config.SweeperPickupVolume = value,
+							0f, 2f
 						),
 					}
 				},

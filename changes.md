@@ -3,6 +3,12 @@
 ## Unreleased changes since 1.7.6
 
 * In the Enter selection menu, backwalls such as drywall and Gravitas lab walls are now listed after duplicants, critters, and debris, just above the element, instead of near the top.
+* Ctrl+Arrow in the utility overlays now follows a pipe or wire straight across a bridge, instead of stopping on the bridge's middle and again at its far end.
+* A bridge that ends partway along a pipe or wire now makes that spot a junction, so Ctrl+Arrow along the line stops there instead of passing it.
+* Ctrl+Arrow away from a junction now follows the branch to its next stop instead of stopping one tile later.
+* Two new settings in a new Cursor Skip Settings section, both off by default: Stop skips at bridge middles, and Stop skips at building ports, which makes a building's input or output partway along a line a junction.
+* Fixed overflow and priority valves being read as a bridge middle in the plumbing and ventilation overlays, and pipe shape earcons playing a false connection at the pipes on their input and output.
+* Sweeper pickup earcons and their volume moved from Tile Cursor Settings to Miscellaneous, next to the sweeper activity readout.
 * Bridges now read their orientation: liquid, gas, and conveyor bridges say which way they flow, in the same words as when rotating one for placement ("right Liquid Bridge"), and wire and automation bridges and joint plates say horizontal or vertical.
 
 ## 1.7.6

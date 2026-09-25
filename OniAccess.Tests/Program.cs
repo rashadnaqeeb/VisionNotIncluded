@@ -439,6 +439,10 @@ namespace OniAccess.Tests {
 			foreach (var r in DevServerTests.All())
 				results.Add(r);
 
+			// --- Utility skip step rule ---
+			foreach (var r in UtilityPieceTests.All())
+				results.Add(r);
+
 			int passed = 0, failed = 0;
 			foreach (var (name, ok, detail) in results) {
 				if (ok) {

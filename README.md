@@ -22,7 +22,7 @@ Most overlays prepend one extra reading before the standard tile information. Te
 
 - **Default view**: different building, tile type, or element
 - **Temperature**: different temperature band (8 bands from below freezing to above 1800 C)
-- **Power / Plumbing / Ventilation / Conveyor**: follows a pipe/wire, stops at junctions or at the end of the pipe/wire. Doesn't jump between networks.
+- **Power / Plumbing / Ventilation / Conveyor / Automation**: follows a pipe or wire, carrying on over bridges. Stops at junctions and just past the end of the pipe or wire, and doesn't jump to one it isn't connected to. A bridge that ends partway along a line counts as a branch, so that spot is a junction. Two settings add stops: at bridge middles, and at building ports on the line.
 - **Rooms**: different room
 - **Disease**: transition between clean and infected
 - **Light / Radiation / Decor**: different value band, set by the game
@@ -318,7 +318,7 @@ Most menu screens support type-ahead: start typing to filter. Matches are ranked
 
 ## Settings (F12)
 
-**F12** opens the settings screen. All settings persist across sessions. Navigate with Up/Down, toggle with Enter or Left/Right. Type-ahead search works here too. Settings are organized into five sections.
+**F12** opens the settings screen. All settings persist across sessions. Navigate with Up/Down, toggle with Enter or Left/Right. Type-ahead search works here too. Settings are organized into seven sections.
 
 ### Speech
 
@@ -336,6 +336,11 @@ Most menu screens support type-ahead: start typing to filter. Matches are ranked
 - **Footstep volume** -- volume for footstep earcons (0-200%)
 - **Temperature band earcons** -- plays a rising or falling tone when the cursor crosses a temperature threshold. See Earcons below. Off by default
 - **Temperature band volume** -- volume for temperature band earcons (0-200%)
+
+### Cursor skip settings
+
+- **Stop skips at bridge middles** -- in utility overlays, Ctrl+Arrow stops on the middle of any bridge it reaches, whether it is following the bridge or the line underneath. Off by default
+- **Stop skips at building ports** -- in utility overlays, a building's input or output on a pipe or wire counts as a branch, so a port partway along a line is a junction where Ctrl+Arrow stops. Off by default
 
 ### Scanner settings
 

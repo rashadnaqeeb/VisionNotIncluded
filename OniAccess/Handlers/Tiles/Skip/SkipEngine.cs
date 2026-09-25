@@ -1,7 +1,9 @@
 namespace OniAccess.Handlers.Tiles.Skip {
 	/// <summary>
-	/// Walks cells in a direction until the active strategy's signature
-	/// changes. Handles unexplored cells and world boundaries.
+	/// Walks cells in a direction until the active strategy says to stop:
+	/// a line strategy judges each step, a signature strategy stops where
+	/// the signature differs from the starting cell's. Handles unexplored
+	/// cells and world boundaries.
 	/// Returns the speech string with tile count prepended.
 	/// </summary>
 	public class SkipEngine {
@@ -22,7 +24,11 @@ namespace OniAccess.Handlers.Tiles.Skip {
 				var overlayScreen = OverlayScreen.Instance;
 				if (overlayScreen != null)
 					mode = overlayScreen.GetMode();
-				return SkipCore(direction, _registry.GetStrategy(mode));
+				var line = _registry.GetLineStrategy(mode);
+				if (line != null)
+					return SkipCore(direction, (from, to) =>
+						line.Continues(from, to, direction));
+				return SkipBySignature(direction, _registry.GetStrategy(mode));
 			} catch (System.Exception ex) {
 				Util.Log.Error($"SkipEngine.Skip: {ex}");
 				return (string)STRINGS.ONIACCESS.SKIP.NO_CHANGE_BOUNDARY;
@@ -31,18 +37,24 @@ namespace OniAccess.Handlers.Tiles.Skip {
 
 		public string SkipDefault(Direction direction) {
 			try {
-				return SkipCore(direction, _coarse);
+				return SkipBySignature(direction, _coarse);
 			} catch (System.Exception ex) {
 				Util.Log.Error($"SkipEngine.SkipDefault: {ex}");
 				return (string)STRINGS.ONIACCESS.SKIP.NO_CHANGE_BOUNDARY;
 			}
 		}
 
-		private string SkipCore(Direction direction, ISkipStrategy strategy) {
+		private string SkipBySignature(Direction direction, ISkipStrategy strategy) {
+			object startSignature = strategy.GetSignature(TileCursor.Instance.Cell);
+			return SkipCore(direction, (from, to) =>
+				object.Equals(startSignature, strategy.GetSignature(to)));
+		}
+
+		private string SkipCore(Direction direction,
+				System.Func<int, int, bool> continues) {
 			var cursor = TileCursor.Instance;
 			int startCell = cursor.Cell;
 			bool startedUnexplored = !Grid.IsVisible(startCell);
-			object startSignature = strategy.GetSignature(startCell);
 
 			int current = startCell;
 			int steps = 0;
@@ -53,6 +65,7 @@ namespace OniAccess.Handlers.Tiles.Skip {
 				if (next == Grid.InvalidCell || !TileCursor.IsInWorldBounds(next))
 					break;
 
+				int previous = current;
 				steps++;
 				current = next;
 
@@ -72,8 +85,7 @@ namespace OniAccess.Handlers.Tiles.Skip {
 				}
 
 				if (!startedUnexplored) {
-					object sig = strategy.GetSignature(current);
-					if (!object.Equals(startSignature, sig)) {
+					if (!continues(previous, current)) {
 						string cellSpeech = cursor.JumpTo(current);
 						return FormatTileCount(steps) + ", " + cellSpeech;
 					}

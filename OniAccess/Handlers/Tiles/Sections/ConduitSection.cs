@@ -203,17 +203,27 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		}
 
 		/// <summary>
-		/// True when the object is a bridge endpoint. Bridge endpoints
-		/// are handled by BuildingSection (port labels + name), not here.
+		/// True when the object is a bridge, found at one of its ends: it
+		/// carries a line from one end to the other over the cell between.
+		/// Bridge endpoints are handled by BuildingSection (port labels +
+		/// name), not here. Overflow and priority valves share the Conduit
+		/// build rule but sit on the Building layer; their ports are ordinary
+		/// ports with nothing between them.
 		/// </summary>
 		internal static bool IsBridgeEndpoint(UnityEngine.GameObject go) {
 			var building = go.GetComponent<Building>();
 			if (building == null) return false;
-			var rule = building.Def.BuildLocationRule;
-			return rule == BuildLocationRule.Conduit
-				|| rule == BuildLocationRule.WireBridge
-				|| rule == BuildLocationRule.LogicBridge
-				|| rule == BuildLocationRule.HighWattBridgeTile;
+			var def = building.Def;
+			switch (def.BuildLocationRule) {
+				case BuildLocationRule.WireBridge:
+				case BuildLocationRule.LogicBridge:
+				case BuildLocationRule.HighWattBridgeTile:
+					return true;
+				case BuildLocationRule.Conduit:
+					return def.ObjectLayer != ObjectLayer.Building;
+				default:
+					return false;
+			}
 		}
 
 		/// <summary>

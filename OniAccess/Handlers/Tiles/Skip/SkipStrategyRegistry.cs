@@ -2,22 +2,35 @@ using System.Collections.Generic;
 
 namespace OniAccess.Handlers.Tiles.Skip {
 	/// <summary>
-	/// Maps overlay mode IDs to skip strategies.
-	/// Falls back to DefaultSkipStrategy for unmapped overlays.
+	/// Maps overlay mode IDs to skip strategies. An overlay has either a
+	/// line strategy or a signature strategy; unmapped overlays fall back
+	/// to DefaultSkipStrategy.
 	/// </summary>
 	public sealed class SkipStrategyRegistry {
 		private readonly Dictionary<HashedString, ISkipStrategy> _strategies
 			= new Dictionary<HashedString, ISkipStrategy>();
+		private readonly Dictionary<HashedString, ILineSkipStrategy> _lineStrategies
+			= new Dictionary<HashedString, ILineSkipStrategy>();
 		private readonly ISkipStrategy _default = new DefaultSkipStrategy();
 
 		public void Register(HashedString modeId, ISkipStrategy strategy) {
 			_strategies[modeId] = strategy;
 		}
 
+		public void Register(HashedString modeId, ILineSkipStrategy strategy) {
+			_lineStrategies[modeId] = strategy;
+		}
+
 		public ISkipStrategy GetStrategy(HashedString modeId) {
 			if (_strategies.TryGetValue(modeId, out var strategy))
 				return strategy;
 			return _default;
+		}
+
+		/// <summary>Null when the overlay uses a signature strategy.</summary>
+		public ILineSkipStrategy GetLineStrategy(HashedString modeId) {
+			_lineStrategies.TryGetValue(modeId, out var strategy);
+			return strategy;
 		}
 
 		public static SkipStrategyRegistry Build() {

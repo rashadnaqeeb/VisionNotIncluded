@@ -102,6 +102,7 @@ namespace STRINGS {
 			// "Chaosbringer" is a proper name (do not translate).
 			public static LocString VERBOSE_UI_TOOLTIP = "for weaklings like Chaosbringer who get lost in \"basic\" UI";
 			public static LocString SECTION_TILE_CURSOR = "Tile Cursor Settings";
+			public static LocString SECTION_CURSOR_SKIP = "Cursor Skip Settings";
 			public static LocString SECTION_SCANNER = "Scanner Settings";
 			public static LocString SECTION_UTILITY = "Utility Readouts";
 			public static LocString SECTION_MISC = "Miscellaneous";
@@ -136,6 +137,8 @@ namespace STRINGS {
 			public static LocString SCANNER_DIRECTION_EARCONS = "Scanner direction earcons";
 			public static LocString SCANNER_DIRECTION_VOLUME = "Scanner direction volume";
 			public static LocString FLOW_DIRECTION_READOUT = "Flow direction readout";
+			public static LocString SKIP_STOPS_AT_BRIDGE_MIDDLES = "Stop skips at bridge middles";
+			public static LocString SKIP_STOPS_AT_PORTS = "Stop skips at building ports";
 			public static LocString CUSTOM_SCANNER_CATEGORIES = "Custom scanner categories";
 		}
 
