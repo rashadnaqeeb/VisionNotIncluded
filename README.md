@@ -463,3 +463,13 @@ If something isn't working, the player log usually has the answer. It's at `%USE
 - **Austin Hicks (ahicks)** — His general advice and work on Factorio Access inspired much of the mod's infrastructure. Many of the mod's core systems are lifted directly from Factorio Access.
 - **Brad Renshaw (chaosbringer216)** — Helped me keep my code organized, teaching me OOP along the way. His Slay the Spire mod inspired the graph/node tree approach.
 - **Keltosh_** — Provided the earcon sounds used for pipe and wire presence detection.
+
+## License
+
+Copyright (C) 2026 Rashad Naqeeb
+
+This mod is licensed under the GNU General Public License version 3; see [LICENSE](LICENSE). You are free to use, study, change and share it, but anything you distribute that is based on it must be released under the same license, with its full source code.
+
+Additional permission under GNU GPL version 3 section 7: if you modify this program, or any covered work, by linking or combining it with Oxygen Not Included (or a modified version of it), including its engine and libraries, containing parts covered by the terms of their own licenses, the licensors of this program grant you additional permission to convey the resulting work.
+
+Bundled third-party components keep their own licenses.
