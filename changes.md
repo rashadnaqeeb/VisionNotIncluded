@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.7.7
 
+* Ctrl+Shift+\\ now also follows the current duplicant or bot, for 1Password users on Windows, where 1Password takes Ctrl+\\ for autofill.
+
 ## 1.7.7
 
 * On Mac, most Ctrl commands are now Control, as on Windows. Option replaces Ctrl only with arrow keys and Space, which macOS claims for Mission Control, Spaces, and input switching. Ctrl+F is Command+F, and Alt is still Command. Alt+H is gone on Mac because Command+H hides the game.

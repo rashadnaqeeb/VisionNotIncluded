@@ -140,6 +140,8 @@ namespace OniAccess.Handlers.Tiles {
 			new ConsumedKey(KKeyCode.Backslash),
 			new ConsumedKey(KKeyCode.Backslash, Modifier.Shift),
 			new ConsumedKey(KKeyCode.Backslash, Modifier.Ctrl),
+			// Ctrl+Shift+\ is a second follow key: 1Password on Windows takes Ctrl+\ for autofill
+			new ConsumedKey(KKeyCode.Backslash, Modifier.Ctrl | Modifier.Shift),
 			// W overwrites PanUp (camera pan — mod cursor replaces camera navigation)
 			new ConsumedKey(KKeyCode.W),
 			// Shift+G opens disinfect threshold settings (G = game's dig tool; Shift variant is free)
@@ -191,6 +193,7 @@ namespace OniAccess.Handlers.Tiles {
 			new HelpEntry((string)STRINGS.ONIACCESS.BOTS.KEY_SHIFT_BRACKETS, (string)STRINGS.ONIACCESS.BOTS.HELP_CYCLE),
 			new HelpEntry("\\", (string)STRINGS.ONIACCESS.DUPES.HELP_JUMP),
 			new HelpEntry("Ctrl+\\", (string)STRINGS.ONIACCESS.DUPES.FOLLOW.HELP_FOLLOW),
+			new HelpEntry("Ctrl+Shift+\\", (string)STRINGS.ONIACCESS.DUPES.FOLLOW.HELP_FOLLOW),
 			new HelpEntry("Shift+\\", (string)STRINGS.ONIACCESS.DUPES.HELP_CHECK_PATH),
 			new HelpEntry("W", (string)STRINGS.ONIACCESS.WORLD_SELECTOR.OPEN),
 			new HelpEntry("Shift+G", (string)STRINGS.ONIACCESS.DISINFECT_SETTINGS.HELP_OPEN),
@@ -556,7 +559,7 @@ namespace OniAccess.Handlers.Tiles {
 			}
 			// Jump/follow/pathability — targets whichever entity type was last cycled
 			if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Backslash)) {
-				if (InputUtil.CtrlHeld() && !InputUtil.ShiftHeld()) {
+				if (InputUtil.CtrlHeld()) {
 					string speech = _lastCycledBots
 						? _botNavigator.StartFollow()
 						: _dupeNavigator.StartFollow();

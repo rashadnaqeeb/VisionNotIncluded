@@ -92,6 +92,8 @@ Camera pan (WASD) and build category keys (Plan1-14) are globally blocked by `Mo
 | ] | Cycle dupe forward | BuildingUtility3 (Building context) | ConsumedKey |
 | \\ | Jump to / select dupe | BuildingUtility1 (Building context) | ConsumedKey |
 | Shift+\\ | Check pathability | None | ConsumedKey |
+| Ctrl+\\ | Follow dupe or bot | None | ConsumedKey |
+| Ctrl+Shift+\\ | Follow dupe or bot (second key; 1Password on Windows takes Ctrl+\\ for autofill) | None | ConsumedKey |
 
 **Colony Status:**
 
