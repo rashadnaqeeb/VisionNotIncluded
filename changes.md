@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.7.7
+## Unreleased changes since 1.7.8
+
+## 1.7.8
 
 * Ctrl+Shift+\\ now also follows the current duplicant or bot, for 1Password users on Windows, where 1Password takes Ctrl+\\ for autofill.
 * The game should feel slightly more responsive on each key press.
