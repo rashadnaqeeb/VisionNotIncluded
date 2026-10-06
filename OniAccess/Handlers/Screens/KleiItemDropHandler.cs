@@ -134,7 +134,6 @@ namespace OniAccess.Handlers.Screens {
 				}
 			}
 
-			Log.Debug($"KleiItemDropHandler.DiscoverWidgets: {_widgets.Count} widgets, stage={_stage}");
 			return true;
 		}
 

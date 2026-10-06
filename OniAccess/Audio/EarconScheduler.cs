@@ -46,21 +46,13 @@ namespace OniAccess.Audio {
 		public void PlayForCell(int cell, HashedString overlayMode) {
 			var allBatches = new List<SoundBatch>();
 			foreach (var set in _sets) {
-				if (!set.IsActive(overlayMode)) {
-					Log.Debug($"EarconScheduler: {set.GetType().Name} not active for overlay");
+				if (!set.IsActive(overlayMode) || !set.IsEnabled)
 					continue;
-				}
-				if (!set.IsEnabled) {
-					Log.Debug($"EarconScheduler: {set.GetType().Name} disabled in config");
-					continue;
-				}
 				var batches = set.GetBatches(cell);
-				Log.Debug($"EarconScheduler: {set.GetType().Name} returned {batches.Count} batch(es) for cell {cell}");
 				float volume = set.Volume;
 				foreach (var batch in batches)
 					allBatches.Add(new SoundBatch(volume, batch.Specs));
 			}
-			Log.Debug($"EarconScheduler: playing {allBatches.Count} total batch(es)");
 			Play(allBatches);
 		}
 
@@ -92,7 +84,6 @@ namespace OniAccess.Audio {
 				return;
 			}
 			_oneShotChannel.setVolume(volume);
-			Log.Debug($"EarconScheduler: playing one-shot '{clipName}'");
 		}
 
 		private void StopOneShot() {
@@ -147,7 +138,6 @@ namespace OniAccess.Audio {
 				channel.setPitch(spec.Pitch);
 				channel.setPan(spec.Pan);
 				_activeChannels.Add(channel);
-				Log.Debug($"EarconScheduler: playing '{spec.ClipName}' pitch={spec.Pitch} pan={spec.Pan}");
 			}
 		}
 	}

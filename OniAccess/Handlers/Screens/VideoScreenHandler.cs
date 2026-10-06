@@ -85,7 +85,6 @@ namespace OniAccess.Handlers.Screens {
 			// proceedButton — only when active
 			WidgetDiscoveryUtil.TryAddButtonField(screen, "proceedButton", null, _widgets);
 
-			Log.Debug($"VideoScreenHandler.DiscoverWidgets: {_widgets.Count} widgets");
 			return true;
 		}
 
