@@ -3,6 +3,8 @@
 ## Unreleased changes since 1.7.8
 
 * On a tile where a backwall such as drywall is the only building, I now reads the backwall's tooltip instead of skipping to the next one.
+* While placing a pipe or conveyor sensor (element, temperature, or germ), the cursor now reads the pipe or rail under it as well as any automation wire. Before, only the automation wire was read, and a pending pipe came out as a bare "priority 5".
+* While placing a building, a build order's priority is no longer read unless the order itself is named.
 
 ## 1.7.8
 

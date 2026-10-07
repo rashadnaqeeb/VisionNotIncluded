@@ -42,9 +42,12 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 	/// the wires, pipes, rails, or automation wire the overlay shows stay
 	/// in the readout while a building is being placed. Sensors, valves,
 	/// pumps, and every powered machine switch the game to their overlay
-	/// without living on a conduit layer, so the overlay decides. With no
-	/// utility overlay on, falls back to the layer of the utility being
-	/// placed. No-op for regular buildings outside the utility overlays.
+	/// without living on a conduit layer, so the overlay decides. Conduit
+	/// sensors are the exception: the game shows the automation overlay
+	/// while placing them, but they go on a pipe or rail, so that line is
+	/// read before the automation wire. With no utility overlay on, falls
+	/// back to the layer of the utility being placed. No-op for regular
+	/// buildings outside the utility overlays.
 	/// </summary>
 	public class UtilityLayerSection: ICellSection {
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
@@ -55,11 +58,14 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 			HashedString overlay = OverlayScreen.Instance != null
 				? OverlayScreen.Instance.GetMode()
 				: OverlayModes.None.ID;
+			var tokens = new List<string>();
+			var sensorSection = MapSensorToSection(handler._def);
+			if (sensorSection != null)
+				tokens.AddRange(sensorSection.Read(cell, ctx));
 			var section = Resolve(overlay, handler._def.ObjectLayer);
-			if (section == null)
-				return System.Array.Empty<string>();
-
-			return section.Read(cell, ctx);
+			if (section != null && section != sensorSection)
+				tokens.AddRange(section.Read(cell, ctx));
+			return tokens;
 		}
 
 		/// <summary>
@@ -68,6 +74,21 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 		/// </summary>
 		private static ICellSection Resolve(HashedString overlay, ObjectLayer placingLayer) {
 			return MapOverlayToSection(overlay) ?? MapDefToSection(placingLayer);
+		}
+
+		/// <summary>
+		/// The section for the line a conduit sensor monitors, or null when
+		/// the building is not a conduit sensor.
+		/// </summary>
+		private static ICellSection MapSensorToSection(BuildingDef def) {
+			var sensor = def.BuildingComplete.GetComponent<ConduitSensor>();
+			if (sensor == null) return null;
+			switch (sensor.conduitType) {
+				case ConduitType.Gas: return GlanceComposer.Ventilation;
+				case ConduitType.Liquid: return GlanceComposer.Plumbing;
+				case ConduitType.Solid: return GlanceComposer.Conveyor;
+				default: return null;
+			}
 		}
 
 		private static ICellSection MapOverlayToSection(HashedString mode) {
@@ -104,7 +125,9 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 	/// <summary>
 	/// Reads the construction priority of a pending build order at the
 	/// cursor cell. Lets the player check what priority their queued
-	/// buildings have while the build tool is active.
+	/// buildings have while the build tool is active. A pending line is
+	/// only read when a conduit section has already named it, so a
+	/// priority is never spoken without the order it belongs to.
 	/// </summary>
 	public class BuildPrioritySection: ICellSection {
 		private static readonly int[] _layers = {
@@ -121,6 +144,9 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles.Sections {
 			foreach (int layer in _layers) {
 				var go = Grid.Objects[cell, layer];
 				if (go == null) continue;
+				bool isLine = layer != (int)ObjectLayer.Building
+					&& layer != (int)ObjectLayer.FoundationTile;
+				if (isLine && !ctx.Claimed.Contains(go)) continue;
 
 				var constructable = go.GetComponent<Constructable>();
 				if (constructable == null) continue;
