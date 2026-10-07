@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.7.8
 
+* On a tile where a backwall such as drywall is the only building, I now reads the backwall's tooltip instead of skipping to the next one.
+
 ## 1.7.8
 
 * Ctrl+Shift+\\ now also follows the current duplicant or bot, for 1Password users on Windows, where 1Password takes Ctrl+\\ for autofill.

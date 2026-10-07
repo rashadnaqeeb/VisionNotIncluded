@@ -136,18 +136,6 @@ namespace OniAccess.Handlers.Tiles {
 				}
 			}
 
-			string backwallName = backwall != null
-				? backwall.GetProperName() : null;
-
-			// When only a backwall building exists, skip past its tooltip line
-			if (backwallName != null) {
-				for (int i = 0; i < lines.Count; i++) {
-					if (!lines[i].StartsWith(backwallName,
-							System.StringComparison.OrdinalIgnoreCase))
-						return lines[i];
-				}
-			}
-
 			// Outside utility overlays, skip conduit/wire blocks that the
 			// movement cursor doesn't mention — hearing them is disorienting.
 			if (GetUtilityConduitLayers() == null) {
