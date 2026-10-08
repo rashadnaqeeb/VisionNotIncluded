@@ -3,6 +3,7 @@
 ## Unreleased changes since 1.7.9
 
 * Flow sonification now works on conveyor rails in the Conveyor Overlay. The tone sounds while an item is on the rail under the cursor, so a sparse rail beeps as each item passes, and its pitch rises with the item's mass up to a full 20 kg load.
+* I on a Storage Tile now reads the item it is set to store and how full it is against the capacity you set, such as "filter Sand, Storing: 12 / 20 kg".
 
 ## 1.7.9
 

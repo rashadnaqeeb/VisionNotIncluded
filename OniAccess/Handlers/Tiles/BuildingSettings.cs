@@ -19,7 +19,9 @@ namespace OniAccess.Handlers.Tiles {
 	/// Settings whose value cannot be stated in one line (storage filters,
 	/// cluster location lists, access permissions) are deliberately absent, as is
 	/// storage capacity - IUserControlledCapacity sits on dozens of common
-	/// buildings and would bury the settings worth hearing.
+	/// buildings and would bury the settings worth hearing. The Storage Tile is
+	/// the exception: it holds a single item, and its fill line never reaches
+	/// the hover text.
 	/// </summary>
 	internal static class BuildingSettings {
 		/// <summary>
@@ -72,6 +74,7 @@ namespace OniAccess.Handlers.Tiles {
 				ReadValve(go, tokens);
 				ReadLimitValve(go, tokens);
 				ReadFuelCapacity(go, tokens);
+				ReadStorageTile(go, tokens);
 				ReadCounter(go, tokens);
 				ReadTimer(go, tokens);
 				ReadTimeRange(go, tokens);
@@ -222,6 +225,31 @@ namespace OniAccess.Handlers.Tiles {
 			tokens.Add(string.Format(
 				(string)STRINGS.ONIACCESS.GLANCE.SETTING_CAPACITY,
 				max.ToString("F0") + " " + (string)capacity.CapacityUnits));
+		}
+
+		/// <summary>
+		/// The Storage Tile's item and fill. The game's own "Storing" line is a
+		/// Main status item that the building's operational status displaces, so
+		/// it never shows; and it would state the tile's fixed 1000 kg rather than
+		/// the player's cap, because it looks the cap up as a component and the
+		/// tile keeps it on its state machine. An unset item already raises the
+		/// game's "Filters Not Designated" status.
+		/// </summary>
+		private static void ReadStorageTile(GameObject go, List<string> tokens) {
+			var tile = go.GetSMI<StorageTile.Instance>();
+			if (tile == null) return;
+
+			if (tile.TargetTag != StorageTile.INVALID_TAG)
+				tokens.Add(string.Format(
+					(string)STRINGS.ONIACCESS.GLANCE.SETTING_FILTER,
+					tile.TargetTag.ProperName()));
+
+			// Stored rounds down, as the game rounds its own line.
+			float stored = Mathf.Floor(go.GetComponent<Storage>().MassStored());
+			tokens.Add(((string)STRINGS.BUILDING.STATUSITEMS.STORAGELOCKER.NAME)
+				.Replace("{Stored}", global::Util.FormatWholeNumber(stored))
+				.Replace("{Capacity}", global::Util.FormatWholeNumber(tile.UserMaxCapacity))
+				.Replace("{Units}", tile.CapacityUnits));
 		}
 
 		private static void ReadCounter(GameObject go, List<string> tokens) {
