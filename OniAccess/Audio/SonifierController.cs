@@ -38,8 +38,7 @@ namespace OniAccess.Audio {
 			}
 
 			var conduitType = GetConduitType(overlayMode);
-			if (conduitType == ConduitType.None
-				|| !GetConduitFlow(conduitType).HasConduit(cell)) {
+			if (conduitType == ConduitType.None || !HasConduit(conduitType, cell)) {
 				Deactivate();
 				return;
 			}
@@ -76,6 +75,10 @@ namespace OniAccess.Audio {
 				SamplePower();
 				return;
 			}
+			if (_activeConduitType == ConduitType.Solid) {
+				SampleRail();
+				return;
+			}
 			var flow = GetConduitFlow(_activeConduitType);
 			var contents = flow.GetContents(_activeCell);
 			if (contents.mass <= 0f
@@ -103,12 +106,35 @@ namespace OniAccess.Audio {
 			Sonifier.Instance.UpdateTone(fillRatio, wattsUsed > 0f);
 		}
 
+		// A rail cell holds at most one item; pitch follows its mass against the
+		// largest chunk a Conveyor Loader puts down.
+		private void SampleRail() {
+			var flow = Game.Instance.solidConduitFlow;
+			// Null when the cell is empty or its item was destroyed in transit.
+			var pickupable = flow.GetPickupable(flow.GetContents(_activeCell).pickupableHandle);
+			if (pickupable == null) {
+				Sonifier.Instance.UpdateTone(0f, false);
+				return;
+			}
+			float mass = pickupable.PrimaryElement.Mass;
+			float fillRatio = UnityEngine.Mathf.Clamp01(mass / SolidConduitFlow.MAX_SOLID_MASS);
+			Sonifier.Instance.UpdateTone(fillRatio, true);
+		}
+
 		private static ConduitType GetConduitType(HashedString overlayMode) {
 			if (overlayMode == OverlayModes.LiquidConduits.ID)
 				return ConduitType.Liquid;
 			if (overlayMode == OverlayModes.GasConduits.ID)
 				return ConduitType.Gas;
+			if (overlayMode == OverlayModes.SolidConveyor.ID)
+				return ConduitType.Solid;
 			return ConduitType.None;
+		}
+
+		private static bool HasConduit(ConduitType type, int cell) {
+			if (type == ConduitType.Solid)
+				return Game.Instance.solidConduitFlow.HasConduit(cell);
+			return GetConduitFlow(type).HasConduit(cell);
 		}
 
 		private static ConduitFlow GetConduitFlow(ConduitType type) {

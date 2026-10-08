@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.7.9
 
+* Flow sonification now works on conveyor rails in the Conveyor Overlay. The tone sounds while an item is on the rail under the cursor, so a sparse rail beeps as each item passes, and its pitch rises with the item's mass up to a full 20 kg load.
+
 ## 1.7.9
 
 * On a tile where a backwall such as drywall is the only building, I now reads the backwall's tooltip instead of skipping to the next one.

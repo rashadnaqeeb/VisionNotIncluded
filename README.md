@@ -390,7 +390,7 @@ Active in all overlays. Plays a rising tone when the cursor moves into a warmer 
 
 ### Flow sonification
 
-Active in the Power, Plumbing, and Ventilation overlays. Plays a continuous tone whose pitch reflects how full the conduit is or how much power the circuit is drawing. Pitch ranges from C4 (empty pipe or idle circuit) up one octave to C5 (full pipe or max safe wattage). The volume rises when the conduit is actively carrying contents and fades when empty. Moving the cursor to a tile without a conduit or wire silences the tone. This gives real-time feedback about system activity without needing to mash the I key.
+Active in the Power, Plumbing, Ventilation, and Conveyor overlays. Plays a continuous tone whose pitch reflects how full the conduit is or how much power the circuit is drawing. Pitch ranges from C4 (empty pipe or idle circuit) up one octave to C5 (full pipe or max safe wattage). The volume rises when the conduit is actively carrying contents and fades when empty. On a conveyor rail, the tone sounds while an item sits on the tile, and its pitch follows the item's mass up to a full 20 kg load; items hop one tile per second, so a sparse rail beeps as each item passes and a busy rail holds a steady tone. Moving the cursor to a tile without a conduit or wire silences the tone. This gives real-time feedback about system activity without needing to mash the I key.
 
 ### Scanner direction earcons
 
