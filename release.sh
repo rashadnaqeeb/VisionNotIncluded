@@ -9,7 +9,7 @@
 # same files for the Steam Workshop upload.
 #
 # The Workshop upload itself is manual: in the Windows VM, point the Oxygen Not
-# Included Mod Uploader at C:\Users\rashadnaqeeb\Documents\VisionNotIncluded\release
+# Included Mod Uploader at C:\Users\rashadnaqeeb\Documents\access-mods\VisionNotIncluded\release
 # (the same folder, shared with the Mac).
 set -euo pipefail
 
@@ -211,5 +211,5 @@ gh release create "$TAG" "$ZIP" --verify-tag --title "$VERSION" --notes-file "$T
 echo
 echo "Released $VERSION."
 echo "Next: in the Windows VM, run the Oxygen Not Included Mod Uploader on"
-echo "  C:\\Users\\rashadnaqeeb\\Documents\\VisionNotIncluded\\release"
+echo "  C:\\Users\\rashadnaqeeb\\Documents\\access-mods\\VisionNotIncluded\\release"
 echo "to replace the Workshop build."
