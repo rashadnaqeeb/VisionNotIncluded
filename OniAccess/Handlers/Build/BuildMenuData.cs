@@ -17,6 +17,11 @@ namespace OniAccess.Handlers.Build {
 			_selectedBuildingGameObject ??= AccessTools.Property(
 				typeof(PlanScreen), "SelectedBuildingGameObject");
 
+		private static FieldInfo _materialSelectors;
+		private static FieldInfo MaterialSelectors =>
+			_materialSelectors ??= AccessTools.Field(
+				typeof(MaterialSelectionPanel), "materialSelectors");
+
 		public struct CategoryEntry {
 			public HashedString Category;
 			public string DisplayName;
@@ -286,22 +291,59 @@ namespace OniAccess.Handlers.Build {
 		}
 
 		/// <summary>
-		/// Builds a brief material summary for the building's auto-selected
-		/// materials. Returns e.g. "copper, 25 kg".
+		/// The build panel's material selector for one recipe ingredient slot,
+		/// or null past the panel's selectors. Read directly because the panel's
+		/// GetSelectedElementAsList Debug.Asserts that every active selector has
+		/// a selection, and ONI treats the assertion as a crash.
+		/// </summary>
+		internal static MaterialSelector GetMaterialSelector(int index) {
+			var panel = PlanScreen.Instance.ProductInfoScreen.materialSelectionPanel;
+			var selectors = (List<MaterialSelector>)MaterialSelectors.GetValue(panel);
+			return index < selectors.Count ? selectors[index] : null;
+		}
+
+		/// <summary>
+		/// Brief summary of every material slot, e.g. "Iron, 100 kg, Glass,
+		/// 100 kg, insufficient". A slot the game left unselected (nothing in
+		/// stock covers it) is named by its category.
 		/// </summary>
 		public static string GetMaterialSummary(BuildingDef def) {
+			var recipe = def.CraftRecipe;
+			if (recipe == null) return null;
 			try {
-				var panel = PlanScreen.Instance.ProductInfoScreen.materialSelectionPanel;
-				var firstTag = panel.CurrentSelectedElement;
-				if (firstTag == null) return null;
-				var element = ElementLoader.GetElement(firstTag);
-				string name = element != null ? element.name : firstTag.ProperName();
-				float mass = def.Mass != null && def.Mass.Length > 0 ? def.Mass[0] : 0f;
-				return $"{name}, {GameUtil.GetFormattedMass(mass)}";
+				var parts = new List<string>();
+				for (int i = 0; i < recipe.Ingredients.Count; i++) {
+					var ingredient = recipe.Ingredients[i];
+					var tag = GetMaterialSelector(i).CurrentSelectedElement;
+					string name = tag != null
+						? tag.ProperName()
+						: GetIngredientCategoryName(ingredient.tag);
+					bool sufficient = MaterialSelector.AllowInsufficientMaterialBuild()
+						|| (tag != null && ClusterManager.Instance.activeWorld.worldInventory
+							.GetAmount(tag, includeRelatedWorlds: true) >= ingredient.amount);
+					parts.Add(string.Format(
+						sufficient
+							? (string)STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_ENTRY
+							: (string)STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_INSUFFICIENT,
+						name, GameUtil.GetFormattedMass(ingredient.amount)));
+				}
+				return string.Join(", ", parts.ToArray());
 			} catch (System.Exception ex) {
-				Util.Log.Warn($"BuildMenuData.GetMaterialSummary: {ex.Message}");
+				Util.Log.Error($"BuildMenuData.GetMaterialSummary: {ex}");
 				return null;
 			}
+		}
+
+		/// <summary>
+		/// A recipe ingredient's category name; a compound tag such as
+		/// "RefinedMetal&amp;Glass" reads as "Refined Metal or Glass".
+		/// </summary>
+		internal static string GetIngredientCategoryName(Tag tag) {
+			string[] parts = tag.ToString().Split('&');
+			var names = new string[parts.Length];
+			for (int i = 0; i < parts.Length; i++)
+				names[i] = parts[i].ToTag().ProperName();
+			return string.Join((string)STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_OR, names);
 		}
 
 		/// <summary>

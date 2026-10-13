@@ -288,7 +288,7 @@ namespace OniAccess.Handlers.Build {
 
 		private static string BuildMaterialLabel(
 				Recipe.Ingredient ingredient, MaterialSelectionPanel panel, int index) {
-			string categoryName = GetIngredientCategoryName(ingredient.tag);
+			string categoryName = BuildMenuData.GetIngredientCategoryName(ingredient.tag);
 			string selectedName = (string)STRINGS.ONIACCESS.STATES.NONE;
 			string quantity = GameUtil.GetFormattedMass(ingredient.amount);
 			bool insufficient = false;
@@ -316,14 +316,6 @@ namespace OniAccess.Handlers.Build {
 			return string.Format(
 				(string)STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_SLOT,
 				categoryName, selectedName, quantity);
-		}
-
-		private static string GetIngredientCategoryName(Tag tag) {
-			string[] parts = tag.ToString().Split('&');
-			var names = new string[parts.Length];
-			for (int i = 0; i < parts.Length; i++)
-				names[i] = parts[i].ToTag().ProperName();
-			return string.Join((string)STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_OR, names);
 		}
 
 

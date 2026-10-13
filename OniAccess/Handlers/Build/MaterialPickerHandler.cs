@@ -168,12 +168,7 @@ namespace OniAccess.Handlers.Build {
 
 		private MaterialSelector GetSelector() {
 			try {
-				var panel = PlanScreen.Instance.ProductInfoScreen.materialSelectionPanel;
-				var field = HarmonyLib.AccessTools.Field(
-					typeof(MaterialSelectionPanel), "materialSelectors");
-				var selectors = (List<MaterialSelector>)field.GetValue(panel);
-				if (_selectorIndex < selectors.Count)
-					return selectors[_selectorIndex];
+				return BuildMenuData.GetMaterialSelector(_selectorIndex);
 			} catch (System.Exception ex) {
 				Util.Log.Error($"MaterialPickerHandler.GetSelector: {ex}");
 			}

@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.7.10
 
+* Choosing a building that needs more than one material, such as the Storage Tile's metal and glass, now reads every material and marks any you lack as insufficient. It used to read only the first, so a missing second material went unmentioned.
+
 ## 1.7.10
 
 * Flow sonification now works on conveyor rails in the Conveyor Overlay. The tone sounds while an item is on the rail under the cursor, so a sparse rail beeps as each item passes, and its pitch rises with the item's mass up to a full 20 kg load.

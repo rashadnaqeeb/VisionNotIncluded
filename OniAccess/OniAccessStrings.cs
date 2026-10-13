@@ -2078,7 +2078,8 @@ namespace STRINGS {
 			public static LocString START_CLEARED = "start cleared";
 			public static LocString INFO_PANEL = "info";
 			public static LocString OBSTRUCTED = "obstructed";
-			// Material picker entries. {0} = material name, {1} = available quantity
+			// Material picker entries and the build tool's material summary.
+			// {0} = material name, {1} = available quantity (picker) or required mass (summary)
 			public static LocString MATERIAL_ENTRY = "{0}, {1}";
 			public static LocString MATERIAL_INSUFFICIENT = "{0}, {1}, insufficient";
 			// Building footprint extent. {0} = tile count from center (int)
