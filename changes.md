@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.7.10
+## Unreleased changes since 1.7.11
+
+## 1.7.11
 
 * Choosing a building that needs more than one material, such as the Storage Tile's metal and glass, now reads every material and marks any you lack as insufficient. It used to read only the first, so a missing second material went unmentioned.
 
