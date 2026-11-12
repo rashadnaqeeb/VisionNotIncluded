@@ -44,6 +44,8 @@ namespace OniAccess.Tests {
 			yield return LimiterHoldsCeilingThroughSpike();
 			yield return LimiterGainIsDownBeforeThePeak();
 			yield return NormalizeLeavesSilenceAlone();
+			yield return FadeEdgesStartsAndEndsAtZero();
+			yield return FadeEdgesFitsAShortLine();
 		}
 
 		private static (string, bool, string) Assert(string name, bool ok, string detail)
@@ -235,6 +237,39 @@ namespace OniAccess.Tests {
 			var z = new float[100];
 			SpeechSamples.Normalize(z, 22050);
 			return Assert("NormalizeLeavesSilenceAlone", ok && z[50] == 0f, $"{s[500]:F5} {z[50]}");
+		}
+
+		private static (string, bool, string) FadeEdgesStartsAndEndsAtZero() {
+			// A line cut off mid-waveform clicks; after fading, both ends sit at
+			// silence, the ramps rise steadily, and the middle is untouched.
+			var s = new float[22050];
+			for (int i = 0; i < s.Length; i++) s[i] = 0.5f;
+			SpeechSamples.FadeEdges(s, 22050);
+			int fadeIn = (int)Math.Round(SpeechSamples.FadeInSeconds * 22050);
+			int fadeOut = (int)Math.Round(SpeechSamples.FadeOutSeconds * 22050);
+			bool rising = true;
+			for (int i = 1; i < fadeIn; i++) rising &= s[i] >= s[i - 1];
+			bool falling = true;
+			for (int i = s.Length - fadeOut; i < s.Length; i++) falling &= s[i] <= s[i - 1];
+			int last = s.Length - 1;
+			bool ok = s[0] == 0f && Math.Abs(s[last]) < 0.01f && rising && falling
+				&& s[fadeIn] == 0.5f && s[s.Length - fadeOut - 1] == 0.5f && s[11000] == 0.5f;
+			return Assert("FadeEdgesStartsAndEndsAtZero", ok,
+				$"first {s[0]} last {s[last]:F4} rising {rising} falling {falling} after-in {s[fadeIn]} before-out {s[s.Length - fadeOut - 1]}");
+		}
+
+		private static (string, bool, string) FadeEdgesFitsAShortLine() {
+			// A line shorter than both ramps still starts and ends at silence
+			// without the ramps running past each other.
+			var s = new float[50];
+			for (int i = 0; i < s.Length; i++) s[i] = 0.5f;
+			SpeechSamples.FadeEdges(s, 22050);
+			bool inRange = true;
+			foreach (float x in s) inRange &= x >= 0f && x <= 0.5f;
+			var one = new float[] { 0.5f };
+			SpeechSamples.FadeEdges(one, 22050);
+			bool ok = s[0] == 0f && Math.Abs(s[49]) < 0.05f && inRange && Peak(s) > 0.4f && one[0] == 0f;
+			return Assert("FadeEdgesFitsAShortLine", ok, $"first {s[0]} last {s[49]:F4} peak {Peak(s):F3} single {one[0]}");
 		}
 
 		private static (string, bool, string) PrimaryLanguageOfEmptyIsEmpty() {

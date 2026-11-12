@@ -26,6 +26,10 @@ namespace OniAccess.Speech {
 		public const double LookaheadSeconds = 0.002;
 		/// <summary>How long the limiter's gain takes to recover after a peak.</summary>
 		public const double ReleaseSeconds = 0.05;
+		/// <summary>Length of the ramp that brings a line in from silence.</summary>
+		public const double FadeInSeconds = 0.002;
+		/// <summary>Length of the ramp that takes a line out to silence.</summary>
+		public const double FadeOutSeconds = 0.004;
 
 		private static float[] _required = new float[32768];
 		private static int[] _queue = new int[32768];
@@ -48,6 +52,33 @@ namespace OniAccess.Speech {
 			Array.Copy(samples, start, result, 0, result.Length);
 			return result;
 		}
+
+		/// <summary>
+		/// Ramp the first <see cref="FadeInSeconds"/> of <paramref name="samples"/>
+		/// up from zero and the last <see cref="FadeOutSeconds"/> down to zero, in
+		/// place, on a raised-cosine curve. AVSpeech can end a line mid-waveform
+		/// (a plosive such as the end of "hundred"), and a line that starts or
+		/// stops on a non-zero sample clicks against the silence around it. The
+		/// ramps are too short to hear as a fade. On a line shorter than both
+		/// ramps together, each ramp gets its share of the line.
+		/// </summary>
+		public static void FadeEdges(float[] samples, double sampleRate) {
+			int n = samples.Length;
+			if (n == 0) return;
+			int fadeIn = Math.Max(1, (int)Math.Round(FadeInSeconds * sampleRate));
+			int fadeOut = Math.Max(1, (int)Math.Round(FadeOutSeconds * sampleRate));
+			if (fadeIn + fadeOut > n) {
+				fadeIn = Math.Max(1, n * fadeIn / (fadeIn + fadeOut));
+				fadeOut = Math.Max(1, n - fadeIn);
+			}
+			for (int i = 0; i < fadeIn; i++)
+				samples[i] *= RaisedCosine((float)i / fadeIn);
+			for (int i = 0; i < fadeOut; i++)
+				samples[n - 1 - i] *= RaisedCosine((float)i / fadeOut);
+		}
+
+		/// <summary>0 at <paramref name="x"/> = 0 rising smoothly to 1 at <paramref name="x"/> = 1.</summary>
+		private static float RaisedCosine(float x) => 0.5f - 0.5f * (float)Math.Cos(Math.PI * x);
 
 		/// <summary>
 		/// Bring <paramref name="samples"/> to <see cref="TargetRms"/> in place,

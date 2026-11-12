@@ -19,7 +19,8 @@ namespace OniAccess.Speech {
 	/// would play in a fraction of its playing time with no silence in front and
 	/// a few tens of milliseconds behind. The samples are trimmed, brought to
 	/// one loudness (the voices render far below the game's mix, and each at its
-	/// own level), and scheduled back-to-back on an AVAudioPlayerNode of our
+	/// own level), faded in and out over a few milliseconds so a line that ends
+	/// mid-waveform does not click, and scheduled back-to-back on an AVAudioPlayerNode of our
 	/// own, in the voice's native
 	/// format (Eloquence renders at 16 kHz, the compact voices at 22.05 kHz; the
 	/// engine's mixer resamples to the output device). Our own AVAudioEngine,
@@ -296,6 +297,7 @@ namespace OniAccess.Speech {
 			try {
 				float[] trimmed = SpeechSamples.Trim(render.Samples, render.Count, render.SampleRate);
 				SpeechSamples.Normalize(trimmed, render.SampleRate);
+				SpeechSamples.FadeEdges(trimmed, render.SampleRate);
 				Schedule(trimmed, render.SampleRate);
 			} catch (Exception ex) {
 				Log.Error($"MacSpeechStream: could not play rendered speech: {ex.Message}");

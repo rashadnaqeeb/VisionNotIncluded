@@ -2,6 +2,8 @@
 
 ## Unreleased changes since 1.7.11
 
+* On a Mac, the system voice no longer clicks at the start or end of a line.
+
 ## 1.7.11
 
 * Choosing a building that needs more than one material, such as the Storage Tile's metal and glass, now reads every material and marks any you lack as insufficient. It used to read only the first, so a missing second material went unmentioned.
