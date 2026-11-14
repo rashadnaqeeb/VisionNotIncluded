@@ -1,0 +1,269 @@
+{
+  "manifestVersion": 1,
+  "id": "vision-not-included",
+  "name": "Vision Not Included",
+  "description": "Screen-reader accessibility for Oxygen Not Included, for blind and visually-impaired players: speaks menus, the colony and its duplicants, and makes the map playable with keyboard navigation and audio cues.",
+  "authors": [
+    "Rashad Naqeeb"
+  ],
+  "license": "MIT",
+  "game": "oxygen-not-included",
+  "distributions": {
+    "steam": "supported",
+    "epic": "untested"
+  },
+  "install": [
+    {
+      "step": "expect",
+      "checks": [
+        {
+          "not": {
+            "processRunning": [
+              "OxygenNotIncluded",
+              "Oxygen Not Included"
+            ]
+          },
+          "message": "Oxygen Not Included is running. Quit the game, then install again."
+        }
+      ]
+    },
+    {
+      "step": "extract-archive",
+      "routes": [
+        {
+          "from": "**",
+          "to": "${game.localMods}/OniAccess"
+        }
+      ]
+    },
+    {
+      "step": "expect",
+      "checks": [
+        {
+          "fileExists": "${game.localMods}/OniAccess/OniAccess.dll",
+          "message": "The download didn't contain the mod (no OniAccess.dll)."
+        }
+      ]
+    },
+    {
+      "step": "notice",
+      "when": {
+        "not": {
+          "jsonHas": {
+            "file": "${game.mods}/mods.json",
+            "path": "mods[label.id=OniAccess][label.distribution_platform=0].enabled"
+          }
+        },
+        "distribution": "steam"
+      },
+      "message": "Oxygen Not Included has to see the mod once before it can be switched on. Loadstone is starting the game now. When the main menu appears, quit the game, then come back here."
+    },
+    {
+      "step": "open-url",
+      "when": {
+        "not": {
+          "jsonHas": {
+            "file": "${game.mods}/mods.json",
+            "path": "mods[label.id=OniAccess][label.distribution_platform=0].enabled"
+          }
+        },
+        "distribution": "steam"
+      },
+      "url": "steam://rungameid/${steam.appId}"
+    },
+    {
+      "step": "notice",
+      "when": {
+        "not": {
+          "jsonHas": {
+            "file": "${game.mods}/mods.json",
+            "path": "mods[label.id=OniAccess][label.distribution_platform=0].enabled"
+          }
+        },
+        "distribution": [
+          "epic",
+          "gog",
+          "gamepass",
+          "itch",
+          "standalone"
+        ]
+      },
+      "message": "Oxygen Not Included has to see the mod once before it can be switched on. If you haven't yet, start the game, wait for the main menu, quit it, then come back here."
+    },
+    {
+      "step": "edit-json",
+      "file": "${game.mods}/mods.json",
+      "requires": {
+        "jsonHas": {
+          "file": "${game.mods}/mods.json",
+          "path": "mods[label.id=OniAccess][label.distribution_platform=0].enabled"
+        },
+        "not": {
+          "processRunning": [
+            "OxygenNotIncluded",
+            "Oxygen Not Included"
+          ]
+        },
+        "onMissing": "Oxygen Not Included hasn't listed the mod yet, or it is still running. Start the game if it isn't open, wait for the main menu, quit the game, then press Retry.",
+        "retryable": true
+      },
+      "ops": [
+        {
+          "op": "set",
+          "path": "mods[label.id=OniAccess][label.distribution_platform=0].enabled",
+          "value": true
+        },
+        {
+          "op": "set",
+          "path": "mods[label.id=OniAccess][label.distribution_platform=0].enabledForDlc",
+          "value": [
+            "",
+            "EXPANSION1_ID"
+          ]
+        },
+        {
+          "op": "set",
+          "path": "mods[label.id=OniAccess][label.distribution_platform=0].crash_count",
+          "value": 0
+        },
+        {
+          "op": "set",
+          "path": "mods[label.id=OniAccess][label.distribution_platform=0].status",
+          "value": 1
+        },
+        {
+          "op": "set",
+          "path": "mods[staticID=OniAccess][label.distribution_platform=1].enabled",
+          "value": false,
+          "optional": true
+        },
+        {
+          "op": "set",
+          "path": "mod_load_in_progress",
+          "value": false
+        }
+      ]
+    },
+    {
+      "step": "notice",
+      "message": "Vision Not Included is switched on. If you were subscribed to it on the Steam Workshop, that copy is switched off so the mod doesn't load twice. For the best experience, turn off the Steam overlay for this game and clear Steam's screenshot key.",
+      "when": {
+        "jsonHas": {
+          "file": "${game.mods}/mods.json",
+          "path": "mods[label.id=OniAccess][label.distribution_platform=0][enabled=true].staticID"
+        }
+      }
+    },
+    {
+      "step": "notice",
+      "when": {
+        "not": {
+          "jsonHas": {
+            "file": "${game.mods}/mods.json",
+            "path": "mods[label.id=OniAccess][label.distribution_platform=0][enabled=true].staticID"
+          }
+        }
+      },
+      "message": "Vision Not Included is installed but not switched on yet. Start Oxygen Not Included once, wait for the main menu, quit it, then press Switch the mod back on."
+    }
+  ],
+  "launch": [
+    {
+      "step": "expect",
+      "when": {
+        "distribution": "steam"
+      },
+      "checks": [
+        {
+          "processRunning": [
+            "steam",
+            "steam_osx"
+          ],
+          "message": "Steam isn't running. Open Steam, then press Launch again."
+        }
+      ]
+    },
+    {
+      "step": "open-url",
+      "when": {
+        "distribution": "steam"
+      },
+      "url": "steam://rungameid/${steam.appId}"
+    },
+    {
+      "step": "notice",
+      "when": {
+        "not": {
+          "distribution": "steam"
+        }
+      },
+      "message": "Start Oxygen Not Included the way you usually do; the mod loads with it."
+    }
+  ],
+  "actions": [
+    {
+      "id": "enable-mod",
+      "label": "Switch the mod back on",
+      "description": "Oxygen Not Included switches mods off after a crash or a game update. This switches Vision Not Included back on. Quit the game first.",
+      "steps": [
+        {
+          "step": "edit-json",
+          "file": "${game.mods}/mods.json",
+          "requires": {
+            "jsonHas": {
+              "file": "${game.mods}/mods.json",
+              "path": "mods[label.id=OniAccess][label.distribution_platform=0].enabled"
+            },
+            "not": {
+              "processRunning": [
+                "OxygenNotIncluded",
+                "Oxygen Not Included"
+              ]
+            },
+            "onMissing": "Oxygen Not Included hasn't listed the mod yet, or it is still running. Start the game if it isn't open, wait for the main menu, quit the game, then press Retry.",
+            "retryable": true
+          },
+          "ops": [
+            {
+              "op": "set",
+              "path": "mods[label.id=OniAccess][label.distribution_platform=0].enabled",
+              "value": true
+            },
+            {
+              "op": "set",
+              "path": "mods[label.id=OniAccess][label.distribution_platform=0].enabledForDlc",
+              "value": [
+                "",
+                "EXPANSION1_ID"
+              ]
+            },
+            {
+              "op": "set",
+              "path": "mods[label.id=OniAccess][label.distribution_platform=0].crash_count",
+              "value": 0
+            },
+            {
+              "op": "set",
+              "path": "mods[label.id=OniAccess][label.distribution_platform=0].status",
+              "value": 1
+            },
+            {
+              "op": "set",
+              "path": "mods[staticID=OniAccess][label.distribution_platform=1].enabled",
+              "value": false,
+              "optional": true
+            },
+            {
+              "op": "set",
+              "path": "mod_load_in_progress",
+              "value": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "userData": [
+    "${game.mods}/OniAccess"
+  ]
+}

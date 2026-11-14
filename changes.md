@@ -3,6 +3,7 @@
 ## Unreleased changes since 1.7.11
 
 * On a Mac, the system voice no longer clicks at the start or end of a line.
+* Releases can now be installed and updated with the Loadstone mod manager, as an alternative to the Steam Workshop. It installs the mod into the game's local mods folder and switches it on.
 * Ctrl+Arrow and Alt+Arrow skipping now works while placing tiles such as sandstone, metal or insulated tiles. It used to stop after a single tile.
 
 ## 1.7.11
