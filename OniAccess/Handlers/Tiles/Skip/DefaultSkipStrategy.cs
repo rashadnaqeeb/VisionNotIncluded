@@ -10,11 +10,11 @@ namespace OniAccess.Handlers.Tiles.Skip {
 		private static readonly Tag TileTag = new Tag(TileConfig.ID);
 
 		public object GetSignature(int cell) {
-			var building = Grid.Objects[cell, (int)ObjectLayer.Building];
+			var building = SkipGrid.Object(cell, ObjectLayer.Building);
 			if (building != null)
 				return NormalizePoiTile(building.PrefabID());
 
-			var tile = Grid.Objects[cell, (int)ObjectLayer.FoundationTile];
+			var tile = SkipGrid.Object(cell, ObjectLayer.FoundationTile);
 			if (tile != null)
 				return NormalizePoiTile(tile.PrefabID());
 

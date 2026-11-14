@@ -3,6 +3,7 @@
 ## Unreleased changes since 1.7.11
 
 * On a Mac, the system voice no longer clicks at the start or end of a line.
+* Ctrl+Arrow and Alt+Arrow skipping now works while placing tiles such as sandstone, metal or insulated tiles. It used to stop after a single tile.
 
 ## 1.7.11
 

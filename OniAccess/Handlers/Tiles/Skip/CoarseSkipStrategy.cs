@@ -13,7 +13,7 @@ namespace OniAccess.Handlers.Tiles.Skip {
 		private static readonly Tag PoiTileTag = new Tag(TilePOIConfig.ID);
 
 		public object GetSignature(int cell) {
-			var building = Grid.Objects[cell, (int)ObjectLayer.Building];
+			var building = SkipGrid.Object(cell, ObjectLayer.Building);
 			if (building != null) {
 				var kpid = building.GetComponent<KPrefabID>();
 				if (kpid.HasTag(GameTags.FloorTiles)
@@ -28,7 +28,7 @@ namespace OniAccess.Handlers.Tiles.Skip {
 				return building.PrefabID();
 			}
 
-			var tile = Grid.Objects[cell, (int)ObjectLayer.FoundationTile];
+			var tile = SkipGrid.Object(cell, ObjectLayer.FoundationTile);
 			if (tile != null) {
 				var kpid = tile.GetComponent<KPrefabID>();
 				if (kpid.HasTag(GameTags.FloorTiles)
