@@ -323,6 +323,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var building = portGo.GetComponent<Building>();
 			if (building == null) return;
 
+			// Lives on the connection layer, so this is the only place
+			// it is read: ports, name, and state on every cell it covers
+			if (ConduitSection.IsPortedConnectionBuilding(portGo)) {
+				ReadBuilding(portGo, cell, tokens);
+				return;
+			}
+
 			int origin = Grid.PosToCell(building.transform.GetPosition());
 			int beforeCount = tokens.Count;
 			ReadOverlayDetails(portGo, building, origin, cell, tokens);

@@ -277,14 +277,33 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		}
 
 		/// <summary>
-		/// True when a building was registered on this layer for port
-		/// tracking rather than being infrastructure that lives here.
+		/// True when a building on this layer is one BuildingSection reads
+		/// with its port labels: either it was registered here for port
+		/// tracking, or it is a ported building that lives on the
+		/// connection layer itself.
 		/// </summary>
 		internal static bool IsPortRegistration(
 				UnityEngine.GameObject go, int layer) {
 			var building = go.GetComponent<Building>();
 			return building != null
-				&& (int)building.Def.ObjectLayer != layer;
+				&& ((int)building.Def.ObjectLayer != layer
+					|| IsPortedConnectionBuilding(go));
+		}
+
+		/// <summary>
+		/// True for a building that occupies a conduit connection layer
+		/// across its whole footprint and is neither a line nor a bridge.
+		/// The Conduction Panel is one: it moves liquid from the pipe at
+		/// its input end to the pipe at its output end.
+		/// </summary>
+		internal static bool IsPortedConnectionBuilding(
+				UnityEngine.GameObject go) {
+			var building = go.GetComponent<Building>();
+			if (building == null) return false;
+			var def = building.Def;
+			return !def.isUtility && !IsBridgeEndpoint(go)
+				&& (def.InputConduitType != ConduitType.None
+					|| def.OutputConduitType != ConduitType.None);
 		}
 
 		/// <summary>
