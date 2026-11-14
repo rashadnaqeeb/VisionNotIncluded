@@ -6,7 +6,7 @@
   "detect": {
     "steam": { "appId": 457140, "dirName": "OxygenNotIncluded" },
     "epic": {},
-    "markers": ["OxygenNotIncluded.exe", "OxygenNotIncluded.app", "OxygenNotIncluded.x86_64"]
+    "markers": ["OxygenNotIncluded.exe", "OxygenNotIncluded.app", "OxygenNotIncluded"]
   },
   "userData": {
     "windows": "${documents}/Klei/OxygenNotIncluded",
