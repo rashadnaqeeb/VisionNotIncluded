@@ -189,7 +189,7 @@ namespace OniAccess.Handlers.Build {
 					return;
 				}
 
-				selector.OnSelectMaterial(tag, _def.CraftRecipe, false);
+				selector.TrySelectMaterial(tag, _def.CraftRecipe, false);
 			} catch (System.Exception ex) {
 				Util.Log.Error($"MaterialPickerHandler.SelectMaterial: {ex}");
 			}

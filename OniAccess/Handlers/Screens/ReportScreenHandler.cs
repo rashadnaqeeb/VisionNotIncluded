@@ -120,7 +120,7 @@ namespace OniAccess.Handlers.Screens {
 		/// </summary>
 		private void CollectNotes(ReportManager.ReportEntry entry, ReportManager.ReportGroup group) {
 			_notesScratch.Clear();
-			entry.IterateNotes(note => _notesScratch.Add(note));
+			entry.CollectNotes(_notesScratch);
 			if (group.posNoteOrder == ReportManager.ReportEntry.Order.Descending)
 				_notesScratch.Sort((a, b) => b.value.CompareTo(a.value));
 			else if (group.posNoteOrder == ReportManager.ReportEntry.Order.Ascending)
@@ -268,10 +268,12 @@ namespace OniAccess.Handlers.Screens {
 					addedDenom = removedDenom = netDenom = ctxCount;
 				} else {
 					int posCount = 0, negCount = 0;
-					entry.IterateNotes(note => {
+					_notesScratch.Clear();
+					entry.CollectNotes(_notesScratch);
+					foreach (var note in _notesScratch) {
 						if (note.value > 0f) posCount++;
 						else if (note.value < 0f) negCount++;
-					});
+					}
 					addedDenom = Math.Max(posCount, 1f);
 					removedDenom = Math.Max(negCount, 1f);
 					netDenom = Math.Max(posCount + negCount, 1f);
