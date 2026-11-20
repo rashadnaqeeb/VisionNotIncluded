@@ -134,7 +134,9 @@ namespace OniAccess.Speech {
 			// Resolve game template placeholders: {Hotkey/ActionName} → key name,
 			// (ClickType/click) → "click" or "press" depending on controller.
 			// LocText normally does this at render time; we read raw data.
-			text = LocText.ParseText(text);
+			// U60 returns whether parsing was needed; the text (including an
+			// unchanged input) is always written to the out parameter.
+			LocText.ParseText(text, out text);
 
 			// Fast path: skip regex pipeline for plain text (no markup)
 			if (text.IndexOf('<') < 0 && text.IndexOf('[') < 0 && text.IndexOf('{') < 0)

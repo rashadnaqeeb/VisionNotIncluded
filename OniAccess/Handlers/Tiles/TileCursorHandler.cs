@@ -858,9 +858,7 @@ namespace OniAccess.Handlers.Tiles {
 
 			foreach (var diag in qualifying) {
 				string message = diag.LatestResult.Message;
-				string value = diag.presentationSetting == ColonyDiagnostic.PresentationSetting.CurrentValue
-					? diag.GetCurrentValueString()
-					: diag.GetAverageValueString();
+				string value = DiagnosticText.GetValue(diag);
 
 				var entry = diag.name + ": ";
 				if (!string.IsNullOrWhiteSpace(message))

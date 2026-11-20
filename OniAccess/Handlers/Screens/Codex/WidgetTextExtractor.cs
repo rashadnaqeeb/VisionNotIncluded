@@ -679,11 +679,10 @@ namespace OniAccess.Handlers.Screens.Codex {
 			};
 
 			foreach (var converter in converters) {
-				var descriptors = converter.GetDescriptors(go);
-				if (descriptors != null) {
-					foreach (var d in descriptors)
-						rows.Add(d.text.Trim());
-				}
+				var descriptors = new List<Descriptor>();
+				converter.CollectDescriptors(go, descriptors);
+				foreach (var d in descriptors)
+					rows.Add(d.text.Trim());
 
 				// Effects group header: input names joined, with a trailing colon
 				// (mirrors GameUtil.BuildPartitionedEffects / AddEffectDescriptors)

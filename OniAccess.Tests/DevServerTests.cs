@@ -16,10 +16,18 @@ namespace OniAccess.Tests {
 		private static (string, bool, string) Check(string name, bool ok, string detail)
 			=> (name, ok, ok ? "OK" : detail);
 
-		public static IEnumerable<(string, bool, string)> All() {
+		public static IEnumerable<(string, bool, string)> All(bool includeEvaluator = true) {
 			yield return SpeechLogCursorReturnsOnlyNewLines();
 			yield return SpeechLogEvictionKeepsIndicesStable();
 			yield return HttpServerParsesPostBodyAndAnswers();
+			if (includeEvaluator)
+				foreach (var result in EvaluatorOnly())
+					yield return result;
+		}
+
+		// U60 game APIs need modern .NET on Windows, while the vendored Mono
+		// evaluator needs .NET Framework. The Windows runner executes both groups.
+		public static IEnumerable<(string, bool, string)> EvaluatorOnly() {
 			yield return EvaluatorKeepsStateAcrossCalls();
 			yield return EvaluatorCapturesConsoleOutput();
 			yield return EvaluatorReportsCompileErrors();
@@ -119,7 +127,7 @@ namespace OniAccess.Tests {
 		private static (string, bool, string) EvaluatorCapturesConsoleOutput() {
 			var ev = new CSharpEvaluator();
 			string result = ev.Eval("Console.WriteLine(\"probe\"); 7");
-			bool ok = result == "probe\n=> 7\n";
+			bool ok = result == "probe" + Environment.NewLine + "=> 7\n";
 			return Check("EvaluatorCapturesConsoleOutput", ok, $"result={result.Replace("\n", "|")}");
 		}
 

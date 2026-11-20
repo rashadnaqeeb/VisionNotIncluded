@@ -433,7 +433,7 @@ namespace OniAccess.Handlers.Screens {
 			if (slotIndex < 0 || slotIndex >= selectors.Count) return;
 			var selector = selectors[slotIndex];
 			var recipe = _activeRecipeField.GetValue(selector) as Recipe;
-			selector.OnSelectMaterial(materials[materialIndex], recipe);
+			selector.TrySelectMaterial(materials[materialIndex], recipe);
 			AfterSelect();
 		}
 
