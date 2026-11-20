@@ -1,8 +1,16 @@
 {
-  "manifestVersion": 1,
+  "manifestVersion": 2,
   "id": "vision-not-included",
   "name": "Vision Not Included",
-  "description": "Screen-reader accessibility for Oxygen Not Included, for blind and visually-impaired players: speaks menus, the colony and its duplicants, and makes the map playable with keyboard navigation and audio cues.",
+  "description": {
+    "en": "Screen-reader accessibility for Oxygen Not Included, for blind and visually-impaired players: speaks menus, the colony and its duplicants, and makes the map playable with keyboard navigation and audio cues.",
+    "es": "Accesibilidad con lector de pantalla para Oxygen Not Included, para jugadores ciegos y con baja visión: lee en voz alta los menús, la colonia y sus duplicantes, y hace jugable el mapa con navegación por teclado y señales sonoras.",
+    "fr": "Accessibilité au lecteur d'écran pour Oxygen Not Included, destinée aux joueurs aveugles et malvoyants : énonce les menus, la colonie et ses duplicants, et rend la carte jouable grâce à la navigation au clavier et à des repères sonores.",
+    "ko": "시각 장애인과 저시력 플레이어를 위한 Oxygen Not Included 스크린 리더 접근성 모드입니다. 메뉴, 콜로니와 복제인을 읽어 주고, 키보드 탐색과 소리 신호로 맵을 플레이할 수 있게 합니다.",
+    "pt-BR": "Acessibilidade com leitor de tela para Oxygen Not Included, para jogadores cegos e com baixa visão: lê em voz alta os menus, a colônia e seus duplicantes, e torna o mapa jogável com navegação pelo teclado e sinais sonoros.",
+    "ru": "Поддержка программ экранного доступа в Oxygen Not Included для незрячих и слабовидящих игроков: озвучивает меню, колонию и её дупликантов и делает карту доступной для игры с помощью навигации с клавиатуры и звуковых сигналов.",
+    "zh-Hans": "为盲人和视障玩家提供的 Oxygen Not Included 屏幕阅读器无障碍支持：朗读菜单、殖民地及其复制人，并通过键盘导航和提示音让地图可以游玩。"
+  },
   "authors": [
     "Rashad Naqeeb"
   ],
@@ -23,7 +31,15 @@
               "Oxygen Not Included"
             ]
           },
-          "message": "Oxygen Not Included is running. Quit the game, then install again."
+          "message": {
+            "en": "Oxygen Not Included is running. Quit the game, then install again.",
+            "es": "Oxygen Not Included se está ejecutando. Cierra el juego y vuelve a instalar.",
+            "fr": "Oxygen Not Included est en cours d'exécution. Quittez le jeu, puis relancez l'installation.",
+            "ko": "Oxygen Not Included가 실행 중입니다. 게임을 종료한 다음 다시 설치하세요.",
+            "pt-BR": "O Oxygen Not Included está em execução. Feche o jogo e instale novamente.",
+            "ru": "Игра Oxygen Not Included запущена. Закройте игру и повторите установку.",
+            "zh-Hans": "Oxygen Not Included 正在运行。请退出游戏，然后重新安装。"
+          }
         }
       ]
     },
@@ -41,7 +57,15 @@
       "checks": [
         {
           "fileExists": "${game.localMods}/OniAccess/OniAccess.dll",
-          "message": "The download didn't contain the mod (no OniAccess.dll)."
+          "message": {
+            "en": "The download didn't contain the mod (no OniAccess.dll).",
+            "es": "La descarga no contenía el mod (falta OniAccess.dll).",
+            "fr": "Le téléchargement ne contenait pas le mod (OniAccess.dll est absent).",
+            "ko": "다운로드한 파일에 모드가 들어 있지 않습니다(OniAccess.dll 없음).",
+            "pt-BR": "O download não continha o mod (OniAccess.dll não encontrado).",
+            "ru": "В загруженном архиве нет мода (отсутствует OniAccess.dll).",
+            "zh-Hans": "下载的文件中没有该模组（缺少 OniAccess.dll）。"
+          }
         }
       ]
     },
@@ -56,7 +80,15 @@
         },
         "distribution": "steam"
       },
-      "message": "Oxygen Not Included has to see the mod once before it can be switched on. Loadstone is starting the game now. When the main menu appears, quit the game, then come back here."
+      "message": {
+        "en": "Oxygen Not Included has to see the mod once before it can be switched on. Loadstone is starting the game now. When the main menu appears, quit the game, then come back here.",
+        "es": "Oxygen Not Included tiene que detectar el mod una vez antes de poder activarlo. Loadstone está iniciando el juego. Cuando aparezca el menú principal, cierra el juego y vuelve aquí.",
+        "fr": "Oxygen Not Included doit détecter le mod une première fois avant qu'il puisse être activé. Loadstone lance le jeu maintenant. Quand le menu principal apparaît, quittez le jeu, puis revenez ici.",
+        "ko": "모드를 켜려면 Oxygen Not Included가 먼저 모드를 한 번 인식해야 합니다. 지금 Loadstone이 게임을 시작합니다. 메인 메뉴가 나타나면 게임을 종료한 다음 여기로 돌아오세요.",
+        "pt-BR": "O Oxygen Not Included precisa detectar o mod uma vez antes que ele possa ser ativado. O Loadstone está iniciando o jogo agora. Quando o menu principal aparecer, feche o jogo e volte aqui.",
+        "ru": "Игра Oxygen Not Included должна один раз обнаружить мод, прежде чем его можно будет включить. Сейчас Loadstone запускает игру. Когда появится главное меню, закройте игру и вернитесь сюда.",
+        "zh-Hans": "Oxygen Not Included 需要先识别一次该模组，才能将其开启。Loadstone 正在启动游戏。出现主菜单后，请退出游戏，然后回到这里。"
+      }
     },
     {
       "step": "open-url",
@@ -88,7 +120,15 @@
           "standalone"
         ]
       },
-      "message": "Oxygen Not Included has to see the mod once before it can be switched on. If you haven't yet, start the game, wait for the main menu, quit it, then come back here."
+      "message": {
+        "en": "Oxygen Not Included has to see the mod once before it can be switched on. If you haven't yet, start the game, wait for the main menu, quit it, then come back here.",
+        "es": "Oxygen Not Included tiene que detectar el mod una vez antes de poder activarlo. Si aún no lo has hecho, inicia el juego, espera al menú principal, ciérralo y vuelve aquí.",
+        "fr": "Oxygen Not Included doit détecter le mod une première fois avant qu'il puisse être activé. Si ce n'est pas encore fait, lancez le jeu, attendez le menu principal, quittez-le, puis revenez ici.",
+        "ko": "모드를 켜려면 Oxygen Not Included가 먼저 모드를 한 번 인식해야 합니다. 아직 하지 않았다면 게임을 시작하고 메인 메뉴가 나올 때까지 기다린 다음, 게임을 종료하고 여기로 돌아오세요.",
+        "pt-BR": "O Oxygen Not Included precisa detectar o mod uma vez antes que ele possa ser ativado. Se ainda não fez isso, inicie o jogo, espere o menu principal aparecer, feche o jogo e volte aqui.",
+        "ru": "Игра Oxygen Not Included должна один раз обнаружить мод, прежде чем его можно будет включить. Если вы ещё этого не сделали, запустите игру, дождитесь главного меню, закройте её и вернитесь сюда.",
+        "zh-Hans": "Oxygen Not Included 需要先识别一次该模组，才能将其开启。如果还没有这样做，请启动游戏，等待主菜单出现后退出游戏，然后回到这里。"
+      }
     },
     {
       "step": "edit-json",
@@ -104,7 +144,15 @@
             "Oxygen Not Included"
           ]
         },
-        "onMissing": "Oxygen Not Included hasn't listed the mod yet, or it is still running. Start the game if it isn't open, wait for the main menu, quit the game, then press Retry.",
+        "onMissing": {
+          "en": "Oxygen Not Included hasn't listed the mod yet, or it is still running. Start the game if it isn't open, wait for the main menu, quit the game, then press Retry.",
+          "es": "Oxygen Not Included aún no ha registrado el mod, o el juego sigue en ejecución. Inicia el juego si no está abierto, espera al menú principal, ciérralo y pulsa Reintentar.",
+          "fr": "Oxygen Not Included n'a pas encore répertorié le mod, ou le jeu est toujours en cours d'exécution. Lancez le jeu s'il n'est pas ouvert, attendez le menu principal, quittez le jeu, puis appuyez sur Réessayer.",
+          "ko": "Oxygen Not Included가 아직 모드를 목록에 올리지 않았거나 게임이 아직 실행 중입니다. 게임이 열려 있지 않다면 시작하고, 메인 메뉴가 나올 때까지 기다린 다음 게임을 종료하고 다시 시도를 누르세요.",
+          "pt-BR": "O Oxygen Not Included ainda não listou o mod, ou o jogo ainda está em execução. Inicie o jogo se ele não estiver aberto, espere o menu principal aparecer, feche o jogo e pressione Tentar novamente.",
+          "ru": "Игра Oxygen Not Included ещё не внесла мод в список или всё ещё запущена. Запустите игру, если она не открыта, дождитесь главного меню, закройте игру и нажмите «Повторить».",
+          "zh-Hans": "Oxygen Not Included 尚未列出该模组，或游戏仍在运行。如果游戏未打开，请启动游戏，等待主菜单出现后退出游戏，然后按“重试”。"
+        },
         "retryable": true
       },
       "ops": [
@@ -146,7 +194,15 @@
     },
     {
       "step": "notice",
-      "message": "Vision Not Included is switched on. If you were subscribed to it on the Steam Workshop, that copy is switched off so the mod doesn't load twice. For the best experience, turn off the Steam overlay for this game and clear Steam's screenshot key.",
+      "message": {
+        "en": "Vision Not Included is switched on. If you were subscribed to it on the Steam Workshop, that copy is switched off so the mod doesn't load twice. For the best experience, turn off the Steam overlay for this game and clear Steam's screenshot key.",
+        "es": "Visión no incluida está activada. Si te suscribiste al mod en el Workshop de Steam, esa copia se ha desactivado para que el mod no se cargue dos veces. Para una mejor experiencia, desactiva la superposición de Steam en este juego y quita la tecla de capturas de pantalla de Steam.",
+        "fr": "Vision non incluse est activée. Si vous étiez abonné au mod sur le Workshop Steam, cette copie a été désactivée pour que le mod ne se charge pas deux fois. Pour une meilleure expérience, désactivez l'overlay Steam pour ce jeu et supprimez le raccourci de capture d'écran de Steam.",
+        "ko": "시각미포함이 켜졌습니다. Steam 창작마당에서 이 모드를 구독했다면, 모드가 두 번 로드되지 않도록 그 사본은 꺼 두었습니다. 최상의 환경을 위해 이 게임에서 Steam 오버레이를 끄고 Steam 스크린샷 단축키를 지우세요.",
+        "pt-BR": "Visão não incluída está ativada. Se você se inscreveu no mod na Oficina Steam, essa cópia foi desativada para que o mod não seja carregado duas vezes. Para a melhor experiência, desative a sobreposição da Steam neste jogo e remova a tecla de captura de tela da Steam.",
+        "ru": "«Зрение не прилагается» включено. Если вы были подписаны на мод в Мастерской Steam, та копия отключена, чтобы мод не загружался дважды. Для лучшей работы отключите оверлей Steam для этой игры и уберите клавишу скриншотов Steam.",
+        "zh-Hans": "缺视已开启。如果曾在 Steam 创意工坊订阅过它，那个副本已被关闭，以免模组加载两次。为获得最佳体验，请为此游戏关闭 Steam 游戏内界面，并清除 Steam 的截图快捷键。"
+      },
       "when": {
         "jsonHas": {
           "file": "${game.mods}/mods.json",
@@ -164,7 +220,15 @@
           }
         }
       },
-      "message": "Vision Not Included is installed but not switched on yet. Start Oxygen Not Included once, wait for the main menu, quit it, then press Switch the mod back on."
+      "message": {
+        "en": "Vision Not Included is installed but not switched on yet. Start Oxygen Not Included once, wait for the main menu, quit it, then press Switch the mod back on.",
+        "es": "Visión no incluida está instalada, pero aún no está activada. Inicia Oxygen Not Included una vez, espera al menú principal, ciérralo y pulsa Reactivar el mod.",
+        "fr": "Vision non incluse est installée, mais pas encore activée. Lancez Oxygen Not Included une fois, attendez le menu principal, quittez le jeu, puis appuyez sur Réactiver le mod.",
+        "ko": "시각미포함이 설치되었지만 아직 켜지지 않았습니다. Oxygen Not Included를 한 번 시작하고 메인 메뉴가 나올 때까지 기다린 다음, 게임을 종료하고 모드 다시 켜기를 누르세요.",
+        "pt-BR": "Visão não incluída está instalada, mas ainda não foi ativada. Inicie o Oxygen Not Included uma vez, espere o menu principal aparecer, feche o jogo e pressione Reativar o mod.",
+        "ru": "«Зрение не прилагается» установлено, но ещё не включено. Запустите Oxygen Not Included один раз, дождитесь главного меню, закройте игру и нажмите «Снова включить мод».",
+        "zh-Hans": "缺视已安装，但尚未开启。请启动一次 Oxygen Not Included，等待主菜单出现后退出游戏，然后按“重新开启模组”。"
+      }
     }
   ],
   "launch": [
@@ -179,7 +243,15 @@
             "steam",
             "steam_osx"
           ],
-          "message": "Steam isn't running. Open Steam, then press Launch again."
+          "message": {
+            "en": "Steam isn't running. Open Steam, then press Launch game again.",
+            "es": "Steam no se está ejecutando. Abre Steam y vuelve a pulsar Iniciar el juego.",
+            "fr": "Steam n'est pas lancé. Ouvrez Steam, puis appuyez de nouveau sur Lancer le jeu.",
+            "ko": "Steam이 실행 중이 아닙니다. Steam을 연 다음 게임 실행을 다시 누르세요.",
+            "pt-BR": "A Steam não está em execução. Abra a Steam e pressione Iniciar o jogo novamente.",
+            "ru": "Steam не запущен. Откройте Steam и снова нажмите «Запустить игру».",
+            "zh-Hans": "Steam 未运行。请打开 Steam，然后再次按“启动游戏”。"
+          }
         }
       ]
     },
@@ -197,14 +269,38 @@
           "distribution": "steam"
         }
       },
-      "message": "Start Oxygen Not Included the way you usually do; the mod loads with it."
+      "message": {
+        "en": "Start Oxygen Not Included the way you usually do; the mod loads with it.",
+        "es": "Inicia Oxygen Not Included como lo haces normalmente; el mod se carga con el juego.",
+        "fr": "Lancez Oxygen Not Included comme d'habitude ; le mod se charge avec le jeu.",
+        "ko": "평소처럼 Oxygen Not Included를 시작하세요. 모드는 게임과 함께 로드됩니다.",
+        "pt-BR": "Inicie o Oxygen Not Included como você costuma fazer; o mod é carregado junto com o jogo.",
+        "ru": "Запустите Oxygen Not Included как обычно — мод загрузится вместе с игрой.",
+        "zh-Hans": "请按平时的方式启动 Oxygen Not Included，模组会随游戏一起加载。"
+      }
     }
   ],
   "actions": [
     {
       "id": "enable-mod",
-      "label": "Switch the mod back on",
-      "description": "Oxygen Not Included switches mods off after a crash or a game update. This switches Vision Not Included back on. Quit the game first.",
+      "label": {
+        "en": "Switch the mod back on",
+        "es": "Reactivar el mod",
+        "fr": "Réactiver le mod",
+        "ko": "모드 다시 켜기",
+        "pt-BR": "Reativar o mod",
+        "ru": "Снова включить мод",
+        "zh-Hans": "重新开启模组"
+      },
+      "description": {
+        "en": "Oxygen Not Included switches mods off after a crash or a game update. This switches Vision Not Included back on. Quit the game first.",
+        "es": "Oxygen Not Included desactiva los mods tras un cierre inesperado o una actualización del juego. Esto vuelve a activar Visión no incluida. Cierra el juego antes.",
+        "fr": "Oxygen Not Included désactive les mods après un plantage ou une mise à jour du jeu. Cette action réactive Vision non incluse. Quittez d'abord le jeu.",
+        "ko": "Oxygen Not Included는 게임이 비정상 종료되거나 업데이트되면 모드를 끕니다. 이 동작은 시각미포함을 다시 켭니다. 먼저 게임을 종료하세요.",
+        "pt-BR": "O Oxygen Not Included desativa os mods após uma falha ou uma atualização do jogo. Isto reativa Visão não incluída. Feche o jogo antes.",
+        "ru": "Oxygen Not Included отключает моды после сбоя или обновления игры. Это действие снова включает «Зрение не прилагается». Сначала закройте игру.",
+        "zh-Hans": "Oxygen Not Included 会在崩溃或游戏更新后关闭模组。此操作会重新开启缺视。请先退出游戏。"
+      },
       "steps": [
         {
           "step": "edit-json",
@@ -220,7 +316,15 @@
                 "Oxygen Not Included"
               ]
             },
-            "onMissing": "Oxygen Not Included hasn't listed the mod yet, or it is still running. Start the game if it isn't open, wait for the main menu, quit the game, then press Retry.",
+            "onMissing": {
+              "en": "Oxygen Not Included hasn't listed the mod yet, or it is still running. Start the game if it isn't open, wait for the main menu, quit the game, then press Retry.",
+              "es": "Oxygen Not Included aún no ha registrado el mod, o el juego sigue en ejecución. Inicia el juego si no está abierto, espera al menú principal, ciérralo y pulsa Reintentar.",
+              "fr": "Oxygen Not Included n'a pas encore répertorié le mod, ou le jeu est toujours en cours d'exécution. Lancez le jeu s'il n'est pas ouvert, attendez le menu principal, quittez le jeu, puis appuyez sur Réessayer.",
+              "ko": "Oxygen Not Included가 아직 모드를 목록에 올리지 않았거나 게임이 아직 실행 중입니다. 게임이 열려 있지 않다면 시작하고, 메인 메뉴가 나올 때까지 기다린 다음 게임을 종료하고 다시 시도를 누르세요.",
+              "pt-BR": "O Oxygen Not Included ainda não listou o mod, ou o jogo ainda está em execução. Inicie o jogo se ele não estiver aberto, espere o menu principal aparecer, feche o jogo e pressione Tentar novamente.",
+              "ru": "Игра Oxygen Not Included ещё не внесла мод в список или всё ещё запущена. Запустите игру, если она не открыта, дождитесь главного меню, закройте игру и нажмите «Повторить».",
+              "zh-Hans": "Oxygen Not Included 尚未列出该模组，或游戏仍在运行。如果游戏未打开，请启动游戏，等待主菜单出现后退出游戏，然后按“重试”。"
+            },
             "retryable": true
           },
           "ops": [
