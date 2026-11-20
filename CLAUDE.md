@@ -83,6 +83,8 @@ When a build fails on a type or method signature, look it up in `ONI-Decompiled/
 
 When committing a new feature or bug fix, add an entry to `changes.md`. Keep entries short — one line per change, written from the player's perspective (what changed for them, not implementation details).
 
+Don't document support for something the game itself added or changed (a new building, screen or game feature the mod now reads). Add an entry only when the mod does something different that the player needs to know about, such as a new or changed key, a mod-side behaviour change, or a fix to the mod's own bug.
+
 ## Code Style
 
 - Harmony patch classes: `GameType_MethodName_Patch` (e.g., `KScreen_Activate_Patch`)

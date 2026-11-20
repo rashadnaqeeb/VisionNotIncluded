@@ -19,6 +19,8 @@ namespace OniAccess.Handlers.Build {
 	/// and utility buildings (straight-line path via UtilityBuildTool/WireBuildTool).
 	/// </summary>
 	public class BuildToolHandler: BaseScreenHandler {
+		private readonly Util.GameEventSubscription _toolChangedSub = new Util.GameEventSubscription();
+
 		public static BuildToolHandler Instance { get; private set; }
 
 		private HashedString _category;
@@ -100,12 +102,18 @@ namespace OniAccess.Handlers.Build {
 			return new CellOffset(-rotated.x, -rotated.y);
 		}
 
-		private int GetOriginCell() {
+		private int GetOriginCell() => GetOriginCell(TileCursor.Instance.Cell);
+
+		/// <summary>
+		/// The cell the game places the building's origin on when the
+		/// cursor is on cursorCell.
+		/// </summary>
+		internal int GetOriginCell(int cursorCell) {
 			var orientation = BuildMenuData.GetCurrentOrientation();
 			var shift = BuildMenuData.IsFlowBuilding(_def)
 				? InputEndToOriginOffset(_def, orientation)
 				: BottomLeftToOriginOffset(_def, orientation);
-			return Grid.OffsetCell(TileCursor.Instance.Cell, shift);
+			return Grid.OffsetCell(cursorCell, shift);
 		}
 
 		private static readonly IReadOnlyList<HelpEntry> _singleModeNoRectHelp = new List<HelpEntry> {
@@ -176,10 +184,8 @@ namespace OniAccess.Handlers.Build {
 		public override void OnActivate() {
 			Instance = this;
 
-			if (Game.Instance != null) {
-				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
-				Game.Instance.Subscribe(1174281782, OnActiveToolChanged);
-			}
+			if (Game.Instance != null)
+				_toolChangedSub.Subscribe(Game.Instance, 1174281782, OnActiveToolChanged);
 		}
 
 		/// <summary>
@@ -214,8 +220,7 @@ namespace OniAccess.Handlers.Build {
 			if (TileCursor.Instance != null)
 				TileCursor.Instance.ActiveToolProfile = null;
 
-			if (Game.Instance != null)
-				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+			_toolChangedSub.Unsubscribe();
 
 			_utilityStartCell = Grid.InvalidCell;
 			_rectMode = RectMode.Off;
@@ -401,8 +406,8 @@ namespace OniAccess.Handlers.Build {
 			}
 			if (e.TryConsume(Action.RotateBuilding))
 				return true;
-			for (int i = (int)Action.Plan1; i <= (int)Action.Plan14; i++) {
-				if (e.TryConsume((Action)i))
+			foreach (var action in ModInputRouter.PlanCategoryActions) {
+				if (e.TryConsume(action))
 					return true;
 			}
 			return false;
@@ -1334,8 +1339,7 @@ namespace OniAccess.Handlers.Build {
 		private void ExitBuildMode() => LeaveBuildMode(announceCancel: false);
 
 		private void LeaveBuildMode(bool announceCancel) {
-			if (Game.Instance != null)
-				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+			_toolChangedSub.Unsubscribe();
 
 			QueueOverlayAndPop();
 

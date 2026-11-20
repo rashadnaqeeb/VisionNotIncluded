@@ -123,7 +123,8 @@ namespace OniAccess.Handlers.Build {
 						(string)STRINGS.ONIACCESS.BUILD_MENU.MATERIAL_INSUFFICIENT,
 						name, quantity);
 
-				var descriptors = GameUtil.GetMaterialDescriptors(tag);
+				var descriptors = new List<Descriptor>();
+				GameUtil.CollectMaterialDescriptors(tag, descriptors);
 				if (descriptors.Count > 0) {
 					var effects = new List<string>();
 					foreach (var desc in descriptors)
@@ -189,7 +190,7 @@ namespace OniAccess.Handlers.Build {
 					return;
 				}
 
-				selector.OnSelectMaterial(tag, _def.CraftRecipe, false);
+				selector.TrySelectMaterial(tag, _def.CraftRecipe);
 			} catch (System.Exception ex) {
 				Util.Log.Error($"MaterialPickerHandler.SelectMaterial: {ex}");
 			}

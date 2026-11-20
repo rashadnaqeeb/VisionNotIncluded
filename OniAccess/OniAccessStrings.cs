@@ -987,6 +987,9 @@ namespace STRINGS {
 			public static LocString CONFIRM_EMPTY_PIPE = "marked {0} pipe cells for emptying at priority {1}";
 			// {0} = segment count (int)
 			public static LocString CONFIRM_DISCONNECT = "disconnected {0} segments";
+			// Paste Blueprint tool. {0} = number of buildings or duplicants that took
+			// the copied blueprint, {2} = "item" or "items"
+			public static LocString CONFIRM_PASTE_BLUEPRINT = "blueprint applied to {0} {2}";
 			// {0} = priority level (int)
 			public static LocString PRIORITY_BASIC = "priority {0}";
 			public static LocString PRIORITY_EMERGENCY = "emergency priority";
@@ -1239,6 +1242,12 @@ namespace STRINGS {
 			public static LocString FLOW_DIRECTION_PERCENT = "{0}% {1}";
 			// {0} = element name, {1} = direction percentages (e.g. "80% right 15% up")
 			public static LocString FLOW_ELEMENT_DIRECTIONS = "{0}, {1}";
+			// Where the pipe network routes contents out of an idle or empty pipe.
+			// {0} = one or more direction names (e.g. "right", "down and right")
+			public static LocString FLOW_WILL_FLOW = "will flow {0}";
+			// Joins the last direction onto the others. {0} = the earlier directions
+			// separated by commas, {1} = the last direction. Example: "down, left and right"
+			public static LocString FLOW_DIRECTION_AND = "{0} and {1}";
 
 			// {0} = integer percentage of circuit load (can exceed 100)
 			public static LocString WIRE_LOAD_PERCENT = "{0} percent";
@@ -1533,6 +1542,8 @@ namespace STRINGS {
 			public static LocString DUPE_HAT_SUBTITLE = "{0}, {1}, {2}";
 			// {0} = duplicant name, {1} = skills subtitle
 			public static LocString DUPE_SUBTITLE = "{0}, {1}";
+			// {0} = critter or plant name, {1} = the game's subtitle (e.g. "Wood-Molting Critter")
+			public static LocString ENTITY_SUBTITLE = "{0}, {1}";
 			// {0} = entity name, {1} = tab display name
 			public static LocString ENTITY_TAB = "{0}, {1}";
 			// {0} = parent container/context label, {1} = item speech text
@@ -1559,9 +1570,10 @@ namespace STRINGS {
 			public static LocString REACH = "Work reach: A duplicant can work on targets up to 2 tiles above their head, 3 tiles below their feet, and 2 tiles to either side. Storage tasks are an exception, reaching 3 tiles to either side instead of 2. When a target is at a diagonal, digging and tile construction can reach through that corner even if both tiles are solid. Other tasks require at least one of those corner tiles to be open. Otherwise, solid tiles always block work reach. The game recalculates valid work positions whenever terrain changes, for example from digging or construction.";
 			// {0} = raw NavGrid name for unmapped grids
 			public static LocString PATHING_UNKNOWN = "{0} (unknown)";
-			// Auto-Sweeper section header: buildings the arm can service
+			// Auto-Sweeper and support building section header: buildings the
+			// arm can service, or the support building can optimize
 			public static LocString IN_RANGE = "In Range";
-			// Spoken as the only item when the sweeper can reach no buildings
+			// Spoken as the only item when the section has no buildings
 			public static LocString NOTHING_IN_RANGE = "Nothing in range";
 			// Appended to an In Range item whose output lands on a different
 			// cell (conveyor chutes, dispensers, fabricator products).
@@ -1578,6 +1590,16 @@ namespace STRINGS {
 			// Appended to a Robo-Miner item: its dig area overlaps the
 			// sweeper's range, so mined debris lands where the sweeper works
 			public static LocString MINING_OVERLAP = "mining area overlaps";
+			// Support building In Range items: whether this support building is
+			// currently speeding up the listed building
+			public static LocString SUPPORT_OPTIMIZED = "optimized";
+			public static LocString SUPPORT_NOT_OPTIMIZED = "not optimized";
+			// Printing Pod Blueprints tab: header over the vista choices, the
+			// scenic backdrops its projector can show
+			public static LocString VISTAS = "Vistas";
+			// Drywall's Rotate button in the Blueprints tab. {0} = the button's
+			// label, {1} = the wall's current orientation (e.g. "facing up")
+			public static LocString BLUEPRINT_ROTATION = "{0}, {1}";
 			// Spoken each time the open Auto-Sweeper's arm finishes a pickup.
 			// {0} = item and amount, {1} = the building it came out of, or the
 			// coordinates it was lying at when it was loose debris
@@ -2087,6 +2109,12 @@ namespace STRINGS {
 			public static LocString EXTENT_RIGHT = "{0} right";
 			public static LocString EXTENT_UP = "{0} up";
 			public static LocString EXTENT_DOWN = "{0} down";
+			// Placing a support building: the built buildings in its range it would
+			// speed up. {0} = comma-separated building names
+			public static LocString SUPPORT_OPTIMIZES = "optimizes {0}";
+			// Placing a building a support building can speed up: the support
+			// buildings whose range covers it. {0} = comma-separated building names
+			public static LocString SUPPORT_OPTIMIZED_BY = "optimized by {0}";
 			// {0} = direction name (up/down/left/right)
 			public static LocString FACING = "facing {0}";
 			// Building orientation direction names
@@ -2426,7 +2454,8 @@ namespace STRINGS {
 			public static LocString STEELA = "Pale skin and an enormous puff of metallic silver curls that look like they were wound from actual steel wool. A dark visor band runs across her eyes, behind which two round white lenses glow like headlights. She wears a small, composed smile beneath the visor, the expression of someone who has processed the situation and found it mildly amusing. Purple top with cyan trim, mechanical fists, black pants.";
 			public static LocString ULTI = "Tan skin with the right side of their head encased in silver plating, housing a large circular teal lens where an eye used to be. A swept-back fin of lavender-pink hair crowns the top of their head. Their remaining organic eye is small and cheerful, paired with a pleased little smile. Purple top with glowing cyan trim, black pants with teal-accented joints, one hand raised in a casual wave. They look like someone who is fifty percent machine and one hundred percent fine with it.";
 			public static LocString KAI = "Tan skin and a shaggy golden-blonde bob that falls around their face in loose beachy waves, like they just wandered up from the surf and shook dry. Their expression is calm and unbothered, small dark eyes and a relaxed little smile. They wear a deep red top over black pants patterned with fish scales like a wetsuit, with gold trim at the cuffs and belt. The whole outfit says lifeguard; the face says nap.";
-			public static LocString MINNOW = "Pale porcelain skin and a tumble of pearlescent hair that fades from pinkish white at the crown through lavender to purple at the tips, with bright blue and pink streaks tucked underneath and choppy bangs sweeping across her forehead. A sprinkle of small blue dots marks her cheeks, like freckles that decided to be sea spray instead. She has big round dark eyes and a gentle, contented smile. She wears a dusty purple top over black fish-scale-patterned pants, with sky-blue gloves and matching blue trim.";
+			public static LocString MINNOW = "Pale porcelain skin and a tumble of pearlescent hair that fades from pinkish white at the crown through lavender to purple at the tips, with bright blue and pink streaks tucked underneath and choppy bangs sweeping across her forehead. A sprinkle of small blue dots marks her cheeks, like freckles that decided to be sea spray instead. She has big round dark eyes and a gentle, contented smile. She wears a lavender top with a high aqua collar and a wide aqua band around the middle, black fish-scale-patterned pants, sky-blue gloves, and pale blue boots.";
+			public static LocString ZOE = "Tan skin with a scatter of brown freckles across her nose and cheeks. Her bright violet hair is swept up and back into a tall wave that trails off into a long shaggy tail behind her, with one curly strand springing up from her forehead like an antenna, and the side of her head buzzed short to a pale lavender stubble. Big dark eyes and a huge open-mouthed laugh full of gappy teeth. She wears a pale blue button-front tunic with a blue scarf knotted at her neck, a dark grey belt, chunky brown gloves, and brown boots, and stands with her fists planted on her hips like she is about to announce something tremendous.";
 		}
 
 		public class CRITTER_DESCRIPTIONS {
@@ -2443,6 +2472,7 @@ namespace STRINGS {
 			public static LocString LIGHTBUGCRYSTAL = "A white Shine Bug with a brilliant cyan-white glow that radiates outward from its body. Its teardrop shape is almost washed out by the intense light. Faint turquoise highlights outline its eyes and the edges of its rotor wings.";
 			public static LocString SQUIRREL = "A small, round critter covered in spiky olive-green quills that fan out in all directions like a tiny hedgehog-cactus. It has a pale yellow face with two large dark eyes, a small nose, and a wide toothy grin. Its short brown feet poke out from underneath the quills.";
 			public static LocString SQUIRRELHUG = "A fluffy, round critter covered in soft pink-lavender fur instead of quills. It has two large upright ears tipped in purple and a pair of stubby purple arm-wings spread to the sides. Its face is pale pink with big dark eyes and a small toothy smile, giving it a cuddly stuffed-animal look.";
+			public static LocString SQUIRRELAQUATIC = "A Pip morph made over into a little sea creature, bright aquamarine from head to tail. Instead of quills it has webbed fins: a large pair fanning out from its sides like wings, and three smaller ones rising from its head like ears and a crest, every fin tipped in coral red. Its face has two big dark eyes, a tiny pink nose, and a pair of long white buckteeth above a pale bib on its chest. The lower half of its body is covered in overlapping teal scales and ends in a fish tail, with two small red feet tucked underneath.";
 			public static LocString DRECKO = "A low, lizard-like critter with a flat brown head and half-closed sleepy eyes. Its body is almost entirely hidden under a massive mound of puffy, cloud-like grey-white wool that billows out above and behind it. Short stubby legs are barely visible beneath the wool.";
 			public static LocString DRECKOPLASTIC = "A Drecko variant covered in rows of large, overlapping blue-grey scales instead of wool, running from its head to its tail like shingles. Its face is steel blue with a visible underbite showing two front teeth. The scales have a polished, metallic sheen compared to the base Drecko's fluffy coat.";
 			public static LocString CRAB = "A stout, crab-like critter with a large cracked pink shell covering its back. Two tall eyestalks with round black eyes extend upward from the top of its head. Its face is pink and flat, and it stands on short dark legs. The shell has visible fracture lines and angular plates, giving it a rough, weathered look.";

@@ -16,6 +16,12 @@ namespace OniAccess.Handlers.Tools {
 		public string ConfirmSound { get; }
 		public string ConfirmFormat { get; }
 		public Func<int, int> CountTargets { get; }
+		/// <summary>
+		/// Counts targets across all selected cells at once, for tools whose
+		/// targets span several cells and must be counted once each. Used in
+		/// place of CountTargets when set.
+		/// </summary>
+		public Func<System.Collections.Generic.HashSet<int>, int> CountTargetsInCells { get; set; }
 
 		public ModToolInfo(
 			string toolName,

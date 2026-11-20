@@ -14,7 +14,7 @@ namespace OniAccess.Handlers.Tiles {
 		private bool _isDupe;
 		private Action<StatusItemGroup.Entry, StatusItemCategory> _onStatusAdded;
 		private Action<StatusItemGroup.Entry, bool> _onStatusRemoved;
-		private Action<object> _onChoreChanged;
+		private readonly Util.GameEventSubscription _choreChangedSub = new Util.GameEventSubscription();
 
 		public void TickFollow(bool dupeFollowing, bool botFollowing) {
 			try {
@@ -39,13 +39,12 @@ namespace OniAccess.Handlers.Tiles {
 			_isDupe = target.GetComponent<MinionIdentity>() != null;
 			_onStatusAdded = OnStatusAdded;
 			_onStatusRemoved = OnStatusRemoved;
-			_onChoreChanged = OnChoreChanged;
 			var group = target.GetComponent<KSelectable>().GetStatusItemGroup();
 			group.OnAddStatusItem = (Action<StatusItemGroup.Entry, StatusItemCategory>)
 				Delegate.Combine(group.OnAddStatusItem, _onStatusAdded);
 			group.OnRemoveStatusItem = (Action<StatusItemGroup.Entry, bool>)
 				Delegate.Combine(group.OnRemoveStatusItem, _onStatusRemoved);
-			target.Subscribe(-1988963660, _onChoreChanged);
+			_choreChangedSub.Subscribe(target, -1988963660, OnChoreChanged);
 		}
 
 		public void StopFollow() {
@@ -61,14 +60,13 @@ namespace OniAccess.Handlers.Tiles {
 							Delegate.Remove(group.OnRemoveStatusItem, _onStatusRemoved);
 					}
 				}
-				_followedObject.Unsubscribe(-1988963660, _onChoreChanged);
+				_choreChangedSub.Unsubscribe();
 			} catch (Exception ex) {
 				Log.Warn($"ExternalFollowListener.StopFollow: {ex}");
 			}
 			_followedObject = null;
 			_onStatusAdded = null;
 			_onStatusRemoved = null;
-			_onChoreChanged = null;
 		}
 
 		private void OnStatusAdded(StatusItemGroup.Entry entry, StatusItemCategory category) {

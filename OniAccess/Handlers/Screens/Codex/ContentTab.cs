@@ -343,6 +343,12 @@ namespace OniAccess.Handlers.Screens.Codex {
 						continue;
 					}
 
+					// Reference links atop the Plants and Creatures pages: one followable item each
+					if (widget is CodexPreTitleLinks preTitleLinks) {
+						AddPreTitleLinkItems(preTitleLinks);
+						continue;
+					}
+
 					// Merge label-with-icon + following body text (e.g. critter drops: "Meat" + "4800 kcal")
 					if (widget is CodexIndentedLabelWithIcon cili) {
 						string label = WidgetTextExtractor.GetText(cili);
@@ -391,6 +397,21 @@ namespace OniAccess.Handlers.Screens.Codex {
 						}
 					}
 				}
+			}
+		}
+
+		private void AddPreTitleLinkItems(CodexPreTitleLinks widget) {
+			foreach (var (label, pageId, _) in widget.links) {
+				if (!CodexCache.entries.ContainsKey(pageId)) {
+					Util.Log.Warn($"ContentTab: reference link target '{pageId}' is not a codex entry");
+					continue;
+				}
+				string text = TextFilter.FilterForSpeech(label);
+				_items.Add(new ContentItem {
+					text = text,
+					isHeading = false,
+					links = new List<(string id, string text)> { (pageId, text) },
+				});
 			}
 		}
 

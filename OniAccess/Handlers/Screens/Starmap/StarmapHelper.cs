@@ -182,8 +182,9 @@ namespace OniAccess.Handlers.Screens.Starmap {
 			});
 
 			// Fuel, Oxidizer, Storage from module network
-			var network = AttachableBuilding.GetAttachedNetwork(
-				cmd.GetComponent<AttachableBuilding>());
+			var network = new List<UnityEngine.GameObject>();
+			AttachableBuilding.CollectAttachedBuildings(
+				cmd.GetComponent<AttachableBuilding>(), network);
 			Tag engineFuelTag = cmd.rocketStats.GetEngineFuelTag();
 
 			var fuelItems = new List<string>();
@@ -476,8 +477,9 @@ namespace OniAccess.Handlers.Screens.Starmap {
 			if (rocket == null || rocket.state != Spacecraft.MissionState.Grounded)
 				return "";
 			var cmd = rocket.launchConditions.GetComponent<CommandModule>();
-			var network = AttachableBuilding.GetAttachedNetwork(
-				cmd.GetComponent<AttachableBuilding>());
+			var network = new List<UnityEngine.GameObject>();
+			AttachableBuilding.CollectAttachedBuildings(
+				cmd.GetComponent<AttachableBuilding>(), network);
 
 			CargoBay.CargoType targetType;
 			string prefabId;
@@ -515,8 +517,9 @@ namespace OniAccess.Handlers.Screens.Starmap {
 			if (rocket == null || rocket.state != Spacecraft.MissionState.Grounded)
 				return "";
 			var cmd = rocket.launchConditions.GetComponent<CommandModule>();
-			var network = AttachableBuilding.GetAttachedNetwork(
-				cmd.GetComponent<AttachableBuilding>());
+			var network = new List<UnityEngine.GameObject>();
+			AttachableBuilding.CollectAttachedBuildings(
+				cmd.GetComponent<AttachableBuilding>(), network);
 
 			bool hasBay = false;
 			foreach (var m in network) {

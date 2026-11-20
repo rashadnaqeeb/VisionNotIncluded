@@ -278,8 +278,25 @@ namespace OniAccess.Widgets {
 				return;
 			}
 
-			// All toggle
+			// With nothing discovered the game hides the toggles and shows a message instead
+			bool configurationVisible = true;
 			try {
+				var noDiscoveredContainer = tv.Field<GameObject>("noDiscoveredTagsContainer").Value;
+				if (noDiscoveredContainer.activeSelf) {
+					var noDiscoveredLabel = tv.Field<LocText>("noDiscoveredTagsLabel").Value;
+					items.Add(new LabelWidget {
+						Label = Speech.TextFilter.FilterForSpeech(noDiscoveredLabel.text),
+						GameObject = noDiscoveredContainer,
+						SpeechFunc = () => Speech.TextFilter.FilterForSpeech(noDiscoveredLabel.text)
+					});
+				}
+				configurationVisible = tv.Field<GameObject>("configurationRowsContainer").Value.activeSelf;
+			} catch (System.Exception ex) {
+				Util.Log.Error($"WalkTreeFilter: nothing-discovered state read failed: {ex}");
+			}
+
+			// All toggle
+			if (configurationVisible) try {
 				var allCheckBox = tv.Field<MultiToggle>("allCheckBox").Value;
 				var allCheckBoxLabel = tv.Field<LocText>("allCheckBoxLabel").Value;
 				if (allCheckBox != null) {
@@ -304,7 +321,7 @@ namespace OniAccess.Widgets {
 			}
 
 			// Sweep Only toggle
-			try {
+			if (configurationVisible) try {
 				var transportRow = tv.Field<GameObject>("onlyallowTransportItemsRow").Value;
 				if (transportRow != null && transportRow.activeSelf) {
 					var transportCheckBox = tv.Field<MultiToggle>(
@@ -327,7 +344,7 @@ namespace OniAccess.Widgets {
 			}
 
 			// Seasoned Food Only toggle
-			try {
+			if (configurationVisible) try {
 				var spicedRow = tv.Field<GameObject>("onlyallowSpicedItemsRow").Value;
 				if (spicedRow != null && spicedRow.activeSelf) {
 					var spicedCheckBox = tv.Field<MultiToggle>(
@@ -2479,6 +2496,20 @@ namespace OniAccess.Widgets {
 			} catch (System.Exception ex) {
 				Util.Log.Warn($"WalkSingleItemSelection: field read failed: {ex.Message}");
 				return;
+			}
+
+			// With nothing discovered the game hides the selection and the list
+			try {
+				var noElementsContainer = tv.Field<GameObject>("noElementsDiscoveredContainer").Value;
+				if (noElementsContainer.activeSelf) {
+					items.Add(new LabelWidget {
+						Label = (string)STRINGS.UI.UISIDESCREENS.TREEFILTERABLESIDESCREEN.NO_DISCOVERED_ELEMENTS,
+						GameObject = noElementsContainer
+					});
+					return;
+				}
+			} catch (System.Exception ex) {
+				Util.Log.Error($"WalkSingleItemSelection: nothing-discovered state read failed: {ex}");
 			}
 
 			// Current selection

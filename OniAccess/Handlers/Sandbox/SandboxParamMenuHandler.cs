@@ -89,7 +89,32 @@ namespace OniAccess.Handlers.Sandbox {
 				}
 			}
 
+			// Target layer (foreground or backwall), shown for tools and elements
+			// that can paint a backwall. Brush shape is omitted like the radius:
+			// rectangle selection replaces it.
+			var shapeLayer = menu.shapeLayerControl;
+			if (shapeLayer != null && shapeLayer.row.activeSelf && shapeLayer.layerParent.activeSelf) {
+				_widgets.Add(new ButtonWidget {
+					Label = (string)STRINGS.UI.SANDBOXTOOLS.SETTINGS.TARGET_LAYER.NAME,
+					Component = shapeLayer.layerMultiToggleForeground,
+					GameObject = shapeLayer.layerParent,
+					Tag = shapeLayer,
+					SuppressTooltip = true,
+					SpeechFunc = () => ReadTargetLayer(shapeLayer),
+				});
+			}
+
 			return _widgets.Count > 0;
+		}
+
+		private static bool IsTargetingBackground(SandboxToolParameterMenu_ShapeLayerControl control) =>
+			control.layerMultiToggleBackground.CurrentState == 1;
+
+		private static string ReadTargetLayer(SandboxToolParameterMenu_ShapeLayerControl control) {
+			string value = IsTargetingBackground(control)
+				? (string)STRINGS.UI.SANDBOXTOOLS.SETTINGS.TARGET_LAYER.BACKGROUND_TOOLTIP
+				: (string)STRINGS.UI.SANDBOXTOOLS.SETTINGS.TARGET_LAYER.FOREGROUND_TOOLTIP;
+			return $"{(string)STRINGS.UI.SANDBOXTOOLS.SETTINGS.TARGET_LAYER.NAME}, {value}";
 		}
 
 		private static ParamEntry Sel(SandboxToolParameterMenu.SelectorValue sel) =>
@@ -138,6 +163,16 @@ namespace OniAccess.Handlers.Sandbox {
 			// Selector widgets: push the selector handler
 			if (widget.Tag is SandboxToolParameterMenu.SelectorValue sel) {
 				HandlerStack.Push(new SandboxSelectorHandler(sel));
+				return;
+			}
+
+			// Target layer: Enter switches to the other layer, as clicking its toggle does
+			if (widget.Tag is SandboxToolParameterMenu_ShapeLayerControl shapeLayer) {
+				var other = IsTargetingBackground(shapeLayer)
+					? shapeLayer.layerMultiToggleForeground
+					: shapeLayer.layerMultiToggleBackground;
+				other.onClick();
+				SpeechPipeline.SpeakInterrupt(ReadTargetLayer(shapeLayer));
 				return;
 			}
 

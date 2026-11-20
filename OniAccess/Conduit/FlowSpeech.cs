@@ -5,11 +5,16 @@ namespace OniAccess.ConduitTracking {
 	/// Formats a FlowTracker's direction counts as a speech string.
 	/// </summary>
 	public static class FlowSpeech {
+		/// <summary>
+		/// Null when nothing has been sampled yet. moved says whether
+		/// anything left the conduit during the sampled window.
+		/// </summary>
 		public static string Format(FlowTracker tracker, int conduitIdx,
-				bool currentlyEmpty) {
+				bool currentlyEmpty, out bool moved) {
 			var contentCounts = new Dictionary<Tag, int[]>();
 			int samples = tracker.GetContentDirectionCounts(
 				conduitIdx, contentCounts);
+			moved = contentCounts.Count > 0;
 			if (samples == 0) return null;
 
 			if (contentCounts.Count == 0)
@@ -53,7 +58,7 @@ namespace OniAccess.ConduitTracking {
 			return string.Join(", ", tokens);
 		}
 
-		private static string DirectionName(int dir) {
+		internal static string DirectionName(int dir) {
 			switch (dir) {
 				case FlowTracker.DirUp:
 					return STRINGS.ONIACCESS.SCANNER.DIRECTION_UP;

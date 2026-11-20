@@ -23,6 +23,12 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		/// </summary>
 		private static HashSet<string> allOverlayItems;
 
+		/// <summary>
+		/// Overlay-specific IDs that also speak in the default view: warnings
+		/// about a building's own job that an overlay explains further.
+		/// </summary>
+		private static HashSet<string> sharedWithDefault;
+
 		private static HashedString cropOverlay;
 
 		public static void Initialize() {
@@ -45,7 +51,8 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			var liquid = new HashSet<string> {
 				"NeedLiquidIn", "NeedLiquidOut", "LiquidPipeEmpty",
 				"LiquidVentObstructed", "LiquidVentOverPressure",
-				"NoLiquidElementToPump"
+				"NoLiquidElementToPump",
+				"OutputPipeFull", "OutputPipeFull_Lavatory"
 			};
 			overlayItems[OverlayModes.LiquidConduits.ID] = liquid;
 
@@ -82,6 +89,10 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			foreach (var set in overlayItems.Values)
 				foreach (var id in set)
 					allOverlayItems.Add(id);
+
+			sharedWithDefault = new HashSet<string> {
+				"OutputPipeFull", "OutputPipeFull_Lavatory"
+			};
 
 			alwaysNeutrals = new HashSet<string> {
 				"UnderConstruction", "UnderConstructionNoWorker",
@@ -124,12 +135,19 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				return true;
 
 			// Other neutrals suppressed
-			if (severity != NotificationType.Bad
-				&& severity != NotificationType.BadMinor)
+			if (!IsWarning(item))
 				return false;
 
 			// Bad/BadMinor not claimed by any overlay
-			return !allOverlayItems.Contains(id);
+			return !allOverlayItems.Contains(id) || sharedWithDefault.Contains(id);
+		}
+
+		/// <summary>
+		/// True for the severities the default view speaks.
+		/// </summary>
+		public static bool IsWarning(StatusItem item) {
+			return item.notificationType == NotificationType.Bad
+				|| item.notificationType == NotificationType.BadMinor;
 		}
 	}
 }

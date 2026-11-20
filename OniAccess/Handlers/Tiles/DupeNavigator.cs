@@ -18,9 +18,9 @@ namespace OniAccess.Handlers.Tiles {
 		private MinionIdentity _followedDupe;
 		private Action<StatusItemGroup.Entry, StatusItemCategory> _onStatusAdded;
 		private Action<StatusItemGroup.Entry, bool> _onStatusRemoved;
-		private Action<object> _onChoreChanged;
-		private Action<object> _onEquipped;
-		private Action<object> _onUnequipped;
+		private readonly Util.GameEventSubscription _choreChangedSub = new Util.GameEventSubscription();
+		private readonly Util.GameEventSubscription _equippedSub = new Util.GameEventSubscription();
+		private readonly Util.GameEventSubscription _unequippedSub = new Util.GameEventSubscription();
 
 		/// <summary>
 		/// Returns the dupe at the current cycle index, or null if no dupes
@@ -126,18 +126,15 @@ namespace OniAccess.Handlers.Tiles {
 							Delegate.Remove(group.OnRemoveStatusItem, _onStatusRemoved);
 					}
 				}
-				_followedDupe.gameObject.Unsubscribe(-1988963660, _onChoreChanged);
-				_followedDupe.gameObject.Unsubscribe((int)GameHashes.EquippedItemEquipper, _onEquipped);
-				_followedDupe.gameObject.Unsubscribe((int)GameHashes.UnequippedItemEquipper, _onUnequipped);
+				_choreChangedSub.Unsubscribe();
+				_equippedSub.Unsubscribe();
+				_unequippedSub.Unsubscribe();
 			} catch (Exception ex) {
 				Log.Warn($"DupeNavigator.StopFollow: {ex}");
 			}
 			_followedDupe = null;
 			_onStatusAdded = null;
 			_onStatusRemoved = null;
-			_onChoreChanged = null;
-			_onEquipped = null;
-			_onUnequipped = null;
 		}
 
 		private void SwitchFollowTarget() {
@@ -155,17 +152,14 @@ namespace OniAccess.Handlers.Tiles {
 			_followedDupe = mi;
 			_onStatusAdded = OnStatusAdded;
 			_onStatusRemoved = OnStatusRemoved;
-			_onChoreChanged = OnChoreChanged;
-			_onEquipped = OnEquipped;
-			_onUnequipped = OnUnequipped;
 			var group = mi.GetComponent<KSelectable>().GetStatusItemGroup();
 			group.OnAddStatusItem = (Action<StatusItemGroup.Entry, StatusItemCategory>)
 				Delegate.Combine(group.OnAddStatusItem, _onStatusAdded);
 			group.OnRemoveStatusItem = (Action<StatusItemGroup.Entry, bool>)
 				Delegate.Combine(group.OnRemoveStatusItem, _onStatusRemoved);
-			mi.gameObject.Subscribe(-1988963660, _onChoreChanged);
-			mi.gameObject.Subscribe((int)GameHashes.EquippedItemEquipper, _onEquipped);
-			mi.gameObject.Subscribe((int)GameHashes.UnequippedItemEquipper, _onUnequipped);
+			_choreChangedSub.Subscribe(mi.gameObject, -1988963660, OnChoreChanged);
+			_equippedSub.Subscribe(mi.gameObject, (int)GameHashes.EquippedItemEquipper, OnEquipped);
+			_unequippedSub.Subscribe(mi.gameObject, (int)GameHashes.UnequippedItemEquipper, OnUnequipped);
 			CameraController.Instance.SetFollowTarget(mi.transform);
 		}
 

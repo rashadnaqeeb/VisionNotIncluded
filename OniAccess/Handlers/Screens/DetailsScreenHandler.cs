@@ -65,12 +65,31 @@ namespace OniAccess.Handlers.Screens {
 							entityName, hatName, resume.GetSkillsSubtitle())
 						: string.Format(STRINGS.ONIACCESS.DETAILS.DUPE_SUBTITLE,
 							entityName, resume.GetSkillsSubtitle());
+				} else if (GetInfoSubtitle(ds.target) is string subtitle) {
+					entityName = string.Format(STRINGS.ONIACCESS.DETAILS.ENTITY_SUBTITLE,
+						entityName, subtitle);
 				}
 				if (_tabIndex >= 0 && _tabIndex < _activeTabs.Count)
 					return string.Format(STRINGS.ONIACCESS.DETAILS.ENTITY_TAB,
 					entityName, _activeTabs[_tabIndex].DisplayName);
 				return entityName;
 			}
+		}
+
+		/// <summary>
+		/// The subtitle the game shows under a critter's or plant's name in the
+		/// details title. Mirrors DetailsScreen.UpdateTitle: nameable objects,
+		/// rocket modules and rocket doors show other subtext instead.
+		/// </summary>
+		private static string GetInfoSubtitle(GameObject target) {
+			if (target.GetComponent<UserNameable>() != null
+				|| target.GetComponent<CommandModule>() != null
+				|| target.GetComponent<ClustercraftExteriorDoor>() != null)
+				return null;
+			var info = target.GetComponent<InfoDescription>();
+			if (info == null || string.IsNullOrEmpty(info.subtitle))
+				return null;
+			return TextFilter.FilterForSpeech(info.subtitle);
 		}
 
 		public override IReadOnlyList<HelpEntry> HelpEntries { get; }

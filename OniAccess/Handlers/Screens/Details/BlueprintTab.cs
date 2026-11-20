@@ -31,7 +31,7 @@ namespace OniAccess.Handlers.Screens.Details {
 			if (isDupe)
 				PopulateDupeMode(panel, sections);
 			else
-				PopulateBuildingMode(panel, sections);
+				PopulateBuildingMode(panel, target, sections);
 		}
 
 		private static CosmeticsPanel FindPanel() {
@@ -45,21 +45,30 @@ namespace OniAccess.Handlers.Screens.Details {
 		// =============================================
 
 		private static void PopulateBuildingMode(
-				CosmeticsPanel panel, List<DetailSection> sections) {
+				CosmeticsPanel panel, GameObject target,
+				List<DetailSection> sections) {
 			LocText nameLabel;
 			LocText descriptionLabel;
 			FacadeSelectionPanel selectionPanel;
+			KButton rotateButton;
+			KButton copyButton;
+			GameObject vistaPanel;
 			try {
 				var t = Traverse.Create(panel);
 				nameLabel = t.Field<LocText>("nameLabel").Value;
 				descriptionLabel = t.Field<LocText>("descriptionLabel").Value;
 				selectionPanel = t.Field<FacadeSelectionPanel>("selectionPanel").Value;
+				rotateButton = t.Field<KButton>("rotateButton").Value;
+				copyButton = t.Field<KButton>("copyButton").Value;
+				vistaPanel = t.Field<GameObject>("vistaSelectionPanel").Value;
 			} catch (System.Exception ex) {
-				Util.Log.Warn($"BlueprintTab: field access failed: {ex.Message}");
+				Util.Log.Error($"BlueprintTab: field access failed: {ex.Message}");
 				return;
 			}
 
-			AddBuildingSection(nameLabel, descriptionLabel, selectionPanel, sections);
+			AddBuildingSection(nameLabel, descriptionLabel, selectionPanel,
+				rotateButton, copyButton, target, sections);
+			AddVistaSection(vistaPanel, sections);
 		}
 
 		// =============================================
@@ -69,14 +78,18 @@ namespace OniAccess.Handlers.Screens.Details {
 		private static void PopulateDupeMode(
 				CosmeticsPanel panel, List<DetailSection> sections) {
 			LocText nameLabel;
+			LocText descriptionLabel;
 			KButton editButton;
+			KButton copyButton;
 			FacadeSelectionPanel selectionPanel;
 			Dictionary<ClothingOutfitUtility.OutfitType, GameObject> outfitCategories;
 			ClothingOutfitUtility.OutfitType selectedCategory;
 			try {
 				var t = Traverse.Create(panel);
 				nameLabel = t.Field<LocText>("nameLabel").Value;
+				descriptionLabel = t.Field<LocText>("descriptionLabel").Value;
 				editButton = t.Field<KButton>("editButton").Value;
+				copyButton = t.Field<KButton>("copyButton").Value;
 				selectionPanel = t.Field<FacadeSelectionPanel>("selectionPanel").Value;
 				outfitCategories = t.Field<Dictionary<ClothingOutfitUtility.OutfitType, GameObject>>(
 					"outfitCategories").Value;
@@ -87,7 +100,8 @@ namespace OniAccess.Handlers.Screens.Details {
 				return;
 			}
 
-			AddDupeInfoSection(nameLabel, editButton, outfitCategories, sections);
+			AddDupeInfoSection(nameLabel, descriptionLabel, editButton, copyButton,
+				outfitCategories, sections);
 			AddFacadeGridSection(selectionPanel, sections,
 				GetCategoryName(selectedCategory));
 		}
@@ -99,6 +113,7 @@ namespace OniAccess.Handlers.Screens.Details {
 		private static void AddBuildingSection(
 				LocText nameLabel, LocText descriptionLabel,
 				FacadeSelectionPanel selectionPanel,
+				KButton rotateButton, KButton copyButton, GameObject target,
 				List<DetailSection> sections) {
 			var section = new DetailSection();
 			section.Key = "buildingBlueprint";
@@ -127,6 +142,8 @@ namespace OniAccess.Handlers.Screens.Details {
 				}
 			}
 
+			AddRotateButton(rotateButton, target, section);
+			AddCopyButton(copyButton, section);
 			AddFacadeToggles(selectionPanel, section);
 
 			if (section.Items.Count > 0)
@@ -134,7 +151,8 @@ namespace OniAccess.Handlers.Screens.Details {
 		}
 
 		private static void AddDupeInfoSection(
-				LocText nameLabel, KButton editButton,
+				LocText nameLabel, LocText descriptionLabel,
+				KButton editButton, KButton copyButton,
 				Dictionary<ClothingOutfitUtility.OutfitType, GameObject> outfitCategories,
 				List<DetailSection> sections) {
 			var section = new DetailSection();
@@ -151,6 +169,18 @@ namespace OniAccess.Handlers.Screens.Details {
 				});
 			}
 
+			// The outfit's items, one " - name" line each
+			if (descriptionLabel != null) {
+				var desc = descriptionLabel;
+				if (!string.IsNullOrEmpty(ReadItemList(desc)))
+					section.Items.Add(new LabelWidget {
+						Key = desc.gameObject.GetInstanceID().ToString(),
+						Label = ReadItemList(desc),
+						GameObject = desc.gameObject,
+						SpeechFunc = () => ReadItemList(desc)
+					});
+			}
+
 			if (editButton != null && editButton.gameObject.activeSelf) {
 				var btn = editButton;
 				var btnLocText = btn.GetComponentInChildren<LocText>();
@@ -164,10 +194,124 @@ namespace OniAccess.Handlers.Screens.Details {
 				});
 			}
 
+			AddCopyButton(copyButton, section);
 			AddCategoryToggles(outfitCategories, section);
 
 			if (section.Items.Count > 0)
 				sections.Add(section);
+		}
+
+		/// <summary>
+		/// The outfit item list CosmeticsPanel writes, one " - name" line per
+		/// item, read as a comma-separated list.
+		/// </summary>
+		private static string ReadItemList(LocText label) {
+			string text = label.GetParsedText();
+			if (string.IsNullOrEmpty(text)) return text;
+			var items = new List<string>();
+			foreach (var line in text.Split('\n')) {
+				string item = line.Trim();
+				if (item.StartsWith("-")) item = item.Substring(1).Trim();
+				if (item.Length > 0) items.Add(item);
+			}
+			return string.Join(", ", items);
+		}
+
+		/// <summary>
+		/// Copy Blueprint: arms the Paste Blueprint tool with this object as
+		/// the source. The game labels it for buildings or duplicants.
+		/// </summary>
+		private static void AddCopyButton(KButton copyButton, DetailSection section) {
+			if (copyButton == null || !copyButton.gameObject.activeSelf) return;
+			var btn = copyButton;
+			section.Items.Add(new ButtonWidget {
+				Key = "copyBlueprint",
+				Component = btn,
+				GameObject = btn.gameObject,
+				Label = WidgetOps.GetButtonLabel(btn),
+				SpeechFunc = () => WidgetOps.GetButtonLabel(btn)
+			});
+		}
+
+		/// <summary>
+		/// Drywall's rotate button turns the selected wall's pattern. Nothing
+		/// else on the tab changes, so the button reads the wall's current
+		/// orientation, and the re-read after a press carries the new one.
+		/// </summary>
+		private static void AddRotateButton(KButton rotateButton, GameObject target,
+				DetailSection section) {
+			if (rotateButton == null || !rotateButton.gameObject.activeSelf) return;
+			var btn = rotateButton;
+			var rotatable = target.GetComponent<Rotatable>();
+			var def = target.GetComponent<Building>().Def;
+			section.Items.Add(new UserMenuButtonWidget {
+				Key = "rotateBlueprint",
+				GameObject = btn.gameObject,
+				Label = WidgetOps.GetButtonLabel(btn),
+				SpeechFunc = () => string.Format(
+					(string)STRINGS.ONIACCESS.DETAILS.BLUEPRINT_ROTATION,
+					WidgetOps.GetButtonLabel(btn),
+					Build.BuildMenuData.GetOrientationName(
+						rotatable.GetOrientation(), def)),
+				OnClick = () => WidgetOps.ClickButton(btn)
+			});
+		}
+
+		// =============================================
+		// VISTAS
+		// =============================================
+
+		/// <summary>
+		/// The Printing Pod's vista picker: "No Vista" and each vista the
+		/// player owns, the chosen one marked. The description is the
+		/// toggle's tooltip.
+		/// </summary>
+		private static void AddVistaSection(GameObject vistaPanel,
+				List<DetailSection> sections) {
+			if (vistaPanel == null || !vistaPanel.activeSelf) return;
+			var picker = vistaPanel.GetComponentInChildren<VistaSelectionPanel>(true);
+			if (picker == null) {
+				Util.Log.Error("BlueprintTab: vista panel has no VistaSelectionPanel");
+				return;
+			}
+			Dictionary<string, MultiToggle> toggles;
+			try {
+				toggles = Traverse.Create(picker)
+					.Field<Dictionary<string, MultiToggle>>("toggles").Value;
+			} catch (System.Exception ex) {
+				Util.Log.Error($"BlueprintTab: vista toggles read failed: {ex.Message}");
+				return;
+			}
+			// "No Vista" is always there once the picker has spawned
+			if (toggles == null || toggles.Count == 0) {
+				Util.Log.Error("BlueprintTab: vista picker has no toggles");
+				return;
+			}
+
+			var section = new DetailSection {
+				Key = "vistas",
+				Header = (string)STRINGS.ONIACCESS.DETAILS.VISTAS
+			};
+			foreach (var kvp in toggles) {
+				var toggle = kvp.Value;
+				string name = VistaName(kvp.Key);
+				section.Items.Add(new ToggleWidget {
+					Key = "vista_" + kvp.Key,
+					Component = toggle,
+					GameObject = toggle.gameObject,
+					Label = name,
+					SpeechFunc = () => toggle.CurrentState == 1
+						? $"{name}, {(string)STRINGS.ONIACCESS.STATES.SELECTED}"
+						: name
+				});
+			}
+			sections.Add(section);
+		}
+
+		private static string VistaName(string id) {
+			foreach (var vista in VistaConfigs.VISTAS)
+				if (vista.id == id) return vista.Name;
+			return STRINGS.UI.DETAILTABS.COSMETICS.VISTAS.NONE.NAME;
 		}
 
 		private static void AddCategoryToggles(
@@ -281,13 +425,22 @@ namespace OniAccess.Handlers.Screens.Details {
 			}
 		}
 
+		/// <summary>
+		/// A blueprint toggle's tooltip is its name on the first line, then its
+		/// description. Read raw: the cleaned tooltip text has its line breaks
+		/// already turned into sentence breaks. Filtered so the tooltip, read
+		/// after it, can drop its repeat of the name.
+		/// </summary>
 		private static string ReadToggleName(GameObject toggleGO) {
 			var tooltip = toggleGO.GetComponent<ToolTip>();
 			if (tooltip != null) {
-				string text = WidgetOps.ReadAllTooltipText(tooltip);
-				if (!string.IsNullOrEmpty(text)) {
+				tooltip.RebuildDynamicTooltip();
+				if (tooltip.multiStringCount > 0) {
+					string text = tooltip.GetMultiString(0) ?? "";
 					int nl = text.IndexOf('\n');
-					return nl > 0 ? text.Substring(0, nl).Trim() : text;
+					string first = Speech.TextFilter.FilterForSpeech(
+						nl >= 0 ? text.Substring(0, nl) : text).Trim();
+					if (first.Length > 0) return first;
 				}
 			}
 			return toggleGO.name;

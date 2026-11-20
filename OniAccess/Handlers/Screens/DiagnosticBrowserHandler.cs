@@ -124,9 +124,7 @@ namespace OniAccess.Handlers.Screens {
 			string message = diag.LatestResult.Message;
 			bool hasMessage = !string.IsNullOrWhiteSpace(message);
 
-			string value = diag.presentationSetting == ColonyDiagnostic.PresentationSetting.CurrentValue
-				? diag.GetCurrentValueString()
-				: diag.GetAverageValueString();
+			string value = Util.DiagnosticText.GetPresentedValue(diag);
 
 			string pinState = GetPinStateLabel(diag.id);
 

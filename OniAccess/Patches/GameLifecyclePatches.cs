@@ -47,8 +47,8 @@ namespace OniAccess.Patches {
 				ModInputRouter.Register();
 
 				var buildText = BuildWatermark.GetBuildText();
-				if (!buildText.StartsWith("U59-736649"))
-					Log.Warn($"Game build '{buildText}' is newer than last tested 'U59-736649'. Field names may have changed.");
+				if (!buildText.StartsWith("U60-764025"))
+					Log.Warn($"Game build '{buildText}' is newer than last tested 'U60-764025'. Field names may have changed.");
 			} catch (System.Exception ex) {
 				Log.Error($"Failed to register ModInputRouter: {ex}");
 			}

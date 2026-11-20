@@ -18,7 +18,7 @@ namespace OniAccess.Handlers.Tiles {
 		private GameObject _followedBot;
 		private Action<StatusItemGroup.Entry, StatusItemCategory> _onStatusAdded;
 		private Action<StatusItemGroup.Entry, bool> _onStatusRemoved;
-		private Action<object> _onChoreChanged;
+		private readonly Util.GameEventSubscription _choreChangedSub = new Util.GameEventSubscription();
 
 		/// <summary>
 		/// Returns the GameObject of the bot at the current cycle index,
@@ -125,14 +125,13 @@ namespace OniAccess.Handlers.Tiles {
 							Delegate.Remove(group.OnRemoveStatusItem, _onStatusRemoved);
 					}
 				}
-				_followedBot.Unsubscribe(-1988963660, _onChoreChanged);
+				_choreChangedSub.Unsubscribe();
 			} catch (Exception ex) {
 				Log.Warn($"BotNavigator.StopFollow: {ex}");
 			}
 			_followedBot = null;
 			_onStatusAdded = null;
 			_onStatusRemoved = null;
-			_onChoreChanged = null;
 		}
 
 		private void SwitchFollowTarget() {
@@ -150,13 +149,12 @@ namespace OniAccess.Handlers.Tiles {
 			_followedBot = bot;
 			_onStatusAdded = OnStatusAdded;
 			_onStatusRemoved = OnStatusRemoved;
-			_onChoreChanged = OnChoreChanged;
 			var group = bot.GetComponent<KSelectable>().GetStatusItemGroup();
 			group.OnAddStatusItem = (Action<StatusItemGroup.Entry, StatusItemCategory>)
 				Delegate.Combine(group.OnAddStatusItem, _onStatusAdded);
 			group.OnRemoveStatusItem = (Action<StatusItemGroup.Entry, bool>)
 				Delegate.Combine(group.OnRemoveStatusItem, _onStatusRemoved);
-			bot.Subscribe(-1988963660, _onChoreChanged);
+			_choreChangedSub.Subscribe(bot, -1988963660, OnChoreChanged);
 			CameraController.Instance.SetFollowTarget(bot.transform);
 		}
 

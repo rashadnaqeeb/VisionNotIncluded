@@ -224,13 +224,16 @@ namespace OniAccess.Handlers.Build {
 
 		private void AddDescriptorItems() {
 			try {
-				var allDescriptors = GameUtil.GetAllDescriptors(_def.BuildingComplete);
+				var allDescriptors = new List<Descriptor>();
+				GameUtil.CollectAllDescriptors(_def.BuildingComplete, allDescriptors);
+				var requirements = new List<Descriptor>();
+				GameUtil.CollectRequirementDescriptors(allDescriptors, requirements);
 				AddMergedDescriptorItem(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.REQUIREMENTS,
-					GameUtil.GetRequirementDescriptors(allDescriptors));
+					(string)STRINGS.ONIACCESS.BUILD_MENU.REQUIREMENTS, requirements);
+				var effects = new List<Descriptor>();
+				GameUtil.CollectEffectDescriptors(allDescriptors, effects);
 				AddMergedDescriptorItem(
-					(string)STRINGS.ONIACCESS.BUILD_MENU.EFFECTS,
-					GameUtil.GetEffectDescriptors(allDescriptors));
+					(string)STRINGS.ONIACCESS.BUILD_MENU.EFFECTS, effects);
 			} catch (System.Exception ex) {
 				Util.Log.Warn($"BuildInfoHandler.AddDescriptorItems: {ex.Message}");
 			}

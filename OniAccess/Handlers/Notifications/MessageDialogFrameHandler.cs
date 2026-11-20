@@ -127,11 +127,18 @@ namespace OniAccess.Handlers.Notifications {
 				var dontShowElement = traverse.Field<UnityEngine.GameObject>("dontShowAgainElement").Value;
 				var dontShowButton = traverse.Field<MultiToggle>("dontShowAgainButton").Value;
 				if (dontShowElement != null && dontShowElement.activeInHierarchy && dontShowButton != null) {
+					// The toggle's sprite states are inverted (1 = unticked), so speak
+					// the setting it controls. Ticking it hides every tutorial, not
+					// just this one.
+					string label = (string)STRINGS.ONIACCESS.NOTIFICATIONS.DONT_SHOW_AGAIN;
 					_widgets.Add(new ToggleWidget {
-						Label = (string)STRINGS.ONIACCESS.NOTIFICATIONS.DONT_SHOW_AGAIN,
+						Label = label,
 						Component = dontShowButton,
 						GameObject = dontShowButton.gameObject,
-						SuppressTooltip = true
+						SuppressTooltip = true,
+						SpeechFunc = () => $"{label}, " + (Tutorial.ShouldShowTutorials
+							? (string)STRINGS.ONIACCESS.STATES.OFF
+							: (string)STRINGS.ONIACCESS.STATES.ON)
 					});
 				}
 			} catch (System.Exception ex) {

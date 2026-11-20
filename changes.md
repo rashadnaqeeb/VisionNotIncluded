@@ -6,6 +6,14 @@
 * Releases can now be installed and updated with the Loadstone mod manager, as an alternative to the Steam Workshop. It installs the mod into the game's local mods folder and switches it on.
 * Ctrl+Arrow and Alt+Arrow skipping now works while placing tiles such as sandstone, metal or insulated tiles. It used to stop after a single tile.
 * In the Plumbing Overlay, the Conduction Panel now reads its liquid input and output ports, both as a blueprint and once built.
+* In the rocket module screen, choosing a material you lack enough of now plays the error sound and repeats the material, since the game no longer selects it.
+* The "don't show again" box on tutorial messages now reads its real state. It used to say "on" while tutorials were still showing.
+* In the pipe and conveyor overlays, a line that is empty, idle or backed up now says which way it will flow, such as "empty, will flow left". A line with things moving through it still reads its recent flow, such as "Water, 80% right".
+* Pipes, rails, wires and automation wires now read their warnings in their overlays, such as Broken or Wire Disconnected. They used to be heard only from the tooltip or the details screen.
+* While placing a support building such as Cooking Tools, the cursor names the buildings in range it would optimize, such as "optimizes Electric Grill". While placing a building one can optimize, it names the support buildings that would reach it, such as "optimized by Cooking Tools".
+* A support building's Properties tab now has an In Range list, like the Auto-Sweeper's: every building in range it can optimize, nearest first, saying whether it is optimized and where it is. Enter selects one.
+* Blueprints in the Blueprints tab now read their name once, followed by the description. They used to read the name and description twice.
+* Minnow's appearance description now gets her outfit right: a lavender top with an aqua collar and waistband, and pale blue boots.
 
 ## 1.7.11
 

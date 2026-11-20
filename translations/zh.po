@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OniAccess\n"
-"PO-Revision-Date: 2026-09-25\n"
+"PO-Revision-Date: 2026-11-20\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -573,6 +573,16 @@ msgstr "起点已清除"
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.START_SET"
 msgid "start set"
 msgstr "起点已设置"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.SUPPORT_OPTIMIZED_BY
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.SUPPORT_OPTIMIZED_BY"
+msgid "optimized by {0}"
+msgstr "受{0}优化"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.SUPPORT_OPTIMIZES
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.SUPPORT_OPTIMIZES"
+msgid "optimizes {0}"
+msgstr "优化{0}"
 
 #. STRINGS.ONIACCESS.BUILD_MENU.TOOLS_CATEGORY
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.TOOLS_CATEGORY"
@@ -1724,6 +1734,11 @@ msgctxt "STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.SQUIRREL"
 msgid "A small, round critter covered in spiky olive-green quills that fan out in all directions like a tiny hedgehog-cactus. It has a pale yellow face with two large dark eyes, a small nose, and a wide toothy grin. Its short brown feet poke out from underneath the quills."
 msgstr "小型圆形生物，覆盖着向四面八方散开的橄榄绿色尖刺，像一个小型刺猬仙人掌。淡黄色的脸上有两只深色大眼睛、小鼻子和咧嘴露齿的笑容。棕色短脚从刺下探出。"
 
+#. STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.SQUIRRELAQUATIC
+msgctxt "STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.SQUIRRELAQUATIC"
+msgid "A Pip morph made over into a little sea creature, bright aquamarine from head to tail. Instead of quills it has webbed fins: a large pair fanning out from its sides like wings, and three smaller ones rising from its head like ears and a crest, every fin tipped in coral red. Its face has two big dark eyes, a tiny pink nose, and a pair of long white buckteeth above a pale bib on its chest. The lower half of its body is covered in overlapping teal scales and ends in a fish tail, with two small red feet tucked underneath."
+msgstr "一种被改造成小海洋生物的松鼠变种，从头到尾都是鲜亮的海蓝绿色。它没有刺，而是长着带蹼的鳍：一对大鳍像翅膀一样在身体两侧展开，三片小鳍像耳朵和冠一样竖在头顶，每片鳍的尖端都是珊瑚红色。它的脸上有两只大大的黑眼睛、一个小小的粉色鼻子，胸前浅色的围兜上方露出一对长长的白色门牙。身体下半部覆盖着层层叠叠的青绿色鳞片，末端是一条鱼尾，下面还缩着两只小小的红脚。"
+
 #. STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.SQUIRRELHUG
 msgctxt "STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.SQUIRRELHUG"
 msgid "A fluffy, round critter covered in soft pink-lavender fur instead of quills. It has two large upright ears tipped in purple and a pair of stubby purple arm-wings spread to the sides. Its face is pale pink with big dark eyes and a small toothy smile, giving it a cuddly stuffed-animal look."
@@ -1859,6 +1874,11 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.ACTIONS_TAB"
 msgid "Actions"
 msgstr "操作"
 
+#. STRINGS.ONIACCESS.DETAILS.BLUEPRINT_ROTATION
+msgctxt "STRINGS.ONIACCESS.DETAILS.BLUEPRINT_ROTATION"
+msgid "{0}, {1}"
+msgstr "{0}，{1}"
+
 #. STRINGS.ONIACCESS.DETAILS.CURRENT_DIRECTION
 msgctxt "STRINGS.ONIACCESS.DETAILS.CURRENT_DIRECTION"
 msgid "Current direction: {0}."
@@ -1896,6 +1916,11 @@ msgstr "{0}, {1}, {2}"
 
 #. STRINGS.ONIACCESS.DETAILS.DUPE_SUBTITLE
 msgctxt "STRINGS.ONIACCESS.DETAILS.DUPE_SUBTITLE"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.DETAILS.ENTITY_SUBTITLE
+msgctxt "STRINGS.ONIACCESS.DETAILS.ENTITY_SUBTITLE"
 msgid "{0}, {1}"
 msgstr "{0}, {1}"
 
@@ -2094,6 +2119,16 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.SKY_CLEAR_AT_HEIGHT"
 msgid "Sky clear at height {0}"
 msgstr "高度 {0} 处天空畅通"
 
+#. STRINGS.ONIACCESS.DETAILS.SUPPORT_NOT_OPTIMIZED
+msgctxt "STRINGS.ONIACCESS.DETAILS.SUPPORT_NOT_OPTIMIZED"
+msgid "not optimized"
+msgstr "未优化"
+
+#. STRINGS.ONIACCESS.DETAILS.SUPPORT_OPTIMIZED
+msgctxt "STRINGS.ONIACCESS.DETAILS.SUPPORT_OPTIMIZED"
+msgid "optimized"
+msgstr "已优化"
+
 #. STRINGS.ONIACCESS.DETAILS.SWEEPER_DROPPED
 msgctxt "STRINGS.ONIACCESS.DETAILS.SWEEPER_DROPPED"
 msgid "Dropped {0}, to {1}"
@@ -2103,6 +2138,11 @@ msgstr "已放下{0}，到{1}"
 msgctxt "STRINGS.ONIACCESS.DETAILS.SWEEPER_PICKED_UP"
 msgid "Picked up {0}, from {1}"
 msgstr "已拾取{0}，来自{1}"
+
+#. STRINGS.ONIACCESS.DETAILS.VISTAS
+msgctxt "STRINGS.ONIACCESS.DETAILS.VISTAS"
+msgid "Vistas"
+msgstr "景观"
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.HELP_OPEN_BROWSER
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.HELP_OPEN_BROWSER"
@@ -2386,8 +2426,8 @@ msgstr "白皙皮肤，一大蓬灰色卷发——那种见证了几十年风雨
 
 #. STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.MINNOW
 msgctxt "STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.MINNOW"
-msgid "Pale porcelain skin and a tumble of pearlescent hair that fades from pinkish white at the crown through lavender to purple at the tips, with bright blue and pink streaks tucked underneath and choppy bangs sweeping across her forehead. A sprinkle of small blue dots marks her cheeks, like freckles that decided to be sea spray instead. She has big round dark eyes and a gentle, contented smile. She wears a dusty purple top over black fish-scale-patterned pants, with sky-blue gloves and matching blue trim."
-msgstr "苍白的瓷质皮肤，一头珠光头发从头顶的粉白色经薰衣草色渐变到发梢的紫色，底下藏着亮蓝色和粉色挑染，参差的刘海扫过额头。脸颊上点缀着小小的蓝点，像一些决定变成浪花的雀斑。她有大而圆的深色眼睛和温柔满足的微笑。她穿着灰紫色上衣，配鱼鳞图案的黑色裤子，戴着天蓝色手套和相配的蓝色饰边。"
+msgid "Pale porcelain skin and a tumble of pearlescent hair that fades from pinkish white at the crown through lavender to purple at the tips, with bright blue and pink streaks tucked underneath and choppy bangs sweeping across her forehead. A sprinkle of small blue dots marks her cheeks, like freckles that decided to be sea spray instead. She has big round dark eyes and a gentle, contented smile. She wears a lavender top with a high aqua collar and a wide aqua band around the middle, black fish-scale-patterned pants, sky-blue gloves, and pale blue boots."
+msgstr "苍白的瓷质皮肤，一头珠光头发从头顶的粉白色经薰衣草色渐变到发梢的紫色，底下藏着亮蓝色和粉色挑染，参差的刘海扫过额头。脸颊上点缀着小小的蓝点，像一些决定变成浪花的雀斑。她有大而圆的深色眼睛和温柔满足的微笑。她穿着一件淡紫色上衣，配有高高的水蓝色立领和腰间一条宽宽的水蓝色饰带，搭配黑色鱼鳞纹长裤、天蓝色手套和浅蓝色靴子。"
 
 #. STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.NAILS
 msgctxt "STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.NAILS"
@@ -2473,6 +2513,11 @@ msgstr "白皙皮肤，浅棕色头发扫向一侧。他们咧着一个很努力
 msgctxt "STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.ULTI"
 msgid "Tan skin with the right side of their head encased in silver plating, housing a large circular teal lens where an eye used to be. A swept-back fin of lavender-pink hair crowns the top of their head. Their remaining organic eye is small and cheerful, paired with a pleased little smile. Purple top with glowing cyan trim, black pants with teal-accented joints, one hand raised in a casual wave. They look like someone who is fifty percent machine and one hundred percent fine with it."
 msgstr "小麦色皮肤，右半边头部包裹在银色金属板中，原来眼睛的位置装着一个大圆形青色镜头。一片向后掠去的薰衣草粉色鳍状发冠立在头顶。剩余的有机眼小而愉快，配上一个满足的小微笑。紫色上衣配发光青色镶边，黑色裤子带青色关节装饰，一只手举起随意挥动。他们看起来像一个百分之五十是机器、百分之百觉得没问题的人。"
+
+#. STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.ZOE
+msgctxt "STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.ZOE"
+msgid "Tan skin with a scatter of brown freckles across her nose and cheeks. Her bright violet hair is swept up and back into a tall wave that trails off into a long shaggy tail behind her, with one curly strand springing up from her forehead like an antenna, and the side of her head buzzed short to a pale lavender stubble. Big dark eyes and a huge open-mouthed laugh full of gappy teeth. She wears a pale blue button-front tunic with a blue scarf knotted at her neck, a dark grey belt, chunky brown gloves, and brown boots, and stands with her fists planted on her hips like she is about to announce something tremendous."
+msgstr "棕褐色皮肤，鼻子和脸颊上散落着棕色雀斑。她亮紫色的头发向上向后梳成一道高高的波浪，末端拖成一条蓬乱的长尾巴，一缕卷发像触角一样从额头翘起，头的一侧剃成短短的淡薰衣草色发茬。一双大大的黑眼睛，张大嘴哈哈大笑，露出满口稀疏的牙齿。她穿着一件带纽扣的浅蓝色束腰上衣，脖子上系着蓝色围巾，配深灰色腰带、厚实的棕色手套和棕色靴子，双拳叉腰站着，好像马上要宣布什么了不起的事情。"
 
 #. STRINGS.ONIACCESS.DUPES.FOLLOW.FOLLOWING
 msgctxt "STRINGS.ONIACCESS.DUPES.FOLLOW.FOLLOWING"
@@ -2799,6 +2844,11 @@ msgctxt "STRINGS.ONIACCESS.GLANCE.FILTERED_PORT"
 msgid "filtered {0}"
 msgstr "过滤 {0}"
 
+#. STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_AND
+msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_AND"
+msgid "{0} and {1}"
+msgstr "{0}和{1}"
+
 #. STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_PERCENT
 msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_PERCENT"
 msgid "{0}% {1}"
@@ -2818,6 +2868,11 @@ msgstr "空"
 msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_NOT_FLOWING"
 msgid "not flowing"
 msgstr "无流动"
+
+#. STRINGS.ONIACCESS.GLANCE.FLOW_WILL_FLOW
+msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_WILL_FLOW"
+msgid "will flow {0}"
+msgstr "将流向{0}"
 
 #. STRINGS.ONIACCESS.GLANCE.GAS_INPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.GAS_INPUT"
@@ -6133,6 +6188,11 @@ msgstr "已设置收获{0}株植物，优先级{1}"
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_MOP"
 msgid "marked {0} for mopping at priority {1}"
 msgstr "已标记{0}为擦拭目标，优先级{1}"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_PASTE_BLUEPRINT
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_PASTE_BLUEPRINT"
+msgid "blueprint applied to {0} {2}"
+msgstr "已将蓝图应用到{0}个{2}"
 
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_PRIORITIZE
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_PRIORITIZE"

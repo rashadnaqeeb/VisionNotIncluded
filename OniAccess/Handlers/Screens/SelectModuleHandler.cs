@@ -433,7 +433,14 @@ namespace OniAccess.Handlers.Screens {
 			if (slotIndex < 0 || slotIndex >= selectors.Count) return;
 			var selector = selectors[slotIndex];
 			var recipe = _activeRecipeField.GetValue(selector) as Recipe;
-			selector.OnSelectMaterial(materials[materialIndex], recipe);
+			var tag = materials[materialIndex];
+			// The game refuses a material the colony does not hold enough of
+			selector.TrySelectMaterial(tag, recipe);
+			if (selector.CurrentSelectedElement != tag) {
+				PlaySound("Negative");
+				SpeechPipeline.SpeakInterrupt(GetMaterialItemLabel(slotIndex, materialIndex));
+				return;
+			}
 			AfterSelect();
 		}
 

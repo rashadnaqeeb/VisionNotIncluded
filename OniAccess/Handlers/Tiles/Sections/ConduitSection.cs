@@ -15,29 +15,41 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		private readonly Func<FlowTracker> _getFlowTracker;
 		private readonly Func<int, int> _getConduitIdx;
 		private readonly Func<int, bool> _isConduitEmpty;
+		private readonly Func<int, int> _getRouteDirections;
+		private readonly Func<int, bool> _isFlowConflict;
 
 		public ConduitSection(Func<IUtilityNetworkMgr> getManager,
 				ObjectLayer replacementLayer,
 				params int[] layers)
-			: this(getManager, null, null, null, replacementLayer, layers) {
+			: this(getManager, null, null, null, null, null,
+				replacementLayer, layers) {
 		}
 
+		/// <param name="getRouteDirections">The directions the network
+		/// routes contents out of a cell, as a FlowRouting mask.</param>
+		/// <param name="isFlowConflict">Null for lines the game never
+		/// marks with Flow Conflict.</param>
 		public ConduitSection(Func<IUtilityNetworkMgr> getManager,
 				Func<FlowTracker> getFlowTracker,
 				Func<int, int> getConduitIdx,
 				Func<int, bool> isConduitEmpty,
+				Func<int, int> getRouteDirections,
+				Func<int, bool> isFlowConflict,
 				ObjectLayer replacementLayer,
 				params int[] layers) {
 			_getManager = getManager;
 			_getFlowTracker = getFlowTracker;
 			_getConduitIdx = getConduitIdx;
 			_isConduitEmpty = isConduitEmpty;
+			_getRouteDirections = getRouteDirections;
+			_isFlowConflict = isFlowConflict;
 			_replacementLayer = (int)replacementLayer;
 			_layers = layers;
 		}
 
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tokens = new List<string>();
+			var warnings = new List<string>();
 			var bridgeConnections = (UtilityConnections)0;
 			foreach (int layer in _layers) {
 				var go = Grid.Objects[cell, layer];
@@ -53,8 +65,10 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				}
 				ctx.Claimed.Add(go);
 				var sel = go.GetComponent<KSelectable>();
-				if (sel != null)
+				if (sel != null) {
 					tokens.Add(ConstructionName(go, sel));
+					AddWarnings(sel, warnings);
+				}
 			}
 			var repGo = Grid.Objects[cell, _replacementLayer];
 			if (repGo != null) {
@@ -74,10 +88,19 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					&& _getFlowTracker != null) {
 				var flowText = FlowSpeech.Format(
 					_getFlowTracker(), _getConduitIdx(cell),
-					_isConduitEmpty(cell));
+					_isConduitEmpty(cell), out bool moved);
 				if (flowText != null)
 					tokens.Add(flowText);
+				if (!moved && (_isFlowConflict == null || !_isFlowConflict(cell))) {
+					var willFlow = FlowRouting.FormatWillFlow(
+						_getRouteDirections(cell));
+					if (willFlow != null)
+						tokens.Add(willFlow);
+				}
 			}
+			if (tokens.Count > 0 && _isFlowConflict != null
+					&& _isFlowConflict(cell))
+				tokens.Add(STRINGS.UI.OVERLAYS.CONDUITFLOW.CONFLICTED);
 			if (tokens.Count > 0 && ConfigManager.Config.FlowDirectionReadout
 					&& OverlayScreen.Instance != null
 					&& OverlayScreen.Instance.GetMode() == OverlayModes.Power.ID) {
@@ -92,7 +115,32 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					}
 				}
 			}
+			tokens.AddRange(warnings);
 			return tokens;
+		}
+
+		/// <summary>
+		/// Speaks a line's warnings (broken, disconnected, damaged, no
+		/// intake on the network). A line has no ports or overlay-specific
+		/// states for StatusFilter to sort, so every warning it carries is
+		/// worth hearing in any overlay that shows the line.
+		/// </summary>
+		internal static void AddWarnings(KSelectable selectable,
+				List<string> tokens) {
+			var group = selectable.GetStatusItemGroup();
+			if (group == null) return;
+			var enumerator = group.GetEnumerator();
+			try {
+				while (enumerator.MoveNext()) {
+					var entry = enumerator.Current;
+					if (!StatusFilter.IsWarning(entry.item)) continue;
+					string name = entry.GetName();
+					if (!string.IsNullOrEmpty(name))
+						tokens.Add(name);
+				}
+			} finally {
+				enumerator.Dispose();
+			}
 		}
 
 		internal static UtilityConnections GetBridgeDirection(

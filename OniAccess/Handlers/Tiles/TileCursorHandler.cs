@@ -18,6 +18,8 @@ namespace OniAccess.Handlers.Tiles {
 	/// pause) pass through.
 	/// </summary>
 	public class TileCursorHandler: BaseScreenHandler {
+		private readonly Util.GameEventSubscription _toolChangedSub = new Util.GameEventSubscription();
+
 		private Overlays.OverlayProfileRegistry _overlayRegistry;
 		private SkipEngine _skipEngine;
 		private ScannerNavigator _scanner;
@@ -248,8 +250,7 @@ namespace OniAccess.Handlers.Tiles {
 				CursorRuler.Create();
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
-			if (Game.Instance != null)
-				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+			_toolChangedSub.Unsubscribe();
 			if (OverlayScreen.Instance != null) {
 				OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
 				try {
@@ -264,12 +265,11 @@ namespace OniAccess.Handlers.Tiles {
 				_overlaySubscribed = false;
 			}
 			if (Game.Instance != null)
-				Game.Instance.Subscribe(1174281782, OnActiveToolChanged);
+				_toolChangedSub.Subscribe(Game.Instance, 1174281782, OnActiveToolChanged);
 		}
 
 		public override void OnDeactivate() {
-			if (Game.Instance != null)
-				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+			_toolChangedSub.Unsubscribe();
 			_notificationAnnouncer?.Detach();
 			_notificationAnnouncer = null;
 			_notificationTracker?.Detach();
@@ -858,9 +858,7 @@ namespace OniAccess.Handlers.Tiles {
 
 			foreach (var diag in qualifying) {
 				string message = diag.LatestResult.Message;
-				string value = diag.presentationSetting == ColonyDiagnostic.PresentationSetting.CurrentValue
-					? diag.GetCurrentValueString()
-					: diag.GetAverageValueString();
+				string value = Util.DiagnosticText.GetPresentedValue(diag);
 
 				var entry = diag.name + ": ";
 				if (!string.IsNullOrWhiteSpace(message))

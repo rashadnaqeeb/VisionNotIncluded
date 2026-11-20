@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OniAccess\n"
-"PO-Revision-Date: 2026-09-25\n"
+"PO-Revision-Date: 2026-11-20\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ko\n"
@@ -573,6 +573,16 @@ msgstr "시작점 해제"
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.START_SET"
 msgid "start set"
 msgstr "시작점 설정"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.SUPPORT_OPTIMIZED_BY
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.SUPPORT_OPTIMIZED_BY"
+msgid "optimized by {0}"
+msgstr "{0}에 의해 최적화됨"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.SUPPORT_OPTIMIZES
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.SUPPORT_OPTIMIZES"
+msgid "optimizes {0}"
+msgstr "{0} 최적화"
 
 #. STRINGS.ONIACCESS.BUILD_MENU.TOOLS_CATEGORY
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.TOOLS_CATEGORY"
@@ -1724,6 +1734,11 @@ msgctxt "STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.SQUIRREL"
 msgid "A small, round critter covered in spiky olive-green quills that fan out in all directions like a tiny hedgehog-cactus. It has a pale yellow face with two large dark eyes, a small nose, and a wide toothy grin. Its short brown feet poke out from underneath the quills."
 msgstr "작은 고슴도치-선인장처럼 사방으로 펼쳐지는 뾰족한 올리브 녹색 가시로 덮인 작고 둥근 생물입니다. 두 개의 큰 어두운 눈, 작은 코, 넓은 이빨 미소가 있는 옅은 노란 얼굴을 가지고 있습니다. 짧은 갈색 발이 가시 아래에서 삐져나옵니다."
 
+#. STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.SQUIRRELAQUATIC
+msgctxt "STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.SQUIRRELAQUATIC"
+msgid "A Pip morph made over into a little sea creature, bright aquamarine from head to tail. Instead of quills it has webbed fins: a large pair fanning out from its sides like wings, and three smaller ones rising from its head like ears and a crest, every fin tipped in coral red. Its face has two big dark eyes, a tiny pink nose, and a pair of long white buckteeth above a pale bib on its chest. The lower half of its body is covered in overlapping teal scales and ends in a fish tail, with two small red feet tucked underneath."
+msgstr "작은 바다 생물로 탈바꿈한 핍 변종으로, 머리부터 꼬리까지 선명한 아쿠아마린색입니다. 가시 대신 물갈퀴 지느러미가 달려 있어, 큰 한 쌍은 양옆으로 날개처럼 펼쳐져 있고 작은 세 개는 머리 위로 귀와 볏처럼 솟아 있으며, 지느러미 끝은 모두 산호빛 빨간색입니다. 얼굴에는 커다란 검은 눈 두 개, 조그만 분홍 코, 그리고 가슴의 옅은 턱받이 위로 길고 하얀 앞니 한 쌍이 있습니다. 몸 아래쪽 절반은 겹겹이 겹친 청록색 비늘로 덮여 있고 물고기 꼬리로 끝나며, 작은 빨간 발 두 개가 그 아래에 접혀 있습니다."
+
 #. STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.SQUIRRELHUG
 msgctxt "STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.SQUIRRELHUG"
 msgid "A fluffy, round critter covered in soft pink-lavender fur instead of quills. It has two large upright ears tipped in purple and a pair of stubby purple arm-wings spread to the sides. Its face is pale pink with big dark eyes and a small toothy smile, giving it a cuddly stuffed-animal look."
@@ -1859,6 +1874,11 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.ACTIONS_TAB"
 msgid "Actions"
 msgstr "동작"
 
+#. STRINGS.ONIACCESS.DETAILS.BLUEPRINT_ROTATION
+msgctxt "STRINGS.ONIACCESS.DETAILS.BLUEPRINT_ROTATION"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
 #. STRINGS.ONIACCESS.DETAILS.CURRENT_DIRECTION
 msgctxt "STRINGS.ONIACCESS.DETAILS.CURRENT_DIRECTION"
 msgid "Current direction: {0}."
@@ -1896,6 +1916,11 @@ msgstr "{0}, {1}, {2}"
 
 #. STRINGS.ONIACCESS.DETAILS.DUPE_SUBTITLE
 msgctxt "STRINGS.ONIACCESS.DETAILS.DUPE_SUBTITLE"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.DETAILS.ENTITY_SUBTITLE
+msgctxt "STRINGS.ONIACCESS.DETAILS.ENTITY_SUBTITLE"
 msgid "{0}, {1}"
 msgstr "{0}, {1}"
 
@@ -2094,6 +2119,16 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.SKY_CLEAR_AT_HEIGHT"
 msgid "Sky clear at height {0}"
 msgstr "높이 {0}에서 하늘 확보"
 
+#. STRINGS.ONIACCESS.DETAILS.SUPPORT_NOT_OPTIMIZED
+msgctxt "STRINGS.ONIACCESS.DETAILS.SUPPORT_NOT_OPTIMIZED"
+msgid "not optimized"
+msgstr "최적화 안 됨"
+
+#. STRINGS.ONIACCESS.DETAILS.SUPPORT_OPTIMIZED
+msgctxt "STRINGS.ONIACCESS.DETAILS.SUPPORT_OPTIMIZED"
+msgid "optimized"
+msgstr "최적화됨"
+
 #. STRINGS.ONIACCESS.DETAILS.SWEEPER_DROPPED
 msgctxt "STRINGS.ONIACCESS.DETAILS.SWEEPER_DROPPED"
 msgid "Dropped {0}, to {1}"
@@ -2103,6 +2138,11 @@ msgstr "{1}에 {0} 내려놓음"
 msgctxt "STRINGS.ONIACCESS.DETAILS.SWEEPER_PICKED_UP"
 msgid "Picked up {0}, from {1}"
 msgstr "{1}에서 {0} 수거함"
+
+#. STRINGS.ONIACCESS.DETAILS.VISTAS
+msgctxt "STRINGS.ONIACCESS.DETAILS.VISTAS"
+msgid "Vistas"
+msgstr "풍경"
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.HELP_OPEN_BROWSER
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.HELP_OPEN_BROWSER"
@@ -2386,8 +2426,8 @@ msgstr "창백한 피부에 수십 년을 겪었지만 그 어느 것에도 감�
 
 #. STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.MINNOW
 msgctxt "STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.MINNOW"
-msgid "Pale porcelain skin and a tumble of pearlescent hair that fades from pinkish white at the crown through lavender to purple at the tips, with bright blue and pink streaks tucked underneath and choppy bangs sweeping across her forehead. A sprinkle of small blue dots marks her cheeks, like freckles that decided to be sea spray instead. She has big round dark eyes and a gentle, contented smile. She wears a dusty purple top over black fish-scale-patterned pants, with sky-blue gloves and matching blue trim."
-msgstr "창백한 도자기 같은 피부에, 정수리의 분홍빛 흰색에서 라벤더를 거쳐 끝의 보라색으로 물드는 진주빛 머리카락이 흘러내리고, 그 아래에 밝은 파란색과 분홍색 브릿지가 숨어 있으며 들쭉날쭉한 앞머리가 이마를 가로지른다. 뺨에는 작은 파란 점들이 흩뿌려져 있어, 주근깨가 바다 물보라가 되기로 결심한 것 같다. 크고 둥근 어두운 눈과 부드럽고 만족스러운 미소를 띠고 있다. 물고기 비늘 무늬의 검은 바지 위에 칙칙한 보라색 상의를 입었고, 하늘색 장갑과 그에 맞춘 파란 장식이 있다."
+msgid "Pale porcelain skin and a tumble of pearlescent hair that fades from pinkish white at the crown through lavender to purple at the tips, with bright blue and pink streaks tucked underneath and choppy bangs sweeping across her forehead. A sprinkle of small blue dots marks her cheeks, like freckles that decided to be sea spray instead. She has big round dark eyes and a gentle, contented smile. She wears a lavender top with a high aqua collar and a wide aqua band around the middle, black fish-scale-patterned pants, sky-blue gloves, and pale blue boots."
+msgstr "창백한 도자기 같은 피부에, 정수리의 분홍빛 흰색에서 라벤더를 거쳐 끝의 보라색으로 물드는 진주빛 머리카락이 흘러내리고, 그 아래에 밝은 파란색과 분홍색 브릿지가 숨어 있으며 들쭉날쭉한 앞머리가 이마를 가로지른다. 뺨에는 작은 파란 점들이 흩뿌려져 있어, 주근깨가 바다 물보라가 되기로 결심한 것 같다. 크고 둥근 어두운 눈과 부드럽고 만족스러운 미소를 띠고 있다. 높은 아쿠아색 깃과 허리를 두른 넓은 아쿠아색 띠가 있는 라벤더색 상의, 물고기 비늘 무늬의 검은 바지, 하늘색 장갑, 연한 파란색 부츠를 착용했다."
 
 #. STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.NAILS
 msgctxt "STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.NAILS"
@@ -2473,6 +2513,11 @@ msgstr "창백한 피부에 연한 갈색 머리가 한쪽으로 쓸려 있다. 
 msgctxt "STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.ULTI"
 msgid "Tan skin with the right side of their head encased in silver plating, housing a large circular teal lens where an eye used to be. A swept-back fin of lavender-pink hair crowns the top of their head. Their remaining organic eye is small and cheerful, paired with a pleased little smile. Purple top with glowing cyan trim, black pants with teal-accented joints, one hand raised in a casual wave. They look like someone who is fifty percent machine and one hundred percent fine with it."
 msgstr "황갈색 피부에 머리 오른쪽이 은색 도금으로 감싸져 있고, 눈이 있던 자리에 큰 원형 청록 렌즈가 들어 있다. 라벤더 핑크 머리카락의 뒤로 쓸린 지느러미가 머리 꼭대기를 장식한다. 남은 유기 눈은 작고 유쾌하며, 흡족한 작은 미소와 짝을 이룬다. 빛나는 시안 테두리의 보라 상의, 청록 장식 관절의 검은 바지, 한 손을 들어 가볍게 흔들고 있다. 50퍼센트는 기계이고 100퍼센트 그것에 만족하는 사람 같다."
+
+#. STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.ZOE
+msgctxt "STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.ZOE"
+msgid "Tan skin with a scatter of brown freckles across her nose and cheeks. Her bright violet hair is swept up and back into a tall wave that trails off into a long shaggy tail behind her, with one curly strand springing up from her forehead like an antenna, and the side of her head buzzed short to a pale lavender stubble. Big dark eyes and a huge open-mouthed laugh full of gappy teeth. She wears a pale blue button-front tunic with a blue scarf knotted at her neck, a dark grey belt, chunky brown gloves, and brown boots, and stands with her fists planted on her hips like she is about to announce something tremendous."
+msgstr "코와 볼에 갈색 주근깨가 흩뿌려진 황갈색 피부. 선명한 보라색 머리는 위로 쓸어 올려 뒤로 높이 넘긴 물결 모양이고, 끝은 길고 덥수룩한 꼬리처럼 늘어진다. 이마에서 곱슬곱슬한 머리카락 한 가닥이 더듬이처럼 솟아 있고, 머리 한쪽은 연한 라벤더색으로 짧게 밀었다. 커다란 검은 눈에, 듬성듬성한 이가 가득 보이도록 입을 크게 벌리고 웃고 있다. 단추가 달린 연한 파란색 튜닉에 파란 스카프를 목에 묶고, 진회색 벨트, 두툼한 갈색 장갑, 갈색 부츠를 착용했으며, 금방이라도 엄청난 소식을 발표할 것처럼 주먹을 허리에 얹고 서 있다."
 
 #. STRINGS.ONIACCESS.DUPES.FOLLOW.FOLLOWING
 msgctxt "STRINGS.ONIACCESS.DUPES.FOLLOW.FOLLOWING"
@@ -2799,6 +2844,11 @@ msgctxt "STRINGS.ONIACCESS.GLANCE.FILTERED_PORT"
 msgid "filtered {0}"
 msgstr "필터된 {0}"
 
+#. STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_AND
+msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_AND"
+msgid "{0} and {1}"
+msgstr "{0} 및 {1}"
+
 #. STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_PERCENT
 msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_PERCENT"
 msgid "{0}% {1}"
@@ -2818,6 +2868,11 @@ msgstr "비어 있음"
 msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_NOT_FLOWING"
 msgid "not flowing"
 msgstr "흐르지 않음"
+
+#. STRINGS.ONIACCESS.GLANCE.FLOW_WILL_FLOW
+msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_WILL_FLOW"
+msgid "will flow {0}"
+msgstr "{0} 방향으로 흐를 예정"
 
 #. STRINGS.ONIACCESS.GLANCE.GAS_INPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.GAS_INPUT"
@@ -6133,6 +6188,11 @@ msgstr "식물 {0}개를 우선순위 {1}(으)로 수확 설정"
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_MOP"
 msgid "marked {0} for mopping at priority {1}"
 msgstr "{0}을(를) 우선순위 {1}(으)로 걸레질 지정"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_PASTE_BLUEPRINT
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_PASTE_BLUEPRINT"
+msgid "blueprint applied to {0} {2}"
+msgstr "{0} {2}에 청사진 적용됨"
 
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_PRIORITIZE
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_PRIORITIZE"

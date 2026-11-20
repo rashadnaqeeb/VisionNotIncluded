@@ -349,6 +349,7 @@ namespace OniAccess.Tests {
 			results.Add(StatusFilterTests.DefaultOtherNeutralSuppressed());
 			results.Add(StatusFilterTests.DefaultBadNotOverlay());
 			results.Add(StatusFilterTests.DefaultBadClaimedByOverlay());
+			results.Add(StatusFilterTests.DefaultBadSharedWithOverlay());
 
 			// --- RectangleSelection ---
 			results.Add(RectSelectionFirstCornerSet());
@@ -406,6 +407,8 @@ namespace OniAccess.Tests {
 			results.Add(FlowTrackerClearResetsState());
 			results.Add(FlowSpeechNamesFlowingContent());
 			results.Add(FlowSpeechUnnamedContentKeepsDirection());
+			results.Add(FlowSpeechIdleConduitNotMoved());
+			results.Add(FlowRoutingFormatsDirectionList());
 
 			// --- NavTree (lazy-children navigation engine) ---
 			foreach (var r in NavTreeTests.All())
@@ -4199,6 +4202,9 @@ namespace OniAccess.Tests {
 					new HashSet<string> {
 						"UnderConstruction", "BuildingDisabled" });
 
+				type.GetField("sharedWithDefault", flags).SetValue(null,
+					new HashSet<string> { "NeedGasOut" });
+
 				type.GetField("cropOverlay", flags)
 					.SetValue(null, CropOverlay);
 			}
@@ -4287,6 +4293,16 @@ namespace OniAccess.Tests {
 				return Assert(
 					"ShouldSpeakDefaultBadClaimedByOverlay", !result,
 					"expected false for bad item claimed by power overlay");
+			}
+
+			public static (string, bool, string) DefaultBadSharedWithOverlay() {
+				var item = MakeStatusItem("NeedGasOut",
+					NotificationType.BadMinor);
+				bool result = StatusFilter.ShouldSpeak(item,
+					DefaultOverlay, isPlant: false);
+				return Assert(
+					"ShouldSpeakDefaultBadSharedWithOverlay", result,
+					"expected true for overlay item shared with the default view");
 			}
 		}
 
@@ -4737,13 +4753,14 @@ namespace OniAccess.Tests {
 			buffer[0] = FlowTracker.DirRight;
 			tags[0] = new Tag("Cuprite");
 			var tracker = MakeFlowTracker(conduits, 1, 1, buffer, tags);
-			string text = FlowSpeech.Format(tracker, 0, currentlyEmpty: true);
+			string text = FlowSpeech.Format(tracker, 0, currentlyEmpty: true,
+				out bool moved);
 			string expected = string.Format(
 				STRINGS.ONIACCESS.GLANCE.FLOW_ELEMENT_DIRECTIONS,
 				TagManager.GetProperName(new Tag("Cuprite"), stripLink: true),
 				string.Format(STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_PERCENT,
 					100, (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT));
-			bool ok = text == expected;
+			bool ok = text == expected && moved;
 			return Assert("FlowSpeechNamesFlowingContent", ok,
 				$"got \"{text}\", expected \"{expected}\"");
 		}
@@ -4757,13 +4774,54 @@ namespace OniAccess.Tests {
 			buffer[0] = FlowTracker.DirLeft;
 			tags[0] = Tag.Invalid;
 			var tracker = MakeFlowTracker(conduits, 1, 1, buffer, tags);
-			string text = FlowSpeech.Format(tracker, 0, currentlyEmpty: true);
+			string text = FlowSpeech.Format(tracker, 0, currentlyEmpty: true,
+				out bool moved);
 			string expected = string.Format(
 				STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_PERCENT,
 				100, (string)STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT);
-			bool ok = text == expected;
+			bool ok = text == expected && moved;
 			return Assert("FlowSpeechUnnamedContentKeepsDirection", ok,
 				$"got \"{text}\", expected \"{expected}\"");
+		}
+
+		static (string, bool, string) FlowSpeechIdleConduitNotMoved() {
+			// A full pipe whose samples saw nothing leave reads "not
+			// flowing" and reports no movement, so the glance adds the
+			// routed direction after it.
+			int conduits = 1;
+			var buffer = new int[conduits * FlowTracker.BufferSize];
+			var tags = new Tag[conduits * FlowTracker.BufferSize];
+			var tracker = MakeFlowTracker(conduits, 3, 3, buffer, tags);
+			string text = FlowSpeech.Format(tracker, 0, currentlyEmpty: false,
+				out bool moved);
+			bool ok = text == (string)STRINGS.ONIACCESS.GLANCE.FLOW_NOT_FLOWING
+				&& !moved;
+			return Assert("FlowSpeechIdleConduitNotMoved", ok,
+				$"got \"{text}\", moved={moved}");
+		}
+
+		static (string, bool, string) FlowRoutingFormatsDirectionList() {
+			// Directions read in a fixed order, the last one joined with
+			// "and", so a junction reads the same every time.
+			int one = 1 << FlowTracker.DirRight;
+			int three = (1 << FlowTracker.DirRight) | (1 << FlowTracker.DirDown)
+				| (1 << FlowTracker.DirLeft);
+			string right = STRINGS.ONIACCESS.SCANNER.DIRECTION_RIGHT;
+			string expectedOne = string.Format(
+				STRINGS.ONIACCESS.GLANCE.FLOW_WILL_FLOW, right);
+			string expectedThree = string.Format(
+				STRINGS.ONIACCESS.GLANCE.FLOW_WILL_FLOW,
+				string.Format(STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_AND,
+					(string)STRINGS.ONIACCESS.SCANNER.DIRECTION_DOWN + ", "
+						+ STRINGS.ONIACCESS.SCANNER.DIRECTION_LEFT,
+					right));
+			string gotOne = FlowRouting.FormatWillFlow(one);
+			string gotThree = FlowRouting.FormatWillFlow(three);
+			string gotNone = FlowRouting.FormatWillFlow(0);
+			bool ok = gotOne == expectedOne && gotThree == expectedThree
+				&& gotNone == null;
+			return Assert("FlowRoutingFormatsDirectionList", ok,
+				$"one=\"{gotOne}\", three=\"{gotThree}\", none={gotNone ?? "null"}");
 		}
 
 		static (string, bool, string) FlowTrackerClearResetsState() {

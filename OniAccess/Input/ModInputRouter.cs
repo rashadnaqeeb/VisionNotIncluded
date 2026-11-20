@@ -17,16 +17,25 @@ namespace OniAccess.Input {
 	public class ModInputRouter: IInputHandler {
 		public static ModInputRouter Instance { get; private set; }
 
-		private static readonly HashSet<Action> _globalBlockedActions = new HashSet<Action> {
-			// Building categories — handled by the action tab
+		/// <summary>
+		/// The build menu's category hotkeys. The build menu is reached through
+		/// the action tab instead. Plan16 is not contiguous with the rest of the enum.
+		/// </summary>
+		internal static readonly Action[] PlanCategoryActions = {
 			Action.Plan1, Action.Plan2, Action.Plan3, Action.Plan4,
 			Action.Plan5, Action.Plan6, Action.Plan7, Action.Plan8,
 			Action.Plan9, Action.Plan10, Action.Plan11, Action.Plan12,
-			Action.Plan13, Action.Plan14,
+			Action.Plan13, Action.Plan14, Action.Plan15, Action.Plan16,
+		};
+
+		private static readonly HashSet<Action> _globalBlockedActions = new HashSet<Action>(PlanCategoryActions) {
 			// Camera pan — not usable without sight
 			Action.PanUp, Action.PanDown, Action.PanLeft, Action.PanRight,
 			// Building search — PlanScreen.OnKeyUp crashes on null BuildingGroupScreen
 			Action.Find,
+			// Move To / Relocate To on bare Q; the tile cursor reads cycle status
+			// on Q, and the action menu still offers Move To
+			Action.MoveRelocateTo,
 		};
 
 		// Actions whose key went down with Command held; their release is swallowed too.

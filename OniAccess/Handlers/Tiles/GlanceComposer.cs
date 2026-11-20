@@ -34,6 +34,8 @@ namespace OniAccess.Handlers.Tiles {
 			() => FlowTracker.Liquid,
 			cell => Game.Instance.liquidConduitFlow.GetConduit(cell).idx,
 			cell => Game.Instance.liquidConduitFlow.IsConduitEmpty(cell),
+			cell => FlowRouting.GetFluidDirections(Game.Instance.liquidConduitFlow, cell),
+			cell => FlowRouting.IsFlowConflict(Game.Instance.liquidConduitFlow, cell),
 			ObjectLayer.ReplacementLiquidConduit,
 			(int)ObjectLayer.LiquidConduit, (int)ObjectLayer.LiquidConduitConnection);
 		internal static readonly ICellSection Ventilation = new Sections.ConduitSection(
@@ -41,6 +43,8 @@ namespace OniAccess.Handlers.Tiles {
 			() => FlowTracker.Gas,
 			cell => Game.Instance.gasConduitFlow.GetConduit(cell).idx,
 			cell => Game.Instance.gasConduitFlow.IsConduitEmpty(cell),
+			cell => FlowRouting.GetFluidDirections(Game.Instance.gasConduitFlow, cell),
+			cell => FlowRouting.IsFlowConflict(Game.Instance.gasConduitFlow, cell),
 			ObjectLayer.ReplacementGasConduit,
 			(int)ObjectLayer.GasConduit, (int)ObjectLayer.GasConduitConnection);
 		internal static readonly ICellSection Conveyor = new Sections.ConduitSection(
@@ -48,6 +52,8 @@ namespace OniAccess.Handlers.Tiles {
 			() => FlowTracker.Solid,
 			cell => Game.Instance.solidConduitFlow.GetConduit(cell).idx,
 			cell => Game.Instance.solidConduitFlow.IsConduitEmpty(cell),
+			cell => FlowRouting.GetSolidDirections(Game.Instance.solidConduitFlow, cell),
+			null,
 			ObjectLayer.ReplacementSolidConduit,
 			(int)ObjectLayer.SolidConduit, (int)ObjectLayer.SolidConduitConnection);
 		internal static readonly ICellSection Automation = new Sections.AutomationSection();

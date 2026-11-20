@@ -228,9 +228,7 @@ namespace OniAccess.Handlers.Screens {
 			if (!string.IsNullOrEmpty(recipe.description))
 				label += ", " + TextFilter.FilterForSpeech(recipe.description);
 
-			string duration = (recipe.time + " "
-				+ (string)STRINGS.UI.UNITSUFFIXES.SECONDS).ToLower();
-			label += ", " + duration;
+			label += ", " + BuildDurationText(recipe.time, GetTarget());
 
 			// Results
 			foreach (var result in recipe.results) {
@@ -499,6 +497,43 @@ namespace OniAccess.Handlers.Screens {
 			if (rowMap == null) return null;
 			rowMap.TryGetValue(containers[slotIdx], out var rows);
 			return rows;
+		}
+
+		private static string FormatSeconds(float seconds) {
+			return (seconds.ToString("0.#") + " "
+				+ (string)STRINGS.UI.UNITSUFFIXES.SECONDS).ToLower();
+		}
+
+		/// <summary>
+		/// The recipe's duration in this building, after support buildings and
+		/// other speed modifiers, as the game's duration label shows it. When a
+		/// modifier applies, follows with the game's tooltip breakdown: the base
+		/// duration and each modifier's source and percentage.
+		/// </summary>
+		private static string BuildDurationText(float baseDuration, ComplexFabricator target) {
+			float current = baseDuration * target.GetTotalSpeedModifier();
+			string text = FormatSeconds(current);
+			if (current == baseDuration)
+				return text;
+
+			text += " " + (string)(current < baseDuration
+				? STRINGS.UI.BUILDINGEFFECTS.COMPLEXFABRICATOR_SPEED_MODIFIER_GOOD
+				: STRINGS.UI.BUILDINGEFFECTS.COMPLEXFABRICATOR_SPEED_MODIFIER_BAD);
+
+			// The breakdown is a title line then one line per modifier; speak the
+			// lines as a comma-separated list
+			string breakdown = ((string)STRINGS.UI.BUILDINGEFFECTS.TOOLTIPS.COMPLEXFABRICATOR_SPEED_MODIFIER_TITLE)
+				.Replace("{BASE}", FormatSeconds(baseDuration))
+				+ target.GetSpeedModifierProvidersList();
+			var lines = new List<string>();
+			foreach (var line in breakdown.Split('\n')) {
+				string spoken = TextFilter.FilterForSpeech(line);
+				if (!string.IsNullOrEmpty(spoken))
+					lines.Add(spoken);
+			}
+			if (lines.Count > 1)
+				text += ", " + lines[0] + " " + string.Join(", ", lines.GetRange(1, lines.Count - 1).ToArray());
+			return text;
 		}
 
 		private ComplexFabricator GetTarget() {

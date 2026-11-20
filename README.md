@@ -357,7 +357,7 @@ Most menu screens support type-ahead: start typing to filter. Matches are ranked
 - **Pipe shape volume** -- volume for pipe shape earcons (0-200%)
 - **Flow sonification** -- continuous tone reflecting conduit fill or circuit load. See Earcons below. Off by default
 - **Flow sonification volume** -- volume for flow sonification (0-200%)
-- **Flow direction readout** -- appends flow direction and wire load to conduit and power overlay readings. In conduit overlays, announces which direction contents are flowing (e.g., "Water 80% right"). In the power overlay, announces circuit load as a percentage of safe wattage. On by default
+- **Flow direction readout** -- appends flow direction and wire load to conduit and power overlay readings. In conduit overlays, announces which direction contents are flowing (e.g., "Water 80% right"). A line with nothing moving through it says which way the network will send its contents instead (e.g., "empty, will flow left"). In the power overlay, announces circuit load as a percentage of safe wattage. On by default
 
 ### Miscellaneous
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OniAccess\n"
-"PO-Revision-Date: 2026-09-25\n"
+"PO-Revision-Date: 2026-11-20\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -573,6 +573,16 @@ msgstr "início limpo"
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.START_SET"
 msgid "start set"
 msgstr "início definido"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.SUPPORT_OPTIMIZED_BY
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.SUPPORT_OPTIMIZED_BY"
+msgid "optimized by {0}"
+msgstr "otimizado por {0}"
+
+#. STRINGS.ONIACCESS.BUILD_MENU.SUPPORT_OPTIMIZES
+msgctxt "STRINGS.ONIACCESS.BUILD_MENU.SUPPORT_OPTIMIZES"
+msgid "optimizes {0}"
+msgstr "otimiza {0}"
 
 #. STRINGS.ONIACCESS.BUILD_MENU.TOOLS_CATEGORY
 msgctxt "STRINGS.ONIACCESS.BUILD_MENU.TOOLS_CATEGORY"
@@ -1724,6 +1734,11 @@ msgctxt "STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.SQUIRREL"
 msgid "A small, round critter covered in spiky olive-green quills that fan out in all directions like a tiny hedgehog-cactus. It has a pale yellow face with two large dark eyes, a small nose, and a wide toothy grin. Its short brown feet poke out from underneath the quills."
 msgstr "Uma criatura pequena e redonda coberta de espinhos verde-oliva que se abrem em todas as direções como um mini ouriço-cacto. Tem um rosto amarelo-pálido com dois grandes olhos escuros, nariz pequeno e um sorriso largo e dentudo. Pés curtos e marrons aparecem debaixo dos espinhos."
 
+#. STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.SQUIRRELAQUATIC
+msgctxt "STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.SQUIRRELAQUATIC"
+msgid "A Pip morph made over into a little sea creature, bright aquamarine from head to tail. Instead of quills it has webbed fins: a large pair fanning out from its sides like wings, and three smaller ones rising from its head like ears and a crest, every fin tipped in coral red. Its face has two big dark eyes, a tiny pink nose, and a pair of long white buckteeth above a pale bib on its chest. The lower half of its body is covered in overlapping teal scales and ends in a fish tail, with two small red feet tucked underneath."
+msgstr "Uma variante de Pip transformada numa pequena criatura marinha, de um água-marinha vivo da cabeça à cauda. Em vez de espinhos, tem barbatanas palmadas: um par grande abrindo-se dos lados como asas e três menores erguendo-se da cabeça como orelhas e uma crista, todas com a ponta vermelho-coral. O rosto tem dois grandes olhos escuros, um narizinho rosa e um par de longos dentes brancos de coelho acima de um peitilho claro no peito. A metade inferior do corpo é coberta de escamas verde-azuladas sobrepostas e termina numa cauda de peixe, com dois pezinhos vermelhos dobrados por baixo."
+
 #. STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.SQUIRRELHUG
 msgctxt "STRINGS.ONIACCESS.CRITTER_DESCRIPTIONS.SQUIRRELHUG"
 msgid "A fluffy, round critter covered in soft pink-lavender fur instead of quills. It has two large upright ears tipped in purple and a pair of stubby purple arm-wings spread to the sides. Its face is pale pink with big dark eyes and a small toothy smile, giving it a cuddly stuffed-animal look."
@@ -1859,6 +1874,11 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.ACTIONS_TAB"
 msgid "Actions"
 msgstr "Ações"
 
+#. STRINGS.ONIACCESS.DETAILS.BLUEPRINT_ROTATION
+msgctxt "STRINGS.ONIACCESS.DETAILS.BLUEPRINT_ROTATION"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
 #. STRINGS.ONIACCESS.DETAILS.CURRENT_DIRECTION
 msgctxt "STRINGS.ONIACCESS.DETAILS.CURRENT_DIRECTION"
 msgid "Current direction: {0}."
@@ -1896,6 +1916,11 @@ msgstr "{0}, {1}, {2}"
 
 #. STRINGS.ONIACCESS.DETAILS.DUPE_SUBTITLE
 msgctxt "STRINGS.ONIACCESS.DETAILS.DUPE_SUBTITLE"
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. STRINGS.ONIACCESS.DETAILS.ENTITY_SUBTITLE
+msgctxt "STRINGS.ONIACCESS.DETAILS.ENTITY_SUBTITLE"
 msgid "{0}, {1}"
 msgstr "{0}, {1}"
 
@@ -2094,6 +2119,16 @@ msgctxt "STRINGS.ONIACCESS.DETAILS.SKY_CLEAR_AT_HEIGHT"
 msgid "Sky clear at height {0}"
 msgstr "Céu livre na altura {0}"
 
+#. STRINGS.ONIACCESS.DETAILS.SUPPORT_NOT_OPTIMIZED
+msgctxt "STRINGS.ONIACCESS.DETAILS.SUPPORT_NOT_OPTIMIZED"
+msgid "not optimized"
+msgstr "não otimizado"
+
+#. STRINGS.ONIACCESS.DETAILS.SUPPORT_OPTIMIZED
+msgctxt "STRINGS.ONIACCESS.DETAILS.SUPPORT_OPTIMIZED"
+msgid "optimized"
+msgstr "otimizado"
+
 #. STRINGS.ONIACCESS.DETAILS.SWEEPER_DROPPED
 msgctxt "STRINGS.ONIACCESS.DETAILS.SWEEPER_DROPPED"
 msgid "Dropped {0}, to {1}"
@@ -2103,6 +2138,11 @@ msgstr "Soltou {0}, em {1}"
 msgctxt "STRINGS.ONIACCESS.DETAILS.SWEEPER_PICKED_UP"
 msgid "Picked up {0}, from {1}"
 msgstr "Pegou {0}, de {1}"
+
+#. STRINGS.ONIACCESS.DETAILS.VISTAS
+msgctxt "STRINGS.ONIACCESS.DETAILS.VISTAS"
+msgid "Vistas"
+msgstr "Vistas"
 
 #. STRINGS.ONIACCESS.DIAGNOSTICS.HELP_OPEN_BROWSER
 msgctxt "STRINGS.ONIACCESS.DIAGNOSTICS.HELP_OPEN_BROWSER"
@@ -2386,8 +2426,8 @@ msgstr "Pele clara e um grande volume de cabelo grisalho cacheado, do tipo que j
 
 #. STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.MINNOW
 msgctxt "STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.MINNOW"
-msgid "Pale porcelain skin and a tumble of pearlescent hair that fades from pinkish white at the crown through lavender to purple at the tips, with bright blue and pink streaks tucked underneath and choppy bangs sweeping across her forehead. A sprinkle of small blue dots marks her cheeks, like freckles that decided to be sea spray instead. She has big round dark eyes and a gentle, contented smile. She wears a dusty purple top over black fish-scale-patterned pants, with sky-blue gloves and matching blue trim."
-msgstr "Pele pálida de porcelana e uma cascata de cabelo perolado que vai do branco-rosado no topo, passando pelo lilás, até o roxo nas pontas, com mechas azul-vivas e rosas escondidas por baixo e uma franja repicada varrendo a testa. Um punhado de pontinhos azuis marca suas bochechas, como sardas que decidiram ser respingos do mar. Ela tem olhos grandes, redondos e escuros e um sorriso suave e contente. Veste uma camiseta roxo-acinzentada sobre calça preta estampada com escamas de peixe, com luvas azul-celeste e acabamento azul combinando."
+msgid "Pale porcelain skin and a tumble of pearlescent hair that fades from pinkish white at the crown through lavender to purple at the tips, with bright blue and pink streaks tucked underneath and choppy bangs sweeping across her forehead. A sprinkle of small blue dots marks her cheeks, like freckles that decided to be sea spray instead. She has big round dark eyes and a gentle, contented smile. She wears a lavender top with a high aqua collar and a wide aqua band around the middle, black fish-scale-patterned pants, sky-blue gloves, and pale blue boots."
+msgstr "Pele pálida de porcelana e uma cascata de cabelo perolado que vai do branco-rosado no topo, passando pelo lilás, até o roxo nas pontas, com mechas azul-vivas e rosas escondidas por baixo e uma franja repicada varrendo a testa. Um punhado de pontinhos azuis marca suas bochechas, como sardas que decidiram ser respingos do mar. Ela tem olhos grandes, redondos e escuros e um sorriso suave e contente. Ela veste uma blusa lavanda com gola alta água-marinha e uma faixa larga água-marinha na cintura, calça preta com estampa de escamas de peixe, luvas azul-celeste e botas azul-claras."
 
 #. STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.NAILS
 msgctxt "STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.NAILS"
@@ -2473,6 +2513,11 @@ msgstr "Pele clara e cabelo castanho-claro varrido para um lado. Elu exibe um so
 msgctxt "STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.ULTI"
 msgid "Tan skin with the right side of their head encased in silver plating, housing a large circular teal lens where an eye used to be. A swept-back fin of lavender-pink hair crowns the top of their head. Their remaining organic eye is small and cheerful, paired with a pleased little smile. Purple top with glowing cyan trim, black pants with teal-accented joints, one hand raised in a casual wave. They look like someone who is fifty percent machine and one hundred percent fine with it."
 msgstr "Pele bronzeada com o lado direito da cabeça revestido em placas prateadas, abrigando uma grande lente circular azul-petróleo onde costumava haver um olho. Uma barbatana de cabelo rosa-lavanda varrida para trás coroa o topo da cabeça. O olho orgânico restante é pequeno e alegre, acompanhado de um sorrisinho satisfeito. Camiseta roxa com acabamento ciano brilhante, calça preta com juntas em azul-petróleo, uma mão erguida num aceno casual. Elu parece alguém que é cinquenta por cento máquina e cem por cento de boa com isso."
+
+#. STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.ZOE
+msgctxt "STRINGS.ONIACCESS.DUPE_DESCRIPTIONS.ZOE"
+msgid "Tan skin with a scatter of brown freckles across her nose and cheeks. Her bright violet hair is swept up and back into a tall wave that trails off into a long shaggy tail behind her, with one curly strand springing up from her forehead like an antenna, and the side of her head buzzed short to a pale lavender stubble. Big dark eyes and a huge open-mouthed laugh full of gappy teeth. She wears a pale blue button-front tunic with a blue scarf knotted at her neck, a dark grey belt, chunky brown gloves, and brown boots, and stands with her fists planted on her hips like she is about to announce something tremendous."
+msgstr "Pele morena com um punhado de sardas castanhas no nariz e nas bochechas. O cabelo violeta vivo está penteado para cima e para trás numa onda alta que termina num longo rabo desgrenhado, com uma mecha cacheada brotando da testa como uma antena e um lado da cabeça raspado curtinho, com uma penugem lavanda clara. Grandes olhos escuros e uma enorme gargalhada de boca aberta cheia de dentes separados. Ela veste uma túnica azul-clara abotoada com um lenço azul amarrado no pescoço, um cinto cinza-escuro, luvas marrons grossas e botas marrons, e está com os punhos plantados na cintura como se fosse anunciar algo tremendo."
 
 #. STRINGS.ONIACCESS.DUPES.FOLLOW.FOLLOWING
 msgctxt "STRINGS.ONIACCESS.DUPES.FOLLOW.FOLLOWING"
@@ -2799,6 +2844,11 @@ msgctxt "STRINGS.ONIACCESS.GLANCE.FILTERED_PORT"
 msgid "filtered {0}"
 msgstr "{0} filtrado"
 
+#. STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_AND
+msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_AND"
+msgid "{0} and {1}"
+msgstr "{0} e {1}"
+
 #. STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_PERCENT
 msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_DIRECTION_PERCENT"
 msgid "{0}% {1}"
@@ -2818,6 +2868,11 @@ msgstr "vazio"
 msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_NOT_FLOWING"
 msgid "not flowing"
 msgstr "sem fluxo"
+
+#. STRINGS.ONIACCESS.GLANCE.FLOW_WILL_FLOW
+msgctxt "STRINGS.ONIACCESS.GLANCE.FLOW_WILL_FLOW"
+msgid "will flow {0}"
+msgstr "fluirá para {0}"
 
 #. STRINGS.ONIACCESS.GLANCE.GAS_INPUT
 msgctxt "STRINGS.ONIACCESS.GLANCE.GAS_INPUT"
@@ -6133,6 +6188,11 @@ msgstr "colheita definida em {0} plantas na prioridade {1}"
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_MOP"
 msgid "marked {0} for mopping at priority {1}"
 msgstr "{0} marcado para limpeza na prioridade {1}"
+
+#. STRINGS.ONIACCESS.TOOLS.CONFIRM_PASTE_BLUEPRINT
+msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_PASTE_BLUEPRINT"
+msgid "blueprint applied to {0} {2}"
+msgstr "projeto aplicado a {0} {2}"
 
 #. STRINGS.ONIACCESS.TOOLS.CONFIRM_PRIORITIZE
 msgctxt "STRINGS.ONIACCESS.TOOLS.CONFIRM_PRIORITIZE"

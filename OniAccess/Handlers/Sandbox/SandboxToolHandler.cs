@@ -21,6 +21,8 @@ namespace OniAccess.Handlers.Sandbox {
 	/// Single-cell tools receive OnLeftClickDown at the cursor position.
 	/// </summary>
 	public class SandboxToolHandler: BaseScreenHandler {
+		private readonly Util.GameEventSubscription _toolChangedSub = new Util.GameEventSubscription();
+
 		public static SandboxToolHandler Instance { get; private set; }
 
 		internal readonly RectangleSelection Selection = new RectangleSelection();
@@ -95,10 +97,8 @@ namespace OniAccess.Handlers.Sandbox {
 			var activeTool = PlayerController.Instance?.ActiveTool;
 			_isRectangleTool = activeTool != null && RectangleToolTypes.Contains(activeTool.GetType());
 
-			if (Game.Instance != null) {
-				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
-				Game.Instance.Subscribe(1174281782, OnActiveToolChanged);
-			}
+			if (Game.Instance != null)
+				_toolChangedSub.Subscribe(Game.Instance, 1174281782, OnActiveToolChanged);
 
 			_skipFirstTick = true;
 
@@ -120,8 +120,7 @@ namespace OniAccess.Handlers.Sandbox {
 		public override void OnDeactivate() {
 			Instance = null;
 
-			if (Game.Instance != null)
-				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+			_toolChangedSub.Unsubscribe();
 
 			if (_floodProfile != null && TileCursor.Instance != null
 				&& TileCursor.Instance.ActiveToolProfile == _floodProfile)
@@ -450,7 +449,7 @@ namespace OniAccess.Handlers.Sandbox {
 		}
 
 		private void DeactivateToolAndPop() {
-			Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+			_toolChangedSub.Unsubscribe();
 			for (int i = HandlerStack.Count - 1; i >= 0; i--) {
 				if (HandlerStack.GetAt(i) is TileCursorHandler tch) {
 					tch.QueueNextOverlayAnnouncement();

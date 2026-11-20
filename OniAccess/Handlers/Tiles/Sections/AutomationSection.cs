@@ -11,6 +11,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 
 		public IEnumerable<string> Read(int cell, CellContext ctx) {
 			var tokens = new List<string>();
+			var warnings = new List<string>();
 			var bridgeConnections = (UtilityConnections)0;
 			LogicWire wire = null;
 			foreach (int layer in _layers) {
@@ -30,8 +31,10 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				if (wire == null)
 					wire = go.GetComponent<LogicWire>();
 				var sel = go.GetComponent<KSelectable>();
-				if (sel != null)
+				if (sel != null) {
 					tokens.Add(ConduitSection.ConstructionName(go, sel));
+					ConduitSection.AddWarnings(sel, warnings);
+				}
 			}
 			var repGo = Grid.Objects[cell, (int)ObjectLayer.ReplacementLogicWire];
 			if (repGo != null) {
@@ -57,6 +60,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 				}
 			}
 			ConduitSection.FindBridgeMiddle(cell, _layers, ctx, tokens);
+			tokens.AddRange(warnings);
 			return tokens;
 		}
 

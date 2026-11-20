@@ -53,9 +53,10 @@ namespace OniAccess.Handlers.Tiles.ToolProfiles {
 			var buildLine = new Sections.BuildToolSection();
 			var buildPriority = new Sections.BuildPrioritySection();
 			var extentSection = new Sections.BuildExtentSection();
+			var supportSection = new Sections.SupportBuildingSection();
 			registry.Register(typeof(BuildTool), new ToolProfile("BuildTool",
 				new GlanceComposer(new List<ICellSection> {
-					utilityLayer, GlanceComposer.Building, buildPriority, GlanceComposer.Element, GlanceComposer.Order, extentSection
+					utilityLayer, GlanceComposer.Building, buildPriority, GlanceComposer.Element, GlanceComposer.Order, supportSection, extentSection
 				}.AsReadOnly())));
 			registry.Register(typeof(UtilityBuildTool), new ToolProfile("UtilityBuildTool",
 				new GlanceComposer(new List<ICellSection> {

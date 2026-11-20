@@ -16,6 +16,8 @@ namespace OniAccess.Handlers.Tools {
 	/// entity they're looking at).
 	/// </summary>
 	public class MoveToLocationHandler: IAccessHandler {
+		private readonly Util.GameEventSubscription _toolChangedSub = new Util.GameEventSubscription();
+
 		public string DisplayName => BuildActivationName();
 		public bool CapturesAllInput => false;
 
@@ -32,16 +34,13 @@ namespace OniAccess.Handlers.Tools {
 		public IReadOnlyList<HelpEntry> HelpEntries => _helpEntries;
 
 		public void OnActivate() {
-			if (Game.Instance != null) {
-				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
-				Game.Instance.Subscribe(1174281782, OnActiveToolChanged);
-			}
+			if (Game.Instance != null)
+				_toolChangedSub.Subscribe(Game.Instance, 1174281782, OnActiveToolChanged);
 			SpeechPipeline.SpeakInterrupt(DisplayName);
 		}
 
 		public void OnDeactivate() {
-			if (Game.Instance != null)
-				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+			_toolChangedSub.Unsubscribe();
 		}
 
 		private void OnActiveToolChanged(object data) {

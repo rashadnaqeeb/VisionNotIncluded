@@ -215,8 +215,12 @@ namespace OniAccess.Handlers {
 			return width + height - 1;
 		}
 
+		/// <param name="countInCells">Counts targets over all the rectangle's
+		/// usable cells at once, for targets that span several cells. Used in
+		/// place of countTargets when set; only unusable cells are invalid.</param>
 		public static string BuildRectSummary(int cell1, int cell2, Func<int, int> countTargets,
-			bool allowUnexplored = false, bool hollow = false) {
+			bool allowUnexplored = false, bool hollow = false,
+			Func<System.Collections.Generic.HashSet<int>, int> countInCells = null) {
 			int minX = Math.Min(Grid.CellColumn(cell1), Grid.CellColumn(cell2));
 			int maxX = Math.Max(Grid.CellColumn(cell1), Grid.CellColumn(cell2));
 			int minY = Math.Min(Grid.CellRow(cell1), Grid.CellRow(cell2));
@@ -225,6 +229,8 @@ namespace OniAccess.Handlers {
 			int height = maxY - minY + 1;
 			int valid = 0;
 			int invalid = 0;
+			var usable = countInCells != null
+				? new System.Collections.Generic.HashSet<int>() : null;
 
 			for (int y = minY; y <= maxY; y++) {
 				for (int x = minX; x <= maxX; x++) {
@@ -235,7 +241,9 @@ namespace OniAccess.Handlers {
 						invalid++;
 						continue;
 					}
-					if (countTargets != null) {
+					if (usable != null) {
+						usable.Add(cell);
+					} else if (countTargets != null) {
 						int count = countTargets(cell);
 						if (count > 0)
 							valid += count;
@@ -246,6 +254,8 @@ namespace OniAccess.Handlers {
 					}
 				}
 			}
+			if (usable != null)
+				valid = countInCells(usable);
 
 			string format;
 			if (hollow)

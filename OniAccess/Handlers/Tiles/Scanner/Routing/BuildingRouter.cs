@@ -76,11 +76,10 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 				{ ("equipment", "industrialstation"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Generators) },
 
 				// Buildings > Farming
-				{ ("food", "farming"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Farming) },
-				{ ("food", "ranching"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Farming) },
+				{ ("farm", "farming"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Farming) },
+				{ ("farm", "ranching"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Farming) },
+				{ ("farm", "ranchingaquatic"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Farming) },
 				{ ("equipment", "workstations"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Farming) },
-				{ ("equipment", "farming"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Farming) },
-				{ ("equipment", "ranching"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Farming) },
 
 				// Buildings > Production
 				{ ("food", "cooking"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
@@ -88,6 +87,9 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 				{ ("equipment", "manufacturing"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
 				{ ("equipment", "archaeology"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
 				{ ("equipment", "meteordefense"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
+				// Support buildings that speed up a nearby station (ForgeTools sits under refining)
+				{ ("food", "support"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
+				{ ("equipment", "support"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
 				// Marine Drill (geyser tamer, next to GeoTuner which routes via equipment > research)
 				{ ("utilities", "conveyancestructures"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Production) },
 
@@ -123,7 +125,6 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 				{ ("equipment", "operations"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Infrastructure) },
 
 				// Buildings > Rocketry (subcategory-level additions)
-				{ ("equipment", "exploration"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
 				{ ("equipment", "telescopes"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
 				{ ("plumbing", "buildmenuports"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },
 				{ ("hvac", "buildmenuports"), (ScannerTaxonomy.Categories.Buildings, ScannerTaxonomy.Subcategories.Rocketry) },

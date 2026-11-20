@@ -17,6 +17,8 @@ namespace OniAccess.Handlers.Tools {
 	/// to the game via DragTool.OnLeftClickDown/OnLeftClickUp.
 	/// </summary>
 	public class ToolHandler: BaseScreenHandler {
+		private readonly Util.GameEventSubscription _toolChangedSub = new Util.GameEventSubscription();
+
 		public static ToolHandler Instance { get; private set; }
 
 		internal readonly RectangleSelection Selection = new RectangleSelection();
@@ -111,10 +113,8 @@ namespace OniAccess.Handlers.Tools {
 				TileCursor.Instance.ActiveToolProfile = profile;
 			}
 
-			if (Game.Instance != null) {
-				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
-				Game.Instance.Subscribe(1174281782, OnActiveToolChanged);
-			}
+			if (Game.Instance != null)
+				_toolChangedSub.Subscribe(Game.Instance, 1174281782, OnActiveToolChanged);
 
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
@@ -138,8 +138,7 @@ namespace OniAccess.Handlers.Tools {
 			if (TileCursor.Instance != null)
 				TileCursor.Instance.ActiveToolProfile = null;
 
-			if (Game.Instance != null)
-				Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+			_toolChangedSub.Unsubscribe();
 
 			if (OverlayScreen.Instance != null)
 				OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
@@ -306,7 +305,8 @@ namespace OniAccess.Handlers.Tools {
 				PlayDragSound(area);
 				SpeechPipeline.SpeakInterrupt(
 					RectangleSelection.BuildRectSummary(c1, c2,
-						_toolInfo?.CountTargets));
+						_toolInfo?.CountTargets,
+						countInCells: _toolInfo?.CountTargetsInCells));
 				return;
 			}
 
@@ -338,7 +338,8 @@ namespace OniAccess.Handlers.Tools {
 				PlayDragSound(area);
 				SpeechPipeline.SpeakInterrupt(
 					RectangleSelection.BuildRectSummary(rect.Cell1, rect.Cell2,
-						_toolInfo?.CountTargets));
+						_toolInfo?.CountTargets,
+						countInCells: _toolInfo?.CountTargetsInCells));
 			}
 		}
 
@@ -607,6 +608,8 @@ namespace OniAccess.Handlers.Tools {
 							plants += CountUprootTargets(cell, seenPlants);
 					}
 			}
+			if (_toolInfo != null && _toolInfo.CountTargetsInCells != null)
+				digCount = _toolInfo.CountTargetsInCells(cells);
 			total = digCount + plants;
 			string priorityText = "";
 			if (_toolInfo != null && _toolInfo.SupportsPriority) {
@@ -655,7 +658,7 @@ namespace OniAccess.Handlers.Tools {
 				_toolInfo?.DragSound ?? "Tile_Drag", tileCount);
 
 		private void DeactivateToolAndPop() {
-			Game.Instance.Unsubscribe(1174281782, OnActiveToolChanged);
+			_toolChangedSub.Unsubscribe();
 			for (int i = HandlerStack.Count - 1; i >= 0; i--) {
 				if (HandlerStack.GetAt(i) is TileCursorHandler tch) {
 					tch.QueueNextOverlayAnnouncement();
@@ -690,7 +693,64 @@ namespace OniAccess.Handlers.Tools {
 			_toolMap = new Dictionary<Type, ModToolInfo>();
 			foreach (var tool in AllTools)
 				_toolMap[tool.ToolType] = tool;
+			foreach (var tool in SourceArmedTools())
+				_toolMap[tool.ToolType] = tool;
 			return _toolMap;
+		}
+
+		/// <summary>
+		/// Drag tools the game arms from a selected object rather than the
+		/// tool menu, so they stay out of the tool picker.
+		/// </summary>
+		private static IEnumerable<ModToolInfo> SourceArmedTools() {
+			yield return new ModToolInfo("CopyCosmeticsTool",
+				Strings.Get("STRINGS.UI.TOOLS.COPYCOSMETICS.TOOLNAME"),
+				typeof(CopyCosmeticsTool), false, false, false, false,
+				"Tile_Drag", "Tile_Confirm",
+				(string)STRINGS.ONIACCESS.TOOLS.CONFIRM_PASTE_BLUEPRINT,
+				null) {
+				CountTargetsInCells = CountPasteBlueprintTargets
+			};
+		}
+
+		/// <summary>
+		/// Mirrors CopyCosmeticsTool.OnDragTool and its copy step: for a
+		/// duplicant source, every other duplicant; for a building, every
+		/// other building of the same type that takes blueprints. Each
+		/// counted once however many selected cells it covers.
+		/// </summary>
+		private static int CountPasteBlueprintTargets(HashSet<int> cells) {
+			var source = Traverse.Create(CopyCosmeticsTool.Instance)
+				.Field<UnityEngine.GameObject>("sourceGameObject").Value;
+			if (source == null) return 0;
+			bool dupeSource = source.GetComponent<MinionIdentity>() != null;
+			ObjectLayer layer;
+			Tag type = Tag.Invalid;
+			if (dupeSource) {
+				layer = ObjectLayer.Minion;
+			} else {
+				var building = source.GetComponent<Building>();
+				if (building == null) return 0;
+				layer = building.Def.ObjectLayer;
+				type = building.Def.Tag;
+			}
+			var seen = new HashSet<UnityEngine.GameObject>();
+			int count = 0;
+			foreach (int cell in cells) {
+				var go = Grid.Objects[cell, (int)layer];
+				if (go == null || go == source || !seen.Add(go)) continue;
+				if (dupeSource) {
+					if (go.GetComponent<MinionIdentity>() != null
+							&& go.GetComponent<WearableAccessorizer>() != null)
+						count++;
+				} else {
+					var building = go.GetComponent<Building>();
+					if (go.GetComponent<BuildingFacade>() != null
+							&& building != null && building.Def.Tag == type)
+						count++;
+				}
+			}
+			return count;
 		}
 
 		internal static ModToolInfo FindToolInfo(InterfaceTool activeTool) {

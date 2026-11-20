@@ -11,7 +11,7 @@ The mod uses two mechanisms together:
 - **Suppression**: `ModInputRouter`, registered in the game's `KInputHandler` tree at priority 50 (above `PlayerController` at 20, `CameraController` at 1). It receives every `KButtonEvent` from the game's input pipeline and consumes events the mod claims, preventing game handlers from seeing them.
 
 Suppression works through three mechanisms in `ModInputRouter`:
-1. **`_globalBlockedActions`**: Always blocks `Plan1-14` and `PanUp/Down/Left/Right` regardless of handler state.
+1. **`_globalBlockedActions`**: Always blocks `Plan1-16`, `PanUp/Down/Left/Right`, `Find` and `MoveRelocateTo` regardless of handler state.
 2. **`CapturesAllInput`**: When the active handler has this flag (screen handlers like menus, tables, cluster map), ALL non-passthrough keys are consumed.
 3. **`ConsumedKeys`**: Per-handler list of specific physical keys to consume when `CapturesAllInput` is false (used by `TileCursorHandler`, `BuildToolHandler`, `ToolHandler`).
 
@@ -37,7 +37,7 @@ These have no Root-context game binding, making them safe for the mod without ne
 - **Arrow keys** -- natural choice for accessibility cursor
 - **PageUp, PageDown, Home, End** -- used by mod scanner
 - **Ctrl+R, Ctrl+B** -- used by mod (red alert, ruler)
-- **Q** (bare, no modifier) -- bound only in BuildingsMenu context (build submenu letter key), not Root
+- **Shift+Minus, Shift+Equals, Shift+Backspace** -- were build categories 13-15 before U60, now unbound
 - **Backspace** (bare) -- bound only in Debug context (DebugToggle), not Root
 - **Backtick** -- bound only in Debug context (ToggleProfiler), not Root
 
@@ -61,7 +61,7 @@ These have no Root-context game binding, making them safe for the mod without ne
 
 ### Tile Cursor (TileCursorHandler -- main gameplay)
 
-Camera pan (WASD) and build category keys (Plan1-14) are globally blocked by `ModInputRouter._globalBlockedActions`. Other game bindings are suppressed per-key via `ConsumedKeys` on the tile cursor handler. Tool activation keys (G, C, X, M, etc.) are NOT consumed and pass through to the game, which is intentional -- the mod detects tool activations via `OnActiveToolChanged` and pushes appropriate tool handlers.
+Camera pan (WASD), build category keys (Plan1-16) and Move To (Q) are globally blocked by `ModInputRouter._globalBlockedActions`. Other game bindings are suppressed per-key via `ConsumedKeys` on the tile cursor handler. Tool activation keys (G, C, X, M, etc.) are NOT consumed and pass through to the game, which is intentional -- the mod detects tool activations via `OnActiveToolChanged` and pushes appropriate tool handlers.
 
 **Movement:**
 
@@ -78,7 +78,7 @@ Camera pan (WASD) and build category keys (Plan1-14) are globally blocked by `Mo
 |-----|--------|-------------|-------------|
 | I | Read tooltip | Disinfect tool activation | ConsumedKey |
 | Shift+K | Read coordinates | Sandbox Sample (sandbox only) | ConsumedKey |
-| Q | Read cycle status | BuildMenuKeyQ (build submenu only) | ConsumedKey |
+| Q | Read cycle status | MoveRelocateTo (Root, since U60); BuildMenuKeyQ (build submenu) | Globally blocked (MoveRelocateTo) + ConsumedKey |
 | Shift+Q | Read time played | None | ConsumedKey |
 | S | Colony status summary | PanDown (camera) | Globally blocked |
 | D | Read diagnostics | PanRight (camera) | Globally blocked |
@@ -272,7 +272,8 @@ Keys where the mod suppresses the original game function. Only listed if the gam
 | K | Clear (Sweep) tool activation | (no longer consumed — passes through to game) | N/A |
 | I | Disinfect tool activation | Read tooltip / info | Tools activated via mod action menu |
 | Shift+D | Disconnect tool activation | Open diagnostic browser | Tools activated via mod action menu |
-| 1-0, -, =, Shift+-, Shift+= | Plan 1-14 (build category hotkeys) | Bookmarks (with Ctrl/Shift/Alt), build priority (in tool context) | Build menu navigated through mod's menu handler |
+| 1-0, -, =, CapsLock+1-4 | Plan 1-16 (build category hotkeys) | Bookmarks (with Ctrl/Shift/Alt), build priority (in tool context). CapsLock+1-4 is left to the screen reader | Build menu navigated through mod's menu handler |
+| Q | MoveRelocateTo (Move To / Relocate To for the selected object) | Read cycle status | Move To stays in the selected object's action menu; a hotkey for it is no use without sight of the target cell |
 | Shift+0-9 | GotoUserNav (camera bookmarks) | Go to mod bookmark | Mod bookmarks replace camera bookmarks |
 | Ctrl+F | Find (game search) | Scanner search | Mod scanner replaces game search |
 | Space (build/tool only) | TogglePause | Place/confirm building or tool area | Backtick pauses; pausing mid-placement not useful |
