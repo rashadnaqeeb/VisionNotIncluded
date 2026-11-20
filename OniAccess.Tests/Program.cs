@@ -117,6 +117,9 @@ namespace OniAccess.Tests {
 			results.Add(ScannerSearchMatcherStripsLinkFormatting());
 
 			// --- TextFilter ---
+			// LocText's click templates use keyed strings populated by the
+			// game's localization startup; initialize that table offline too.
+			LocString.CreateLocStringKeys(typeof(STRINGS.UI.CONTROLS));
 			TextFilter.RegisterSprite("warning", "warning:");
 			TextFilter.RegisterSprite("logic_signal_green", "green signal");
 			TextFilter.RegisterSprite("logic_signal_red", "red signal");
@@ -131,6 +134,9 @@ namespace OniAccess.Tests {
 			results.Add(TextFilterNormalizesWhitespace());
 			results.Add(TextFilterHandlesEmptyAndNull());
 			results.Add(TextFilterPreservesPlainText());
+			results.Add(TextFilterResolvesMouseClickTemplate());
+			results.Add(TextFilterResolvesGamepadClickTemplate());
+			results.Add(TextFilterPreservesUnknownTemplates());
 			results.Add(TextFilterStripsHotkey());
 			results.Add(TextFilterStripsSizeStyle());
 			results.Add(TextFilterUnclosedTag());
@@ -1422,6 +1428,38 @@ namespace OniAccess.Tests {
 			string result = TextFilter.FilterForSpeech("Build a Ladder {Hotkey}");
 			bool ok = result == "Build a Ladder";
 			return Assert("TextFilterStripsHotkey", ok, $"got \"{result}\"");
+		}
+
+		private static (string, bool, string) TextFilterResolvesMouseClickTemplate() {
+			bool previous = KInputManager.currentControllerIsGamepad;
+			try {
+				KInputManager.currentControllerIsGamepad = false;
+				string result = TextFilter.FilterForSpeech("<b>(ClickType/Click)</b> to select [45%]");
+				string expected = STRINGS.UI.CONTROLS.CLICK + " to select 45%";
+				return Assert("TextFilterResolvesMouseClickTemplate", result == expected, $"got \"{result}\", expected \"{expected}\"");
+			} finally {
+				KInputManager.currentControllerIsGamepad = previous;
+			}
+		}
+
+		private static (string, bool, string) TextFilterResolvesGamepadClickTemplate() {
+			bool previous = KInputManager.currentControllerIsGamepad;
+			try {
+				KInputManager.currentControllerIsGamepad = true;
+				string result = TextFilter.FilterForSpeech("<b>(ClickType/Click)</b> to select");
+				string expected = STRINGS.UI.CONTROLS.PRESS + " to select";
+				return Assert("TextFilterResolvesGamepadClickTemplate", result == expected, $"got \"{result}\", expected \"{expected}\"");
+			} finally {
+				KInputManager.currentControllerIsGamepad = previous;
+			}
+		}
+
+		private static (string, bool, string) TextFilterPreservesUnknownTemplates() {
+			// A marker makes U60 ParseText return true even if its lookup has no
+			// match. Speech must preserve the returned text, not use that bool.
+			string input = "Unknown {Hotkey/NotARealAction} (ClickType/NotARealClick)";
+			string result = TextFilter.FilterForSpeech(input);
+			return Assert("TextFilterPreservesUnknownTemplates", result == input, $"got \"{result}\"");
 		}
 
 		private static (string, bool, string) TextFilterStripsSizeStyle() {
