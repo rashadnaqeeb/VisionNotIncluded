@@ -21,6 +21,13 @@ using UnityEngine;
 namespace OniAccess.Tests {
 	class Program {
 		static int Main(string[] args) {
+			bool excludeEvaluator = args.Length == 1 && args[0] == "--exclude-evaluator";
+			bool evaluatorOnly = args.Length == 1 && args[0] == "--evaluator-only";
+			if (args.Length > 0 && !excludeEvaluator && !evaluatorOnly) {
+				Console.Error.WriteLine("Usage: OniAccess.Tests.exe [--exclude-evaluator | --evaluator-only]");
+				return 2;
+			}
+
 			// Resolve game assemblies at runtime from ONI_MANAGED (test.sh and
 			// windows/test.ps1 set it).
 			var managed = Environment.GetEnvironmentVariable("ONI_MANAGED");
@@ -35,10 +42,12 @@ namespace OniAccess.Tests {
 				return File.Exists(path) ? Assembly.LoadFrom(path) : null;
 			};
 
-			return RunTests();
+			return evaluatorOnly
+				? ReportResults(DevServerTests.EvaluatorOnly())
+				: RunTests(includeEvaluator: !excludeEvaluator);
 		}
 
-		static int RunTests() {
+		static int RunTests(bool includeEvaluator) {
 			// Replace Unity time/frame sources to avoid native calls in tests
 			SpeechPipeline.TimeSource = () => 0f;
 			SpeechPipeline.SpeakAction = (text, intr) => { };
@@ -442,13 +451,17 @@ namespace OniAccess.Tests {
 				results.Add(r);
 
 			// --- Dev server: speech log, loopback HTTP, evaluator ---
-			foreach (var r in DevServerTests.All())
+			foreach (var r in DevServerTests.All(includeEvaluator))
 				results.Add(r);
 
 			// --- Utility skip step rule ---
 			foreach (var r in UtilityPieceTests.All())
 				results.Add(r);
 
+			return ReportResults(results);
+		}
+
+		static int ReportResults(IEnumerable<(string name, bool passed, string detail)> results) {
 			int passed = 0, failed = 0;
 			foreach (var (name, ok, detail) in results) {
 				if (ok) {
@@ -463,7 +476,7 @@ namespace OniAccess.Tests {
 			}
 
 			Console.WriteLine();
-			Console.WriteLine($"{passed} passed, {failed} failed, {results.Count} total");
+			Console.WriteLine($"{passed} passed, {failed} failed, {passed + failed} total");
 
 			return failed > 0 ? 1 : 0;
 		}

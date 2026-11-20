@@ -50,6 +50,19 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host ""
-Write-Host "Running tests..." -ForegroundColor Cyan
-& $TestExe
-exit $LASTEXITCODE
+# U60 game assemblies use Span APIs absent from desktop .NET Framework.
+# The vendored Mono.CSharp evaluator has the opposite requirement: it calls
+# AppDomain.DefineDynamicAssembly, which modern .NET removed. Run every test
+# once, under the runtime its dependencies support. The Mac Mono path stays
+# a single invocation of the complete suite.
+Write-Host "Running game and handler tests on .NET 8 or newer..." -ForegroundColor Cyan
+dotnet exec --runtimeconfig "$PSScriptRoot\test.runtimeconfig.json" $TestExe --exclude-evaluator
+$CoreExit = $LASTEXITCODE
+
+Write-Host ""
+Write-Host "Running evaluator tests on .NET Framework..." -ForegroundColor Cyan
+& $TestExe --evaluator-only
+$EvaluatorExit = $LASTEXITCODE
+
+if ($CoreExit -ne 0) { exit $CoreExit }
+exit $EvaluatorExit
