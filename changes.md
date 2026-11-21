@@ -3,7 +3,6 @@
 ## Unreleased changes since 1.7.11
 
 * On a Mac, the system voice no longer clicks at the start or end of a line.
-* Releases can now be installed and updated with the Loadstone mod manager, as an alternative to the Steam Workshop. It installs the mod into the game's local mods folder and switches it on.
 * The scanner has a new Warnings category at the end of the cycle, with Damage, Power, Plumbing, Placement and Life subcategories. It lists broken, overheating, entombed and flooded buildings, Flow Conflicts, overloaded circuits, unpowered buildings, circuits mixing wire ratings, dead batteries, blocked outputs, pipe and rail networks with no intake or with nothing at either end, buildings missing their tile or back wall, wilting crops, and entombed, drowning or scalding critters.
 * Ctrl+Arrow skipping along a pipe, rail or wire in its overlay now stops on the corner or end where the line turns or stops. It used to stop one tile past it.
 * Ctrl+Arrow and Alt+Arrow skipping now works while placing tiles such as sandstone, metal or insulated tiles. It used to stop after a single tile.

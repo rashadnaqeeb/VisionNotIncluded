@@ -24,24 +24,9 @@ On Mac, Ctrl is Control, except with an arrow key or Space, where it is Option. 
 
 Updates are delivered automatically through the Steam Workshop.
 
-## Install (Loadstone)
-
-[Loadstone](https://github.com/bradjrenshaw/loadstone) is an accessible mod manager for screen-reader accessibility mods, on Windows and Mac. Use it if you can't use the Steam Workshop, or if you'd rather manage your access mods in one place. It installs the mod into the game's local mods folder and switches it on, so you don't need the EnableMod tool. If you were subscribed on the Steam Workshop, Loadstone switches that copy off so the mod doesn't load twice.
-
-1. Download Loadstone from [Loadstone's latest release](https://github.com/bradjrenshaw/loadstone/releases/latest): `Loadstone.exe` on Windows, `Loadstone.dmg` on Mac. On Mac, open the disk image and copy Loadstone to Applications, then run it from there.
-2. Choose Vision Not Included in the list of mods and press Install. The first time, Loadstone starts the game so it can see the mod: when the main menu appears, quit the game and go back to Loadstone, which then switches the mod on.
-3. Disable two Steam hotkeys that interfere with the mod:
-   - Open Steam > Settings > In-Game.
-   - Uncheck "Enable the Steam Overlay while in-game".
-   - Clear or change the "Screenshot shortcut key".
-4. Press Launch in Loadstone, or start the game the way you usually do. The mod will announce when it's ready.
-5. If you're using a Mac, I recommend pressing F12, pressing Enter on Speech output, and switching to the system voice. This is because VoiceOver has no ability to queue speech.
-
-To update, open Loadstone and press Update on the mod's page. If the game ever switches the mod off after a crash or an update, press Switch the mod back on there.
-
 ## Install (manual, without Steam Workshop)
 
-Use the Steam Workshop or Loadstone install above if at all possible. Both handle updates for you. This manual method is only for players who can use neither.
+Use the Steam Workshop install above if at all possible. It handles updates automatically and is the primary distribution method. This manual method is only for players in regions where the Steam Workshop is unavailable.
 
 1. Download the latest release zip from the [GitHub releases page](https://github.com/rashadnaqeeb/VisionNotIncluded/releases).
 2. Extract the zip into your local mods folder: `Documents\Klei\OxygenNotIncluded\mods\local\OniAccess\` on Windows or `~/Library/Application Support/unity.Klei.Oxygen Not Included/mods/local/OniAccess/` on Mac. Create the folder if it doesn't exist. The folder should contain `OniAccess.dll`, `mod.yaml`, `mod_info.yaml`, and the `native`, `translations`, and `audio` folders directly -- not nested inside an extra subfolder.
