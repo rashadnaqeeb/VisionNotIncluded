@@ -3,8 +3,9 @@ namespace OniAccess.Handlers.Tiles.Skip {
 	/// Skips along utility lines (power, plumbing, ventilation, conveyor,
 	/// automation). A step carries on while the line connects across it,
 	/// including through the middle of a bridge that runs the way the skip
-	/// goes. It stops on entering a junction, at the edges of blueprint and
-	/// replacement runs, and where the line ends. A bridge ending on a line
+	/// goes. It stops on entering a junction, a corner or an end, at the
+	/// edges of blueprint and replacement runs, and where the line stops
+	/// connecting. A bridge ending on a line
 	/// counts as one of its branches, so a bridge landing mid-pipe makes a
 	/// junction. Settings add a stop at every bridge middle and count
 	/// building ports as branches.

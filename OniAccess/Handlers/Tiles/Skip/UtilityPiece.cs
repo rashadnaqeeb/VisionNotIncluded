@@ -18,9 +18,11 @@ namespace OniAccess.Handlers.Tiles.Skip {
 
 		/// <summary>
 		/// True when a skip moving in direction carries on from one piece
-		/// into the next. It stops on entering a junction, at the edges of
-		/// blueprint and replacement runs, and where the line does not
-		/// connect across the step. Leaving a junction is not a stop.
+		/// into the next. It stops on entering a junction, a corner or an
+		/// end (any piece the line does not leave in the skip's direction),
+		/// at the edges of blueprint and replacement runs, and where the
+		/// line does not connect across the step. Leaving a junction or a
+		/// corner is not a stop.
 		/// </summary>
 		public static bool Continues(UtilityPiece from, UtilityPiece to,
 				Direction direction) {
@@ -33,7 +35,8 @@ namespace OniAccess.Handlers.Tiles.Skip {
 				return false;
 			if (from.Replacement != to.Replacement) return false;
 			return (from.Connections & Toward(direction)) != 0
-				&& (to.Connections & Toward(Opposite(direction))) != 0;
+				&& (to.Connections & Toward(Opposite(direction))) != 0
+				&& (to.Connections & Toward(direction)) != 0;
 		}
 
 		public static int CountDirections(UtilityConnections connections) {

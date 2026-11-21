@@ -56,6 +56,18 @@ namespace OniAccess.Tests {
 				UtilityPiece.Continues(
 					Built(Horizontal | UtilityConnections.Up, junction: true),
 					Built(Horizontal), Direction.Right));
+			// The skip lands on the corner or end, not the cell past it
+			yield return Check("EnteringCornerStops", false,
+				UtilityPiece.Continues(Built(Horizontal),
+					Built(UtilityConnections.Left | UtilityConnections.Up),
+					Direction.Right));
+			yield return Check("EnteringEndStops", false,
+				UtilityPiece.Continues(Built(Horizontal),
+					Built(UtilityConnections.Left), Direction.Right));
+			yield return Check("LeavingCornerContinues", true,
+				UtilityPiece.Continues(
+					Built(UtilityConnections.Right | UtilityConnections.Up),
+					Built(Horizontal), Direction.Right));
 			yield return Check("LineIntoEmptyStops", false,
 				UtilityPiece.Continues(Built(Horizontal), UtilityPiece.None,
 					Direction.Right));

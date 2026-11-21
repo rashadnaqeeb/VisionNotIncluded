@@ -4,6 +4,7 @@
 
 * On a Mac, the system voice no longer clicks at the start or end of a line.
 * Releases can now be installed and updated with the Loadstone mod manager, as an alternative to the Steam Workshop. It installs the mod into the game's local mods folder and switches it on.
+* Ctrl+Arrow skipping along a pipe, rail or wire in its overlay now stops on the corner or end where the line turns or stops. It used to stop one tile past it.
 * Ctrl+Arrow and Alt+Arrow skipping now works while placing tiles such as sandstone, metal or insulated tiles. It used to stop after a single tile.
 * In the Plumbing Overlay, the Conduction Panel now reads its liquid input and output ports, both as a blueprint and once built.
 * In the rocket module screen, choosing a material you lack enough of now plays the error sound and repeats the material, since the game no longer selects it.
