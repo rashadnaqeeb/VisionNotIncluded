@@ -67,6 +67,9 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		public List<ElementCluster> Elements = new List<ElementCluster>();
 		public List<TileCluster> Tiles = new List<TileCluster>();
 		public List<NetworkSegmentCluster> NetworkSegments = new List<NetworkSegmentCluster>();
+		// The visible cells of each network, per NetworkLayerConfig type,
+		// keyed by network id. Covers every segment type on the network.
+		public Dictionary<int, List<int>>[] NetworkCells;
 		public List<BridgeInstance> Bridges = new List<BridgeInstance>();
 		public List<OrderCluster> OrderClusters = new List<OrderCluster>();
 		public List<IndividualOrder> IndividualOrders = new List<IndividualOrder>();
@@ -106,6 +109,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		private readonly Dictionary<int, TileCluster> _tileClusters
 			= new Dictionary<int, TileCluster>();
 		private readonly Dictionary<long, NetworkSegmentCluster>[] _networkClusters;
+		private readonly Dictionary<int, List<int>>[] _networkCells;
 		private readonly Dictionary<int, OrderCluster>[] _boxOrderClusters;
 		private readonly Dictionary<int, OrderCluster> _sameTypeOrderClusters
 			= new Dictionary<int, OrderCluster>();
@@ -156,8 +160,11 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			int netCount = NetworkLayerConfig.Types.Length;
 			_networkId = new int[netCount][];
 			_networkClusters = new Dictionary<long, NetworkSegmentCluster>[netCount];
-			for (int i = 0; i < netCount; i++)
+			_networkCells = new Dictionary<int, List<int>>[netCount];
+			for (int i = 0; i < netCount; i++) {
 				_networkClusters[i] = new Dictionary<long, NetworkSegmentCluster>();
+				_networkCells[i] = new Dictionary<int, List<int>>();
+			}
 
 			int boxCount = BoxOrderDefs.Length;
 			_ufBoxOrders = new UnionFind[boxCount];
@@ -232,8 +239,10 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			_elementClusters.Clear();
 			_backwallClusters.Clear();
 			_tileClusters.Clear();
-			for (int i = 0; i < _networkClusters.Length; i++)
+			for (int i = 0; i < _networkClusters.Length; i++) {
 				_networkClusters[i].Clear();
+				_networkCells[i].Clear();
+			}
 			for (int i = 0; i < _boxOrderClusters.Length; i++)
 				_boxOrderClusters[i].Clear();
 			_sameTypeOrderClusters.Clear();
@@ -605,6 +614,13 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				clusters[key] = cluster;
 			}
 			cluster.Cells.Add(cell);
+
+			int networkId = _networkId[typeIndex][cell] - 1;
+			if (!_networkCells[typeIndex].TryGetValue(networkId, out var cells)) {
+				cells = new List<int>();
+				_networkCells[typeIndex][networkId] = cells;
+			}
+			cells.Add(cell);
 		}
 
 		private void ExtractBoxOrder(int cell, int orderIndex) {
@@ -723,6 +739,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			for (int i = 0; i < _networkClusters.Length; i++)
 				foreach (var kvp in _networkClusters[i])
 					result.NetworkSegments.Add(kvp.Value);
+			result.NetworkCells = _networkCells;
 			result.Bridges.AddRange(_bridges);
 			for (int i = 0; i < _boxOrderClusters.Length; i++)
 				foreach (var kvp in _boxOrderClusters[i])

@@ -29,6 +29,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 		private readonly EntityBackend _entityBackend;
 		private readonly GeyserBackend _geyserBackend = new GeyserBackend();
 		private readonly RoomBackend _roomBackend = new RoomBackend();
+		private readonly WarningBackend _warningBackend = new WarningBackend();
 		// Iterated uniformly in RunAllBackends; grid consumers pull what they
 		// need via IGridConsumerBackend. Add a backend here and nowhere else.
 		private readonly List<IScannerBackend> _backends;
@@ -45,6 +46,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			_backends = new List<IScannerBackend> {
 				_elementBackend, _tileBackend, _networkBackend, _orderBackend,
 				_biomeBackend, _entityBackend, _geyserBackend, _roomBackend,
+				_warningBackend,
 			};
 		}
 
@@ -547,6 +549,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				{ ScannerTaxonomy.Categories.Zones, STRINGS.ONIACCESS.SCANNER.CATEGORIES.ZONES },
 				{ ScannerTaxonomy.Categories.Geysers, STRINGS.ONIACCESS.SCANNER.CATEGORIES.GEYSERS },
 				{ ScannerTaxonomy.Categories.Life, STRINGS.ONIACCESS.SCANNER.CATEGORIES.LIFE },
+				{ ScannerTaxonomy.Categories.Warnings, STRINGS.ONIACCESS.SCANNER.CATEGORIES.WARNINGS },
 			};
 		}
 
@@ -601,6 +604,10 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				{ ScannerTaxonomy.Subcategories.WildCritters, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WILD_CRITTERS },
 				{ ScannerTaxonomy.Subcategories.WildPlants, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.WILD_PLANTS },
 				{ ScannerTaxonomy.Subcategories.FarmPlants, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.FARM_PLANTS },
+				{ ScannerTaxonomy.Subcategories.Damage, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.DAMAGE },
+				{ ScannerTaxonomy.Subcategories.Plumbing, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.PLUMBING },
+				{ ScannerTaxonomy.Subcategories.Placement, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.PLACEMENT },
+				{ ScannerTaxonomy.Subcategories.Living, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.LIVING },
 			};
 			// Search results use category names as subcategory labels
 			foreach (var kvp in _categoryNames)

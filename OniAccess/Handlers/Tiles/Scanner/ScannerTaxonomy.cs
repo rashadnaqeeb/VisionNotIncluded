@@ -18,6 +18,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			public const string Zones = "Zones";
 			public const string Geysers = "Geysers";
 			public const string Life = "Life";
+			public const string Warnings = "Warnings";
 		}
 
 		public static readonly string[] CategoryOrder = {
@@ -31,6 +32,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			Categories.Zones,
 			Categories.Geysers,
 			Categories.Life,
+			Categories.Warnings,
 		};
 
 		public static class Subcategories {
@@ -103,6 +105,12 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			public const string WildCritters = "Wild Critters";
 			public const string WildPlants = "Wild Plants";
 			public const string FarmPlants = "Farm Plants";
+
+			// Warnings
+			public const string Damage = "Damage";
+			public const string Plumbing = "Plumbing";
+			public const string Placement = "Placement";
+			public const string Living = "Living";
 		}
 
 		public static readonly Dictionary<string, string[]> SubcategoryOrder =
@@ -153,6 +161,11 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 					Subcategories.Robots,
 					Subcategories.TameCritters, Subcategories.WildCritters,
 					Subcategories.WildPlants, Subcategories.FarmPlants,
+				}},
+				{ Categories.Warnings, new[] {
+					Subcategories.All, Subcategories.Damage, Subcategories.Power,
+					Subcategories.Plumbing, Subcategories.Placement,
+					Subcategories.Living,
 				}},
 			};
 

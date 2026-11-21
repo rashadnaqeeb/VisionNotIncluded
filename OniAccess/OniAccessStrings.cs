@@ -1322,6 +1322,7 @@ namespace STRINGS {
 				public static LocString ZONES = "Zones";
 				public static LocString GEYSERS = "Geysers";
 				public static LocString LIFE = "Life";
+				public static LocString WARNINGS = "Warnings";
 				public static LocString SEARCH = "Search";
 			}
 
@@ -1396,6 +1397,26 @@ namespace STRINGS {
 				public static LocString WILD_CRITTERS = "Wild Critters";
 				public static LocString WILD_PLANTS = "Wild Plants";
 				public static LocString FARM_PLANTS = "Farm Plants";
+
+				// Warnings
+				public static LocString DAMAGE = "Damage";
+				public static LocString PLUMBING = "Plumbing";
+				public static LocString PLACEMENT = "Placement";
+				public static LocString LIVING = "Life";
+			}
+
+			// Problems the Warnings category finds that the game has no status for
+			public class WARNINGS {
+				// {0} = warning name, {1} = what has it, e.g. "Broken, Manual Generator"
+				public static LocString LABEL = "{0}, {1}";
+				// An electrical network built from wires or bridges of different wattage ratings
+				public static LocString MIXED_WIRES = "Mixed wire ratings";
+				// A battery holding no charge
+				public static LocString DEAD_BATTERY = "Dead battery";
+				// A pipe or rail network with no building putting anything in and none taking anything out
+				public static LocString NO_INPUT_OR_OUTPUT = "No input or output";
+				// A conveyor rail network that buildings feed but no building takes from
+				public static LocString CONVEYOR_NO_INTAKE = "Conveyor Network Requires Building Intake";
 			}
 
 			// Auto-move toggle

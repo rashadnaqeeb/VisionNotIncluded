@@ -67,7 +67,7 @@ If a tile has multiple selectable objects, **Enter** opens a picker listing them
 
 The scanner catalogs everything on the current asteroid into a four-level hierarchy: category, subcategory, item, instance.
 
-- **End** -- perform a full scan. Results are organized into categories (Solids, Liquids, Gases, Buildings, Networks, Automation, Debris, Zones, Life), each with subcategories and an "all" subcategory. Each item announces its name, distance from you, and list position, sorted by distance from the cursor. Destroyed entities are silently pruned.
+- **End** -- perform a full scan. Results are organized into categories (Solids, Liquids, Gases, Buildings, Networks, Automation, Debris, Zones, Life, Warnings), each with subcategories and an "all" subcategory. Each item announces its name, distance from you, and list position, sorted by distance from the cursor. Destroyed entities are silently pruned.
 - **Ctrl+PageUp/Down** -- cycle categories
 - **Shift+PageUp/Down** -- cycle subcategories
 - **PageUp/Down** -- cycle items
@@ -78,6 +78,8 @@ The scanner catalogs everything on the current asteroid into a four-level hierar
 - **Shift+End** -- toggle auto-move. When on, the cursor teleports automatically as you cycle, and distances are measured from where you scanned rather than the cursor's current position
 
 ### Clustering
+
+The Warnings category comes last and lists problems: damaged, broken, entombed or flooded buildings, Flow Conflicts, overloaded circuits, unpowered buildings, networks mixing wire ratings, dead batteries, blocked outputs, pipe and rail networks nothing takes from or with no building at either end, buildings missing their support, and wilting crops or entombed, drowning or scalding critters. A warning on a wire, pipe or rail covers its whole network as one entry.
 
 Most scanner results are spatially clustered: adjacent cells of the same type merge into a single entry showing the cell count (e.g., "47 Granite"). This applies to elements, constructed tiles, biome zones, and orders like dig or mop. Two pools of the same liquid that aren't touching appear as separate entries.
 
