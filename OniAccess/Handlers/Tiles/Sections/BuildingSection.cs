@@ -4,8 +4,8 @@ using UnityEngine;
 namespace OniAccess.Handlers.Tiles.Sections {
 	/// <summary>
 	/// Reads all buildings at a cell across ObjectLayer.Building,
-	/// ObjectLayer.FoundationTile, ObjectLayer.Backwall, and
-	/// ObjectLayer.AttachableBuilding.
+	/// ObjectLayer.FoundationTile, ObjectLayer.Gantry, ObjectLayer.Backwall,
+	/// and ObjectLayer.AttachableBuilding.
 	/// Plants also occupy ObjectLayer.Building.
 	///
 	/// For each building: utility ports (when overlay active), name,
@@ -19,9 +19,10 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			try {
 				var buildingGo = Grid.Objects[cell, (int)ObjectLayer.Building];
 				var foundationGo = Grid.Objects[cell, (int)ObjectLayer.FoundationTile];
+				var gantryGo = Grid.Objects[cell, (int)ObjectLayer.Gantry];
 				var backwallGo = Grid.Objects[cell, (int)ObjectLayer.Backwall];
 
-				ReadPortCell(cell, buildingGo, foundationGo, ctx, tokens);
+				ReadPortCell(cell, buildingGo, foundationGo, gantryGo, ctx, tokens);
 
 				if (buildingGo != null && !ctx.Claimed.Contains(buildingGo))
 					ReadBuilding(buildingGo, cell, tokens);
@@ -32,6 +33,11 @@ namespace OniAccess.Handlers.Tiles.Sections {
 					ReadBuilding(foundationGo, cell, tokens);
 				ReadReplacement(cell, ObjectLayer.ReplacementTile, tokens);
 				ReadReplacement(cell, ObjectLayer.ReplacementLadder, tokens);
+
+				// A gantry's walkway cells also hold it on FoundationTile
+				if (gantryGo != null && gantryGo != foundationGo
+					&& !ctx.Claimed.Contains(gantryGo))
+					ReadBuilding(gantryGo, cell, tokens);
 
 				if (!Grid.HasTube[cell])
 					ScanForTubeConnections(cell, tokens);
@@ -285,13 +291,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		/// </summary>
 		private static void ReadPortCell(
 				int cell, GameObject buildingGo, GameObject foundationGo,
-				CellContext ctx, List<string> tokens) {
+				GameObject gantryGo, CellContext ctx, List<string> tokens) {
 			if (OverlayScreen.Instance == null) return;
 			var activeMode = OverlayScreen.Instance.GetMode();
 
 			if (activeMode == OverlayModes.Logic.ID
 				|| activeMode == OverlayModes.Radiation.ID) {
-				ScanNearbyForPorts(cell, buildingGo, foundationGo,
+				ScanNearbyForPorts(cell, buildingGo, foundationGo, gantryGo,
 					activeMode, ctx, tokens);
 				return;
 			}
@@ -312,12 +318,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			if (portGo == null) {
 				if (activeMode == OverlayModes.Power.ID)
 					ScanNearbyForWireLinks(cell, buildingGo, foundationGo,
-						ctx, tokens);
+						gantryGo, ctx, tokens);
 				return;
 			}
 
 			// Already processed through building or foundation layers
-			if (portGo == buildingGo || portGo == foundationGo) return;
+			if (portGo == buildingGo || portGo == foundationGo
+				|| portGo == gantryGo) return;
 			if (ctx.Claimed.Contains(portGo)) return;
 
 			var building = portGo.GetComponent<Building>();
@@ -355,12 +362,13 @@ namespace OniAccess.Handlers.Tiles.Sections {
 		/// </summary>
 		private static void ScanNearbyForWireLinks(
 				int cell, GameObject buildingGo, GameObject foundationGo,
-				CellContext ctx, List<string> tokens) {
+				GameObject gantryGo, CellContext ctx, List<string> tokens) {
 			int cx = Grid.CellColumn(cell);
 			int cy = Grid.CellRow(cell);
 			var seen = new HashSet<GameObject>();
 			if (buildingGo != null) seen.Add(buildingGo);
 			if (foundationGo != null) seen.Add(foundationGo);
+			if (gantryGo != null) seen.Add(gantryGo);
 
 			for (int dy = -1; dy <= 1; dy++) {
 				for (int dx = -1; dx <= 1; dx++) {
@@ -405,12 +413,14 @@ namespace OniAccess.Handlers.Tiles.Sections {
 
 		private static void ScanNearbyForPorts(
 				int cell, GameObject buildingGo, GameObject foundationGo,
-				HashedString activeMode, CellContext ctx, List<string> tokens) {
+				GameObject gantryGo, HashedString activeMode,
+				CellContext ctx, List<string> tokens) {
 			int cx = Grid.CellColumn(cell);
 			int cy = Grid.CellRow(cell);
 			var seen = new HashSet<GameObject>();
 			if (buildingGo != null) seen.Add(buildingGo);
 			if (foundationGo != null) seen.Add(foundationGo);
+			if (gantryGo != null) seen.Add(gantryGo);
 
 			for (int dy = -PortScanRadius; dy <= PortScanRadius; dy++) {
 				for (int dx = -PortScanRadius; dx <= PortScanRadius; dx++) {
@@ -890,10 +900,7 @@ namespace OniAccess.Handlers.Tiles.Sections {
 			} else {
 				name = selectable.GetName();
 			}
-			var kpid = go.GetComponent<KPrefabID>();
-			if (kpid != null && kpid.HasTag(GameTags.PlantBranch))
-				name = string.Format(
-					(string)STRINGS.ONIACCESS.GLANCE.PLANT_BRANCH, name);
+			name = Util.DebrisNameHelper.WithBranchSuffix(go, name);
 			return ConduitSection.WithBridgeOrientation(go, name);
 		}
 

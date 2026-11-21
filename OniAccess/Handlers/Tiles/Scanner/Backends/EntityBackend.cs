@@ -266,7 +266,8 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 					BackendData = go,
 					Category = ScannerTaxonomy.Categories.Life,
 					Subcategory = subcategory,
-					ItemName = go.GetComponent<KSelectable>()?.GetName() ?? go.name,
+					ItemName = WithBranchSuffix(go,
+						go.GetComponent<KSelectable>()?.GetName() ?? go.name),
 				};
 			}
 		}

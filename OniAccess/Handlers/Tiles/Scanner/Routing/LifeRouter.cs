@@ -10,7 +10,13 @@ namespace OniAccess.Handlers.Tiles.Scanner.Routing {
 			return go.GetComponent<KPrefabID>().HasTag(GameTags.Creatures.Wild);
 		}
 
+		/// <summary>
+		/// A branch has no planter of its own; it goes where its trunk goes.
+		/// </summary>
 		public static bool IsFarmPlant(Uprootable plant) {
+			var trunk = plant.GetSMI<PlantBranch.Instance>()?.GetTrunk();
+			if (trunk != null)
+				plant = trunk.GetComponent<Uprootable>();
 			return plant.GetPlanterStorage != null;
 		}
 	}

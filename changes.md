@@ -13,6 +13,8 @@
 * While placing a support building such as Cooking Tools, the cursor names the buildings in range it would optimize, such as "optimizes Electric Grill". While placing a building one can optimize, it names the support buildings that would reach it, such as "optimized by Cooking Tools".
 * A support building's Properties tab now has an In Range list, like the Auto-Sweeper's: every building in range it can optimize, nearest first, saying whether it is optimized and where it is. Enter selects one.
 * Blueprints in the Blueprints tab now read their name once, followed by the description. They used to read the name and description twice.
+* In the scanner, the branches of Arbor and Bonbon Trees are now listed as "Arbor Tree branch" and "Bonbon Tree branch", apart from the trees themselves, and branches of a farmed tree are listed under farm plants with their trunk.
+* The tile cursor now reads the Gantry. It used to be silent on every tile the Gantry covered.
 * Minnow's appearance description now gets her outfit right: a lavender top with an aqua collar and waistband, and pale blue boots.
 
 ## 1.7.11
