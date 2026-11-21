@@ -119,6 +119,14 @@ namespace OniAccess.Handlers.Tiles.Scanner.Backends {
 				{ b.MissingFoundation, ScannerTaxonomy.Subcategories.Placement },
 				{ b.MissingFoundationBackwall, ScannerTaxonomy.Subcategories.Placement },
 				{ b.InvalidPortOverlap, ScannerTaxonomy.Subcategories.Placement },
+				// Element filters and element sensors with no element chosen
+				{ b.NoFilterElementSelected, ScannerTaxonomy.Subcategories.Unconfigured },
+				{ b.NoStorageFilterSet, ScannerTaxonomy.Subcategories.Unconfigured },
+				{ b.NoLureElementSelected, ScannerTaxonomy.Subcategories.Unconfigured },
+				// Only ports that need a wire, such as a sensor's output
+				{ b.NoLogicWireConnected, ScannerTaxonomy.Subcategories.Unconfigured },
+				// A planter set to a seed the colony has none of
+				{ b.NoAvailableSeed, ScannerTaxonomy.Subcategories.Unconfigured },
 			};
 			var c = Db.Get().CreatureStatusItems;
 			_lifeStatuses = new Dictionary<StatusItem, string> {

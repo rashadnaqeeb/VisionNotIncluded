@@ -3,6 +3,7 @@
 ## Unreleased changes since 1.8.0
 
 * Releases can now be installed and updated with the Loadstone mod manager, as an alternative to the Steam Workshop. It installs the mod into the game's local mods folder and switches it on.
+* The scanner's Warnings category has a new Unconfigured subcategory: gas, liquid and conveyor filters and element sensors with no element chosen, storage with nothing allowed in, lures with no bait, sensors and gates with no automation wire, and planters waiting on a seed the colony has none of.
 
 ## 1.8.0
 

@@ -79,7 +79,7 @@ The scanner catalogs everything on the current asteroid into a four-level hierar
 
 ### Clustering
 
-The Warnings category comes last and lists problems: damaged, broken, entombed or flooded buildings, Flow Conflicts, overloaded circuits, unpowered buildings, networks mixing wire ratings, dead batteries, blocked outputs, pipe and rail networks nothing takes from or with no building at either end, buildings missing their support, and wilting crops or entombed, drowning or scalding critters. A warning on a wire, pipe or rail covers its whole network as one entry.
+The Warnings category comes last and lists problems: damaged, broken, entombed or flooded buildings, Flow Conflicts, overloaded circuits, unpowered buildings, networks mixing wire ratings, dead batteries, blocked outputs, pipe and rail networks nothing takes from or with no building at either end, buildings missing their support, wilting crops or entombed, drowning or scalding critters, filters, element sensors, storage and lures left unconfigured, sensors and gates with no automation wire, and planters waiting on a seed you have none of. A warning on a wire, pipe or rail covers its whole network as one entry.
 
 Most scanner results are spatially clustered: adjacent cells of the same type merge into a single entry showing the cell count (e.g., "47 Granite"). This applies to elements, constructed tiles, biome zones, and orders like dig or mop. Two pools of the same liquid that aren't touching appear as separate entries.
 

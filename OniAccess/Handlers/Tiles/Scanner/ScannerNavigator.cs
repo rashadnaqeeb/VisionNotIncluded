@@ -608,6 +608,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				{ ScannerTaxonomy.Subcategories.Plumbing, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.PLUMBING },
 				{ ScannerTaxonomy.Subcategories.Placement, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.PLACEMENT },
 				{ ScannerTaxonomy.Subcategories.Living, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.LIVING },
+				{ ScannerTaxonomy.Subcategories.Unconfigured, STRINGS.ONIACCESS.SCANNER.SUBCATEGORIES.UNCONFIGURED },
 			};
 			// Search results use category names as subcategory labels
 			foreach (var kvp in _categoryNames)

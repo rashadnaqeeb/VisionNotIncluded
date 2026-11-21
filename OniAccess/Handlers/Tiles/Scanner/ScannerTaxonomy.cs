@@ -111,6 +111,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 			public const string Plumbing = "Plumbing";
 			public const string Placement = "Placement";
 			public const string Living = "Living";
+			public const string Unconfigured = "Unconfigured";
 		}
 
 		public static readonly Dictionary<string, string[]> SubcategoryOrder =
@@ -165,7 +166,7 @@ namespace OniAccess.Handlers.Tiles.Scanner {
 				{ Categories.Warnings, new[] {
 					Subcategories.All, Subcategories.Damage, Subcategories.Power,
 					Subcategories.Plumbing, Subcategories.Placement,
-					Subcategories.Living,
+					Subcategories.Living, Subcategories.Unconfigured,
 				}},
 			};
 

@@ -1403,6 +1403,7 @@ namespace STRINGS {
 				public static LocString PLUMBING = "Plumbing";
 				public static LocString PLACEMENT = "Placement";
 				public static LocString LIVING = "Life";
+				public static LocString UNCONFIGURED = "Unconfigured";
 			}
 
 			// Problems the Warnings category finds that the game has no status for
