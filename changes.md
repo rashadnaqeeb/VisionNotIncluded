@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased changes since 1.7.11
+## Unreleased changes since 1.8.0
+
+## 1.8.0
 
 * On a Mac, the system voice no longer clicks at the start or end of a line.
 * The scanner has a new Warnings category at the end of the cycle, with Damage, Power, Plumbing, Placement and Life subcategories. It lists broken, overheating, entombed and flooded buildings, Flow Conflicts, overloaded circuits, unpowered buildings, circuits mixing wire ratings, dead batteries, blocked outputs, pipe and rail networks with no intake or with nothing at either end, buildings missing their tile or back wall, wilting crops, and entombed, drowning or scalding critters.
