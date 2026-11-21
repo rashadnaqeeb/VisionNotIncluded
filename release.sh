@@ -5,7 +5,8 @@
 # "Unreleased changes" section of changes.md into the new version's section,
 # builds and deploys the mod locally (build.sh), commits "Release <version>",
 # tags v<version>, pushes, publishes the GitHub release with the manual-install
-# release.zip and the changelog entries as notes, and fills release/ with the
+# release.zip, the Loadstone installer's loadstone-release.json, and the
+# changelog entries as notes, and fills release/ with the
 # same files for the Steam Workshop upload.
 #
 # The Workshop upload itself is manual: in the Windows VM, point the Oxygen Not
@@ -183,6 +184,24 @@ ZIP="$TMP/release.zip"
 	echo "Manual zip attached for regions where Steam Workshop is unavailable."
 } > "$TMP/notes.md"
 
+# --- Loadstone release manifest ---
+# The Loadstone installer reads loadstone-release.json from each release: it
+# freezes loadstone-packages/vision-not-included.json for this version and pins
+# the zip's hash. Loadstone is a checkout beside this repo (../loadstone, from
+# github.com/rashadnaqeeb/loadstone), or wherever LOADSTONE_DIR points.
+LOADSTONE="${LOADSTONE_DIR:-$(dirname "$REPO")/loadstone}"
+if [ ! -f "$LOADSTONE/Cargo.toml" ]; then
+	echo "ERROR: Loadstone checkout not found at $LOADSTONE (set LOADSTONE_DIR)." >&2
+	exit 1
+fi
+(cd "$LOADSTONE" && cargo build -q --release -p loadstone-cli)
+LOADSTONE_CLI="$LOADSTONE/target/release/loadstone"
+echo "$NOTES" > "$TMP/loadstone-notes.md"
+"$LOADSTONE_CLI" package --manifest loadstone-packages/vision-not-included.json \
+	--scope loadstone-packages --version "$TAG" --artifact "$ZIP" \
+	--notes-file "$TMP/loadstone-notes.md" --out "$TMP/loadstone-release.json" >/dev/null
+"$LOADSTONE_CLI" validate --scope loadstone-packages "$TMP/loadstone-release.json" >/dev/null
+
 if [ "$DRY_RUN" -eq 1 ]; then
 	echo
 	echo "Dry run. Release notes for $TAG would be:"
@@ -206,7 +225,7 @@ COMMITTED=1
 git push -q origin main "$TAG"
 
 echo "Publishing the GitHub release..."
-gh release create "$TAG" "$ZIP" --verify-tag --title "$VERSION" --notes-file "$TMP/notes.md"
+gh release create "$TAG" "$ZIP" "$TMP/loadstone-release.json" --verify-tag --title "$VERSION" --notes-file "$TMP/notes.md"
 
 echo
 echo "Released $VERSION."
